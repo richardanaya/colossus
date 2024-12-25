@@ -8,7 +8,6 @@ use clap::Parser;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::path::Path;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tower_http::services::ServeDir;
@@ -136,13 +135,14 @@ async fn main() {
     let args = Args::parse();
 
     // Build our application with routes
+    let static_dir = args.static_dir.clone();
     let app = Router::new()
         .route(
             "/",
             get(|| async { Html(include_str!("../static/index.html")) }),
         )
         .route("/api/sessions", post(create_session))
-        .route("/contexts", get(move || get_contexts(args.static_dir.clone())))
+        .route("/contexts", get(move || get_contexts(static_dir.clone())))
         .nest_service("/static", ServeDir::new(&args.static_dir));
 
     // Run it with hyper on localhost:3000
