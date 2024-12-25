@@ -29,6 +29,16 @@ struct ContextSelection {
     filename: String,
 }
 
+#[derive(Deserialize)]
+struct ChangeCodeRequest {
+    change: String,
+}
+
+#[derive(Deserialize)]
+struct QuestionRequest {
+    question: String,
+}
+
 #[derive(Serialize, Deserialize)]
 struct SessionRequest {
     model: String,
@@ -152,6 +162,8 @@ async fn main() {
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(static_dir.clone())))
         .route("/select-context", post(handle_context_selection))
+        .route("/change-code", post(handle_change_code))
+        .route("/ask-question", post(handle_question))
         .nest_service("/static", ServeDir::new("./static"));
 
     // Run it with hyper on localhost:3000
@@ -166,4 +178,18 @@ async fn handle_context_selection(
 ) -> StatusCode {
     println!("Context selected: {}", payload.filename);
     StatusCode::OK
+}
+
+async fn handle_change_code(
+    Json(payload): Json<ChangeCodeRequest>,
+) -> Json<String> {
+    println!("Code change requested: {}", payload.change);
+    Json(String::from("I've analyzed your code change request. Here's what I would suggest..."))
+}
+
+async fn handle_question(
+    Json(payload): Json<QuestionRequest>,
+) -> Json<String> {
+    println!("Question asked: {}", payload.question);
+    Json(String::from("Based on the codebase, here's what I can tell you..."))
 }

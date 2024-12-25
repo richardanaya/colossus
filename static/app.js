@@ -265,6 +265,9 @@ function handleMessage(e) {
       args: call.arguments,
     });
     updateFunctionCallsUI();
+    
+    // Handle the function call
+    handleFunctionCall(call.name, JSON.parse(call.arguments));
   }
 
   if (event.type === "response.audio_transcript.delta") {
@@ -304,6 +307,39 @@ function updateCaptionUI() {
     captionElement.style.display = "block";
   } else {
     captionElement.style.display = "none";
+  }
+}
+
+async function handleFunctionCall(name, args) {
+  let response;
+  try {
+    switch (name) {
+      case 'change_code':
+        response = await fetch('/change-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ change: args.change })
+        });
+        break;
+      case 'ask_question':
+        response = await fetch('/ask-question', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: args.question })
+        });
+        break;
+      default:
+        console.warn('Unknown function:', name);
+        return;
+    }
+    
+    const responseText = await response.text();
+    messages.push({ type: 'assistant', content: responseText });
+    updateMessagesUI();
+  } catch (error) {
+    console.error('Function call failed:', error);
+    messages.push({ type: 'assistant', content: 'Sorry, there was an error processing your request.' });
+    updateMessagesUI();
   }
 }
 
