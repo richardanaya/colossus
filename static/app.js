@@ -99,8 +99,8 @@ async function init() {
           tools: [
             {
               type: "function",
-              name: "create_node",
-              description: "Create a new node in the graph",
+              name: "change_code",
+              description: "Request to change the codebase",
               parameters: {
                 type: "object",
                 properties: {
@@ -175,32 +175,37 @@ async function init() {
     analyser = audioContext.createAnalyser();
     analyser.fftSize = 256;
     source.connect(analyser);
-    
+
     dataArray = new Uint8Array(analyser.frequencyBinCount);
-    
+
     // Start volume meter animation
     function drawVolumeMeter() {
       analyser.getByteFrequencyData(dataArray);
       const volume = dataArray.reduce((a, b) => a + b) / dataArray.length;
-      
+
       volumeCtx.clearRect(0, 0, volumeMeter.width, volumeMeter.height);
-      
+
       // Draw background
-      volumeCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      volumeCtx.fillStyle = "rgba(0, 0, 0, 0.1)";
       volumeCtx.fillRect(0, 0, volumeMeter.width, volumeMeter.height);
-      
+
       // Draw volume level
-      const gradient = volumeCtx.createLinearGradient(0, 0, volumeMeter.width, 0);
-      gradient.addColorStop(0, '#3b82f6');
-      gradient.addColorStop(1, '#2563eb');
+      const gradient = volumeCtx.createLinearGradient(
+        0,
+        0,
+        volumeMeter.width,
+        0
+      );
+      gradient.addColorStop(0, "#3b82f6");
+      gradient.addColorStop(1, "#2563eb");
       volumeCtx.fillStyle = gradient;
-      
+
       const width = (volume / 255) * volumeMeter.width;
       volumeCtx.fillRect(0, 0, width, volumeMeter.height);
-      
+
       animationId = requestAnimationFrame(drawVolumeMeter);
     }
-    
+
     drawVolumeMeter();
 
     const offer = await newPc.createOffer();
@@ -307,7 +312,7 @@ function stopVolumeMeter() {
   }
   if (volumeCtx) {
     volumeCtx.clearRect(0, 0, volumeMeter.width, volumeMeter.height);
-    volumeCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+    volumeCtx.fillStyle = "rgba(0, 0, 0, 0.1)";
     volumeCtx.fillRect(0, 0, volumeMeter.width, volumeMeter.height);
   }
 }
