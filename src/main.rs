@@ -7,6 +7,7 @@ use axum::{
 use clap::Parser;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 use std::fs;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
@@ -21,6 +22,11 @@ struct ErrorResponse {
 struct Context {
     filename: String,
     content: String,
+}
+
+#[derive(Deserialize)]
+struct ContextSelection {
+    filename: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -145,6 +151,7 @@ async fn main() {
         )
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(static_dir.clone())))
+        .route("/select-context", post(handle_context_selection))
         .nest_service("/static", ServeDir::new("./static"));
 
     // Run it with hyper on localhost:3000
@@ -152,4 +159,11 @@ async fn main() {
     let listener = TcpListener::bind(addr).await.unwrap();
     println!("listening on {}", addr);
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn handle_context_selection(
+    Json(payload): Json<ContextSelection>,
+) -> StatusCode {
+    println!("Context selected: {}", payload.filename);
+    StatusCode::OK
 }

@@ -86,10 +86,27 @@ async function fetchContexts() {
 function updateContextsUI() {
   const contextsList = document.getElementById('contextsList');
   contextsList.innerHTML = contexts.map(context => `
-    <button class="glass-card" style="width: 100%; text-align: left; margin-bottom: 0.5rem; background: rgba(255, 255, 255, 0.05);">
+    <button 
+      onclick="handleContextSelect('${context.filename}')"
+      class="glass-card" 
+      style="width: 100%; text-align: left; margin-bottom: 0.5rem; background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-weight: 500;">
       ${context.filename}
     </button>
   `).join('');
+}
+
+async function handleContextSelect(filename) {
+  try {
+    await fetch('/select-context', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ filename })
+    });
+  } catch (error) {
+    console.error('Failed to select context:', error);
+  }
 }
 
 async function init() {
