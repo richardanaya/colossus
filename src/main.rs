@@ -30,9 +30,11 @@ struct SessionRequest {
     instructions: String,
 }
 
-async fn get_contexts(static_dir: String) -> Result<Json<Vec<Context>>, (StatusCode, Json<ErrorResponse>)> {
+async fn get_contexts(
+    static_dir: String,
+) -> Result<Json<Vec<Context>>, (StatusCode, Json<ErrorResponse>)> {
     let mut contexts = Vec::new();
-    
+
     // Read all files in the static directory
     let entries = fs::read_dir(&static_dir).map_err(|e| {
         (
@@ -57,7 +59,7 @@ async fn get_contexts(static_dir: String) -> Result<Json<Vec<Context>>, (StatusC
                             }),
                         )
                     })?;
-                    
+
                     contexts.push(Context {
                         filename: filename.to_string(),
                         content,
@@ -131,7 +133,7 @@ struct Args {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    
+
     let args = Args::parse();
 
     // Build our application with routes
@@ -143,7 +145,7 @@ async fn main() {
         )
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(static_dir.clone())))
-        .nest_service("/static", ServeDir::new(&args.static_dir));
+        .nest_service("/static", ServeDir::new("./static"));
 
     // Run it with hyper on localhost:3000
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
