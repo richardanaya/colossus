@@ -53,15 +53,15 @@ async function handleSendMessage() {
 
 async function createSession() {
   const response = await fetch("/api/sessions", {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-4",
+      model: "gpt-4o-realtime-preview-2024-12-17",
       voice: "alloy",
-      instructions: "You are a helpful assistant."
-    })
+      instructions: "You are a helpful assistant.",
+    }),
   });
   return response.json();
 }
