@@ -19,7 +19,6 @@ use tower_http::services::ServeDir;
 struct ErrorResponse {
     error: String,
     project_dir: String,
-    project_dir: String,
 }
 
 #[derive(Serialize)]
@@ -52,6 +51,7 @@ struct SessionRequest {
 
 struct AppStateWithDir {
     current_context: Mutex<Option<Context>>,
+    project_dir: String,
 }
 
 async fn get_contexts(
@@ -66,10 +66,6 @@ async fn get_contexts(
             Json(ErrorResponse {
                 error: format!("Failed to read directory: {}", e),
                 project_dir: static_dir.clone(),
-                project_dir: static_dir.clone(),
-                project_dir: String::new(),
-                project_dir: String::new(),
-                project_dir: String::new(),
             }),
         )
     })?;
@@ -179,10 +175,9 @@ async fn main() {
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(project_dir.clone())))
         .route("/select-context", post(handle_context_selection))
-        .with_state(state_with_dir)
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
-        .with_state(project_dir.clone())
+        .with_state(state_with_dir)
         .nest_service("/static", ServeDir::new("./static"));
 
     // Run it with hyper on localhost:3000
