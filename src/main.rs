@@ -81,6 +81,7 @@ async fn get_contexts(
                             StatusCode::INTERNAL_SERVER_ERROR,
                             Json(ErrorResponse {
                                 error: format!("Failed to read file {}: {}", filename, e),
+                                project_dir: static_dir.clone(),
                             }),
                         )
                     })?;
@@ -105,6 +106,7 @@ async fn create_session(
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(ErrorResponse {
                 error: "API key not found".to_string(),
+                project_dir: String::new(),
             }),
         )
     })?;
@@ -122,6 +124,7 @@ async fn create_session(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(ErrorResponse {
                     error: format!("Failed to create session: {}", e),
+                    project_dir: String::new(),
                 }),
             )
         })?;
@@ -131,6 +134,7 @@ async fn create_session(
             StatusCode::BAD_REQUEST,
             Json(ErrorResponse {
                 error: format!("API error: {}", response.status()),
+                project_dir: String::new(),
             }),
         ));
     }
@@ -140,6 +144,7 @@ async fn create_session(
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(ErrorResponse {
                 error: format!("Failed to parse response: {}", e),
+                project_dir: String::new(),
             }),
         )
     })?;
