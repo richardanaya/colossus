@@ -8,10 +8,10 @@ use axum::{
 use clap::Parser;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
-use std::process::Command;
-use std::sync::{Arc, Mutex};
 use std::fs;
 use std::net::SocketAddr;
+use std::process::Command;
+use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
 use tower_http::services::ServeDir;
 
@@ -156,7 +156,7 @@ async fn create_session(
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// Directory to serve project files from
-    #[arg(short, long, default_value = "static")]
+    #[arg(short, long, default_value = "./")]
     project_dir: String,
 }
 
@@ -211,7 +211,7 @@ async fn handle_change_code(
 ) -> Result<Json<String>, (StatusCode, Json<ErrorResponse>)> {
     let project_dir = &state_with_dir.project_dir;
     let current_context = state_with_dir.current_context.lock().unwrap();
-    
+
     let context_file = if let Some(context) = &*current_context {
         &context.filename
     } else {
@@ -244,7 +244,7 @@ async fn handle_change_code(
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(ErrorResponse {
                 error: format!(
-                    "Aider command failed: {}", 
+                    "Aider command failed: {}",
                     String::from_utf8_lossy(&output.stderr)
                 ),
                 project_dir: project_dir.clone(),
