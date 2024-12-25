@@ -68,7 +68,7 @@ async function createSession() {
       model: "gpt-4o-realtime-preview-2024-12-17",
       voice: "alloy",
       instructions:
-        "You are a helpful assistant working with a user to understand and modify a codebase. You can help answer questions about the codebase and make changes to the codebase.",
+        "You are a helpful assistant working with a user to understand and modify a codebase. You can help answer questions about the codebase and make changes to the codebase. You talk very quickly and concisely so I don't have to hear alot of words.",
     }),
   });
   return response.json();
@@ -265,7 +265,7 @@ function handleMessage(e) {
       args: call.arguments,
     });
     updateFunctionCallsUI();
-    
+
     // Handle the function call
     handleFunctionCall(call.name, JSON.parse(call.arguments));
   }
@@ -314,51 +314,56 @@ async function handleFunctionCall(name, args) {
   let response;
   try {
     switch (name) {
-      case 'change_code':
-        response = await fetch('/change-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ change: args.change })
+      case "change_code":
+        response = await fetch("/change-code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ change: args.change }),
         });
         break;
-      case 'ask_question':
-        response = await fetch('/ask-question', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: args.question })
+      case "ask_question":
+        response = await fetch("/ask-question", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: args.question }),
         });
         break;
       default:
-        console.warn('Unknown function:', name);
+        console.warn("Unknown function:", name);
         return;
     }
-    
+
     const responseText = await response.text();
-    messages.push({ type: 'assistant', content: responseText });
-    updateMessagesUI();
 
     // For ask_question, send a follow-up request to OpenAI to summarize vocally
-    if (name === 'ask_question' && dataChannel) {
-      dataChannel.send(JSON.stringify({
-        type: "conversation.item.create",
-        item: {
-          type: "message",
-          role: "user", 
-          content: [
-            {
-              type: "input_text",
-              text: `I'd like you to summarize this technical response in a more conversational way using your voice: ${responseText}`
-            }
-          ]
-        }
-      }));
-      dataChannel.send(JSON.stringify({
-        type: "response.create"
-      }));
+    if (name === "ask_question" && dataChannel) {
+      dataChannel.send(
+        JSON.stringify({
+          type: "conversation.item.create",
+          item: {
+            type: "message",
+            role: "user",
+            content: [
+              {
+                type: "input_text",
+                text: `I'd like you to summarize this technical response in a more conversational way using your voice: ${responseText}`,
+              },
+            ],
+          },
+        })
+      );
+      dataChannel.send(
+        JSON.stringify({
+          type: "response.create",
+        })
+      );
     }
   } catch (error) {
-    console.error('Function call failed:', error);
-    messages.push({ type: 'assistant', content: 'Sorry, there was an error processing your request.' });
+    console.error("Function call failed:", error);
+    messages.push({
+      type: "assistant",
+      content: "Sorry, there was an error processing your request.",
+    });
     updateMessagesUI();
   }
 }
