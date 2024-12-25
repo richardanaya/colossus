@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .overlay-panel {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .function-name {
+            color: #3b82f6;
+            font-family: monospace;
+        }
+
+        .function-args {
+            color: #4b5563;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+    <main style="padding: 2rem;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <!-- Header -->
+            <header class="glass-card" style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 style="font-size: 1.5rem; font-weight: bold;">AI Assistant</h1>
+                <div style="display: flex; gap: 1rem;">
+                    <button id="connectButton">Start Session</button>
+                    <button id="muteButton">Mute</button>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <div style="display: flex; gap: 2rem; margin-top: 2rem; height: calc(100vh - 16rem);">
+                <!-- Function Calls Panel -->
+                <div class="overlay-panel" style="width: 33%; overflow: hidden; display: flex; flex-direction: column;">
+                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">Function Calls</h3>
+                    <div id="functionCalls" style="overflow-y: auto; flex: 1;"></div>
+                </div>
+
+                <!-- Chat Panel -->
+                <div class="overlay-panel" style="width: 67%; display: flex; flex-direction: column;">
+                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">Chat</h3>
+                    <div id="messages" style="flex: 1; overflow-y: auto; margin-bottom: 1rem;"></div>
+                    <div id="caption" class="glass-card" style="display: none; opacity: 0.5; margin-bottom: 1rem;"></div>
+                    <div style="display: flex; gap: 1rem;">
+                        <textarea
+                            id="textInput"
+                            placeholder="Type your message here... (Press Enter to send)"
+                            rows="3"
+                        ></textarea>
+                        <button id="sendButton">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="/static/app.js"></script>
+</body>
+</html>
