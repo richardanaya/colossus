@@ -1,6 +1,7 @@
 // Global state
 let isConnecting = false;
 let isConnected = false;
+let contexts = [];
 let caption = "";
 let messages = [];
 let functionCalls = [];
@@ -72,8 +73,28 @@ async function createSession() {
   return response.json();
 }
 
+async function fetchContexts() {
+  try {
+    const response = await fetch('/contexts');
+    contexts = await response.json();
+    updateContextsUI();
+  } catch (error) {
+    console.error('Failed to fetch contexts:', error);
+  }
+}
+
+function updateContextsUI() {
+  const contextsList = document.getElementById('contextsList');
+  contextsList.innerHTML = contexts.map(context => `
+    <button class="glass-card" style="width: 100%; text-align: left; margin-bottom: 0.5rem; background: rgba(255, 255, 255, 0.05);">
+      ${context.filename}
+    </button>
+  `).join('');
+}
+
 async function init() {
   setConnectingState(true);
+  await fetchContexts();
   try {
     const data = await createSession();
     const EPHEMERAL_KEY = data.client_secret.value;
