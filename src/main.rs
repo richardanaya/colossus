@@ -19,6 +19,7 @@ use tower_http::services::ServeDir;
 struct ErrorResponse {
     error: String,
     project_dir: String,
+    project_dir: String,
 }
 
 #[derive(Serialize)]
@@ -64,6 +65,11 @@ async fn get_contexts(
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(ErrorResponse {
                 error: format!("Failed to read directory: {}", e),
+                project_dir: static_dir.clone(),
+                project_dir: static_dir.clone(),
+                project_dir: String::new(),
+                project_dir: String::new(),
+                project_dir: String::new(),
             }),
         )
     })?;
@@ -160,7 +166,7 @@ async fn main() {
     let args = Args::parse();
 
     // Initialize global state
-    let state = Arc::new(AppStateWithDir {
+    let state_with_dir = Arc::new(AppStateWithDir {
         current_context: Mutex::new(None),
         project_dir: args.project_dir.clone(),
     });
@@ -173,7 +179,7 @@ async fn main() {
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(project_dir.clone())))
         .route("/select-context", post(handle_context_selection))
-        .with_state(state)
+        .with_state(state_with_dir)
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
         .with_state(project_dir.clone())
