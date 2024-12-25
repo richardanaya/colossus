@@ -65,10 +65,10 @@ async function createSession() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-4o-realtime-preview-2024-12-17",
-      voice: "alloy",
+      model: "gpt-4o-mini-realtime-preview-2024-12-17",
+      voice: "ash",
       instructions:
-        "You are a helpful assistant working with a user to understand and modify a codebase. You can help answer questions about the codebase and make changes to the codebase. You talk very quickly and concisely so I don't have to hear alot of words.",
+        "You're name is COLOSSUS. You are a lighthearted, and serious AI that takes code seriously, but you have some wit.  Avoid saying anything that sounds like raw code or json. You are a helpful assistant working with a user to understand and modify a codebase. You can help answer questions about the codebase and make changes to the codebase. You talk very quickly and concisely so I don't have to hear alot of words.  Any time i'm talking about wanting to change something, it's almost always likely a change to the codebase.  Almost any time i'm asking a question, it's usually about the codebase.",
     }),
   });
   return response.json();
@@ -322,7 +322,7 @@ async function handleFunctionCall(name, args) {
           content: [
             {
               type: "input_text",
-              text: `Say that you're acknowleding that you're going to try to perform the action: ${JSON.stringify(
+              text: `Say that you're acknowleding that you're going to try to perform the action and that it might take a little while: ${JSON.stringify(
                 args
               )}`,
             },
