@@ -48,7 +48,7 @@ struct SessionRequest {
     instructions: String,
 }
 
-struct AppState {
+struct AppStateWithDir {
     current_context: Mutex<Option<Context>>,
 }
 
@@ -159,8 +159,9 @@ async fn main() {
     let args = Args::parse();
 
     // Initialize global state
-    let state = Arc::new(AppState {
+    let state = Arc::new(AppStateWithDir {
         current_context: Mutex::new(None),
+        project_dir: args.project_dir.clone(),
     });
     let project_dir = args.project_dir.clone();
     let app = Router::new()
@@ -171,7 +172,7 @@ async fn main() {
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(project_dir.clone())))
         .route("/select-context", post(handle_context_selection))
-        .with_state(state.clone())
+        .with_state(state)
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
         .with_state(project_dir.clone())
@@ -205,11 +206,11 @@ async fn handle_change_code(
 }
 
 async fn handle_question(
-    State(state): State<Arc<AppState>>,
-    State(project_dir): State<String>,
+    State(state_with_dir): State<Arc<AppStateWithDir>>,
     Json(payload): Json<QuestionRequest>,
 ) -> Json<String> {
-    let current_context = state.current_context.lock().unwrap();
+    let current_context = state_with_dir.current_context.lock().unwrap();
+    let project_dir = &state_with_dir.project_dir;
     let context_file = if let Some(context) = &*current_context {
         &context.filename
     } else {
