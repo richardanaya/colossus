@@ -4,6 +4,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use clap::Parser;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
@@ -72,9 +73,19 @@ async fn create_session(
     Ok(Json(json))
 }
 
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Directory to serve static files from
+    #[arg(short, long, default_value = "static")]
+    static_dir: String,
+}
+
 #[tokio::main]
 async fn main() {
     dotenv().ok();
+    
+    let args = Args::parse();
 
     // Build our application with routes
     let app = Router::new()
@@ -83,7 +94,7 @@ async fn main() {
             get(|| async { Html(include_str!("../static/index.html")) }),
         )
         .route("/api/sessions", post(create_session))
-        .nest_service("/static", ServeDir::new("static"));
+        .nest_service("/static", ServeDir::new(&args.static_dir));
 
     // Run it with hyper on localhost:3000
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
