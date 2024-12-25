@@ -174,6 +174,7 @@ async fn main() {
         .with_state(state.clone())
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
+        .with_state(project_dir.clone())
         .nest_service("/static", ServeDir::new("./static"));
 
     // Run it with hyper on localhost:3000
@@ -204,6 +205,8 @@ async fn handle_change_code(
 }
 
 async fn handle_question(
+    State(state): State<Arc<AppState>>,
+    State(project_dir): State<String>,
     Json(payload): Json<QuestionRequest>,
 ) -> Json<String> {
     let current_context = state.current_context.lock().unwrap();
