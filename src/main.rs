@@ -7,6 +7,8 @@ use axum::{
 use clap::Parser;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::Path;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tower_http::services::ServeDir;
@@ -16,11 +18,57 @@ struct ErrorResponse {
     error: String,
 }
 
+#[derive(Serialize)]
+struct Context {
+    filename: String,
+    content: String,
+}
+
 #[derive(Serialize, Deserialize)]
 struct SessionRequest {
     model: String,
     voice: String,
     instructions: String,
+}
+
+async fn get_contexts() -> Result<Json<Vec<Context>>, (StatusCode, Json<ErrorResponse>)> {
+    let mut contexts = Vec::new();
+    
+    // Read all files in the current directory
+    let entries = fs::read_dir(".").map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: format!("Failed to read directory: {}", e),
+            }),
+        )
+    })?;
+
+    // Filter and process context files
+    for entry in entries {
+        if let Ok(entry) = entry {
+            let path = entry.path();
+            if let Some(filename) = path.file_name().and_then(|n| n.to_str()) {
+                if filename.starts_with("CONTEXT_") && filename.ends_with(".md") {
+                    let content = fs::read_to_string(&path).map_err(|e| {
+                        (
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            Json(ErrorResponse {
+                                error: format!("Failed to read file {}: {}", filename, e),
+                            }),
+                        )
+                    })?;
+                    
+                    contexts.push(Context {
+                        filename: filename.to_string(),
+                        content,
+                    });
+                }
+            }
+        }
+    }
+
+    Ok(Json(contexts))
 }
 
 async fn create_session(
@@ -94,6 +142,7 @@ async fn main() {
             get(|| async { Html(include_str!("../static/index.html")) }),
         )
         .route("/api/sessions", post(create_session))
+        .route("/contexts", get(get_contexts))
         .nest_service("/static", ServeDir::new(&args.static_dir));
 
     // Run it with hyper on localhost:3000
