@@ -1,4 +1,5 @@
 use axum::{
+    extract::State,
     http::StatusCode,
     response::{Html, Json},
     routing::{get, post},
@@ -183,7 +184,7 @@ async fn main() {
 
 async fn handle_context_selection(
     Json(payload): Json<ContextSelection>,
-    state: Arc<AppState>,
+    State(state): State<Arc<AppState>>,
 ) -> StatusCode {
     let mut current_context = state.current_context.lock().unwrap();
     *current_context = Some(Context {
