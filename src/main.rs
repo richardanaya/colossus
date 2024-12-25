@@ -214,6 +214,7 @@ async fn handle_question(
     };
 
     let output = Command::new("aider")
+        .current_dir(project_dir)
         .arg("--load")
         .arg(context_file)
         .arg("--no-suggest-shell-commands")
