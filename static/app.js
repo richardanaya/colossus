@@ -336,6 +336,26 @@ async function handleFunctionCall(name, args) {
     const responseText = await response.text();
     messages.push({ type: 'assistant', content: responseText });
     updateMessagesUI();
+
+    // For ask_question, send a follow-up request to OpenAI to summarize vocally
+    if (name === 'ask_question' && dataChannel) {
+      dataChannel.send(JSON.stringify({
+        type: "conversation.item.create",
+        item: {
+          type: "message",
+          role: "user", 
+          content: [
+            {
+              type: "input_text",
+              text: `I'd like you to summarize this technical response in a more conversational way using your voice: ${responseText}`
+            }
+          ]
+        }
+      }));
+      dataChannel.send(JSON.stringify({
+        type: "response.create"
+      }));
+    }
   } catch (error) {
     console.error('Function call failed:', error);
     messages.push({ type: 'assistant', content: 'Sorry, there was an error processing your request.' });
