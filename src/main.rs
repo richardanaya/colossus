@@ -8,6 +8,7 @@ use axum::{
 use clap::Parser;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
+use std::process::Command;
 use std::sync::{Arc, Mutex};
 use std::fs;
 use std::net::SocketAddr;
@@ -205,6 +206,31 @@ async fn handle_change_code(
 async fn handle_question(
     Json(payload): Json<QuestionRequest>,
 ) -> Json<String> {
-    println!("Question asked: {}", payload.question);
-    Json(String::from("Based on the codebase, here's what I can tell you..."))
+    let current_context = state.current_context.lock().unwrap();
+    let context_file = if let Some(context) = &*current_context {
+        &context.filename
+    } else {
+        ""
+    };
+
+    let output = Command::new("aider")
+        .arg("--load")
+        .arg(context_file)
+        .arg("--no-suggest-shell-commands")
+        .arg("--yes-always")
+        .arg("--message")
+        .arg(&payload.question)
+        .output()
+        .expect("Failed to execute aider");
+
+    let response_message = if output.status.success() {
+        String::from_utf8_lossy(&output.stdout).to_string()
+    } else {
+        format!(
+            "Failed to get response from aider: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )
+    };
+
+    Json(response_message)
 }
