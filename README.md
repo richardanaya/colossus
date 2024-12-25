@@ -25,6 +25,10 @@ cargo install colossus
    ```bash
    colossus
    ```
+3. Go to the website url listed
+4. Click start sessions
+5. Ask questions
+6. Hit mute/unmute as needed
    
 ## Contributing
 
