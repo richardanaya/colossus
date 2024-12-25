@@ -312,6 +312,30 @@ function updateCaptionUI() {
 
 async function handleFunctionCall(name, args) {
   let response;
+  if (dataChannel) {
+    dataChannel.send(
+      JSON.stringify({
+        type: "conversation.item.create",
+        item: {
+          type: "message",
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `Say that you're acknowleding that you're going to try to perform the action: ${JSON.stringify(
+                args
+              )}`,
+            },
+          ],
+        },
+      })
+    );
+    dataChannel.send(
+      JSON.stringify({
+        type: "response.create",
+      })
+    );
+  }
   try {
     switch (name) {
       case "change_code":
@@ -334,9 +358,11 @@ async function handleFunctionCall(name, args) {
     }
 
     const responseText = await response.text();
+    messages.push({ type: "assistant", content: responseText });
+    updateMessagesUI();
 
     // For ask_question, send a follow-up request to OpenAI to summarize vocally
-    if (name === "ask_question" && dataChannel) {
+    if (dataChannel) {
       dataChannel.send(
         JSON.stringify({
           type: "conversation.item.create",
@@ -346,7 +372,7 @@ async function handleFunctionCall(name, args) {
             content: [
               {
                 type: "input_text",
-                text: `I'd like you to summarize this technical response in a more conversational way using your voice: ${responseText}`,
+                text: `I'd like you to summarize this technical response in a more conversational way using your voice in a single sentence.  Phrase your wording as if you are already done.: <AiderLog>${responseText}</AiderLog>`,
               },
             ],
           },
