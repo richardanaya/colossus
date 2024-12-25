@@ -7,7 +7,7 @@ use axum::{
 use clap::Parser;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::fs;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
@@ -44,6 +44,10 @@ struct SessionRequest {
     model: String,
     voice: String,
     instructions: String,
+}
+
+struct AppState {
+    current_context: Mutex<Option<Context>>,
 }
 
 async fn get_contexts(
@@ -152,7 +156,10 @@ async fn main() {
 
     let args = Args::parse();
 
-    // Build our application with routes
+    // Initialize global state
+    let state = Arc::new(AppState {
+        current_context: Mutex::new(None),
+    });
     let static_dir = args.static_dir.clone();
     let app = Router::new()
         .route(
@@ -162,6 +169,7 @@ async fn main() {
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(static_dir.clone())))
         .route("/select-context", post(handle_context_selection))
+        .with_state(state.clone())
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
         .nest_service("/static", ServeDir::new("./static"));
@@ -175,7 +183,13 @@ async fn main() {
 
 async fn handle_context_selection(
     Json(payload): Json<ContextSelection>,
+    state: Arc<AppState>,
 ) -> StatusCode {
+    let mut current_context = state.current_context.lock().unwrap();
+    *current_context = Some(Context {
+        filename: payload.filename.clone(),
+        content: String::new(), // You might want to load the content here
+    });
     println!("Context selected: {}", payload.filename);
     StatusCode::OK
 }
