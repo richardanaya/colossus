@@ -31,11 +31,11 @@ struct SessionRequest {
     instructions: String,
 }
 
-async fn get_contexts() -> Result<Json<Vec<Context>>, (StatusCode, Json<ErrorResponse>)> {
+async fn get_contexts(static_dir: String) -> Result<Json<Vec<Context>>, (StatusCode, Json<ErrorResponse>)> {
     let mut contexts = Vec::new();
     
-    // Read all files in the current directory
-    let entries = fs::read_dir(".").map_err(|e| {
+    // Read all files in the static directory
+    let entries = fs::read_dir(&static_dir).map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(ErrorResponse {
@@ -142,7 +142,7 @@ async fn main() {
             get(|| async { Html(include_str!("../static/index.html")) }),
         )
         .route("/api/sessions", post(create_session))
-        .route("/contexts", get(get_contexts))
+        .route("/contexts", get(move || get_contexts(args.static_dir.clone())))
         .nest_service("/static", ServeDir::new(&args.static_dir));
 
     // Run it with hyper on localhost:3000
