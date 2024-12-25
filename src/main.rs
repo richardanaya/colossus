@@ -147,9 +147,9 @@ async fn create_session(
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// Directory to serve static files from
+    /// Directory to serve project files from
     #[arg(short, long, default_value = "static")]
-    static_dir: String,
+    project_dir: String,
 }
 
 #[tokio::main]
@@ -162,14 +162,14 @@ async fn main() {
     let state = Arc::new(AppState {
         current_context: Mutex::new(None),
     });
-    let static_dir = args.static_dir.clone();
+    let project_dir = args.project_dir.clone();
     let app = Router::new()
         .route(
             "/",
             get(|| async { Html(include_str!("../static/index.html")) }),
         )
         .route("/api/sessions", post(create_session))
-        .route("/contexts", get(move || get_contexts(static_dir.clone())))
+        .route("/contexts", get(move || get_contexts(project_dir.clone())))
         .route("/select-context", post(handle_context_selection))
         .with_state(state.clone())
         .route("/change-code", post(handle_change_code))
