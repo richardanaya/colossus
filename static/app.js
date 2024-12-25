@@ -354,7 +354,10 @@ function setConnectedState(state) {
   muteButton.style.display = state ? "block" : "none";
 }
 
-// Event Listeners
+// Initial load
+fetchContexts();
+
+// Event Listeners 
 connectButton.addEventListener("click", init);
 
 muteButton.addEventListener("click", () => {
