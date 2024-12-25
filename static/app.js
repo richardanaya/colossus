@@ -9,8 +9,14 @@ let dataChannel = null;
 let pc = null;
 let isMuted = false;
 let audioTrack = null;
+let audioContext = null;
+let analyser = null;
+let dataArray = null;
+let animationId = null;
 
 // DOM Elements
+const volumeMeter = document.getElementById("volumeMeter");
+const volumeCtx = volumeMeter.getContext("2d");
 const messagesContainer = document.getElementById("messages");
 const captionElement = document.getElementById("caption");
 const functionCallsContainer = document.getElementById("functionCalls");
@@ -163,6 +169,40 @@ async function init() {
     audioTrack = track;
     newPc.addTrack(track);
 
+    // Set up audio analysis
+    audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(ms);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    
+    // Start volume meter animation
+    function drawVolumeMeter() {
+      analyser.getByteFrequencyData(dataArray);
+      const volume = dataArray.reduce((a, b) => a + b) / dataArray.length;
+      
+      volumeCtx.clearRect(0, 0, volumeMeter.width, volumeMeter.height);
+      
+      // Draw background
+      volumeCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      volumeCtx.fillRect(0, 0, volumeMeter.width, volumeMeter.height);
+      
+      // Draw volume level
+      const gradient = volumeCtx.createLinearGradient(0, 0, volumeMeter.width, 0);
+      gradient.addColorStop(0, '#3b82f6');
+      gradient.addColorStop(1, '#2563eb');
+      volumeCtx.fillStyle = gradient;
+      
+      const width = (volume / 255) * volumeMeter.width;
+      volumeCtx.fillRect(0, 0, width, volumeMeter.height);
+      
+      animationId = requestAnimationFrame(drawVolumeMeter);
+    }
+    
+    drawVolumeMeter();
+
     const offer = await newPc.createOffer();
     await newPc.setLocalDescription(offer);
 
@@ -260,6 +300,18 @@ function updateFunctionCallsUI() {
     .join("");
 }
 
+function stopVolumeMeter() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+  if (volumeCtx) {
+    volumeCtx.clearRect(0, 0, volumeMeter.width, volumeMeter.height);
+    volumeCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+    volumeCtx.fillRect(0, 0, volumeMeter.width, volumeMeter.height);
+  }
+}
+
 function setConnectingState(state) {
   isConnecting = state;
   connectButton.disabled = state;
@@ -283,6 +335,11 @@ muteButton.addEventListener("click", () => {
     isMuted = !isMuted;
     audioTrack.enabled = !isMuted;
     muteButton.textContent = isMuted ? "Unmute" : "Mute";
+    if (isMuted) {
+      stopVolumeMeter();
+    } else if (analyser) {
+      drawVolumeMeter();
+    }
   }
 });
 
