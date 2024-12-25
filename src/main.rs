@@ -18,6 +18,7 @@ use tower_http::services::ServeDir;
 #[derive(Serialize)]
 struct ErrorResponse {
     error: String,
+    project_dir: String,
 }
 
 #[derive(Serialize)]
@@ -186,10 +187,10 @@ async fn main() {
 }
 
 async fn handle_context_selection(
-    State(state): State<Arc<AppState>>,
+    State(state_with_dir): State<Arc<AppStateWithDir>>,
     Json(payload): Json<ContextSelection>,
 ) -> StatusCode {
-    let mut current_context = state.current_context.lock().unwrap();
+    let mut current_context = state_with_dir.current_context.lock().unwrap();
     *current_context = Some(Context {
         filename: payload.filename.clone(),
         content: String::new(), // You might want to load the content here
