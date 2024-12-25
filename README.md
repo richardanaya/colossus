@@ -1,3 +1,8 @@
+
+<p align="center">
+  <img src="pyramid.png" width="200" />
+</p>
+
 Colossus is a realtime voice assistant that is a wrapper for executing [`aider`](https://https://aider.chat/) commands.  To run it
 
 ```
