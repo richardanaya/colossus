@@ -325,6 +325,7 @@ function setConnectingState(state) {
 function setConnectedState(state) {
   isConnected = state;
   connectButton.textContent = state ? "Connected" : "Start Session";
+  muteButton.style.display = state ? "block" : "none";
 }
 
 // Event Listeners
