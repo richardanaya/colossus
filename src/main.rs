@@ -183,8 +183,8 @@ async fn main() {
 }
 
 async fn handle_context_selection(
-    Json(payload): Json<ContextSelection>,
     State(state): State<Arc<AppState>>,
+    Json(payload): Json<ContextSelection>,
 ) -> StatusCode {
     let mut current_context = state.current_context.lock().unwrap();
     *current_context = Some(Context {
