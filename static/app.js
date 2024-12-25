@@ -67,7 +67,8 @@ async function createSession() {
     body: JSON.stringify({
       model: "gpt-4o-realtime-preview-2024-12-17",
       voice: "alloy",
-      instructions: "You are a helpful assistant.",
+      instructions:
+        "You are a helpful assistant working with a user to understand and modify a codebase. You can help answer questions about the codebase and make changes to the codebase.",
     }),
   });
   return response.json();
@@ -75,37 +76,41 @@ async function createSession() {
 
 async function fetchContexts() {
   try {
-    const response = await fetch('/contexts');
+    const response = await fetch("/contexts");
     contexts = await response.json();
     updateContextsUI();
   } catch (error) {
-    console.error('Failed to fetch contexts:', error);
+    console.error("Failed to fetch contexts:", error);
   }
 }
 
 function updateContextsUI() {
-  const contextsList = document.getElementById('contextsList');
-  contextsList.innerHTML = contexts.map(context => `
+  const contextsList = document.getElementById("contextsList");
+  contextsList.innerHTML = contexts
+    .map(
+      (context) => `
     <button 
       onclick="handleContextSelect('${context.filename}')"
       class="glass-card" 
       style="width: 100%; text-align: left; margin-bottom: 0.5rem; background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-weight: 500;">
       ${context.filename}
     </button>
-  `).join('');
+  `
+    )
+    .join("");
 }
 
 async function handleContextSelect(filename) {
   try {
-    await fetch('/select-context', {
-      method: 'POST',
+    await fetch("/select-context", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ filename })
+      body: JSON.stringify({ filename }),
     });
   } catch (error) {
-    console.error('Failed to select context:', error);
+    console.error("Failed to select context:", error);
   }
 }
 
@@ -142,55 +147,27 @@ async function init() {
               parameters: {
                 type: "object",
                 properties: {
-                  name: {
+                  change: {
                     type: "string",
-                    description: "The unique name for the node",
+                    description: "The change to make",
                   },
                 },
-                required: ["name"],
+                required: ["change"],
               },
             },
             {
               type: "function",
-              name: "remove_node",
-              description: "Remove an existing node from the graph",
+              name: "ask_question",
+              description: "Ask a question about the codebase",
               parameters: {
                 type: "object",
                 properties: {
-                  name: {
+                  question: {
                     type: "string",
-                    description: "The name of the node to remove",
+                    description: "The question to ask",
                   },
                 },
-                required: ["name"],
-              },
-            },
-            {
-              type: "function",
-              name: "connect_nodes",
-              description: "Connect two nodes together with specified sockets",
-              parameters: {
-                type: "object",
-                properties: {
-                  from_node: {
-                    type: "string",
-                    description: "Name of the source node",
-                  },
-                  from_socket: {
-                    type: "string",
-                    description: "Name of the output socket on the source node",
-                  },
-                  to_node: {
-                    type: "string",
-                    description: "Name of the destination node",
-                  },
-                  to_socket: {
-                    type: "string",
-                    description:
-                      "Name of the input socket on the destination node",
-                  },
-                },
-                required: ["from_node", "from_socket", "to_node", "to_socket"],
+                required: ["question"],
               },
             },
           ],
@@ -374,7 +351,7 @@ function setConnectedState(state) {
 // Initial load
 fetchContexts();
 
-// Event Listeners 
+// Event Listeners
 connectButton.addEventListener("click", init);
 
 muteButton.addEventListener("click", () => {
