@@ -206,10 +206,51 @@ async fn handle_context_selection(
 }
 
 async fn handle_change_code(
+    State(state_with_dir): State<Arc<AppStateWithDir>>,
     Json(payload): Json<ChangeCodeRequest>,
-) -> Json<String> {
-    println!("Code change requested: {}", payload.change);
-    Json(String::from("I've analyzed your code change request. Here's what I would suggest..."))
+) -> Result<Json<String>, (StatusCode, Json<ErrorResponse>)> {
+    let project_dir = &state_with_dir.project_dir;
+    let current_context = state_with_dir.current_context.lock().unwrap();
+    
+    let context_file = if let Some(context) = &*current_context {
+        &context.filename
+    } else {
+        ""
+    };
+
+    let output = Command::new("aider")
+        .current_dir(project_dir)
+        .arg("--load")
+        .arg(context_file)
+        .arg("--no-suggest-shell-commands")
+        .arg("--yes-always")
+        .arg("--message")
+        .arg(&payload.change)
+        .output()
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ErrorResponse {
+                    error: format!("Failed to execute aider: {}", e),
+                    project_dir: project_dir.clone(),
+                }),
+            )
+        })?;
+
+    if output.status.success() {
+        Ok(Json(String::from_utf8_lossy(&output.stdout).to_string()))
+    } else {
+        Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: format!(
+                    "Aider command failed: {}", 
+                    String::from_utf8_lossy(&output.stderr)
+                ),
+                project_dir: project_dir.clone(),
+            }),
+        ))
+    }
 }
 
 async fn handle_question(
