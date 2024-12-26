@@ -303,13 +303,6 @@ async fn handle_change_code(
     Json(payload): Json<ChangeCodeRequest>,
 ) -> Result<Json<String>, (StatusCode, Json<ErrorResponse>)> {
     let project_dir = &state_with_dir.project_dir;
-    let current_context = state_with_dir.current_context.lock().unwrap();
-
-    let context_file = if let Some(context) = &*current_context {
-        &context.filename
-    } else {
-        ""
-    };
 
     let mut cmd = Command::new("aider");
     cmd.current_dir(project_dir)
