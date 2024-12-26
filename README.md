@@ -49,7 +49,7 @@ TLDR: you should be able to run colossus anywhere you normally run aider as long
 
 Colossus supports several command line options for customization:
 
-```bash
+```terminal
 USAGE:
     colossus [OPTIONS]
 
