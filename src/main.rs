@@ -395,7 +395,7 @@ async fn main() {
     println!("{}", "/______/_|__|_\\______\\".bright_cyan());
     println!(
         "\n{} {}",
-        "Colossus Server:".bright_green(),
+        "Colossus server:".bright_green(),
         format!("http://localhost:{}", args.port).yellow()
     );
     println!(
