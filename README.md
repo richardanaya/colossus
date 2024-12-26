@@ -14,9 +14,20 @@ Colossus is a powerful real-time voice assistant designed to streamline your dev
 
 ## Installation
 
-```bash
-cargo install colossus
-```
+1. Install Rust and Cargo using rustup:
+   ```bash
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   ```
+
+2. Restart your terminal or reload your shell configuration:
+   ```bash
+   source "$HOME/.cargo/env"
+   ```
+
+3. Install Colossus:
+   ```bash
+   cargo install colossus
+   ```
 
 ## Quick Start
 
