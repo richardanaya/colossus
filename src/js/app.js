@@ -324,7 +324,10 @@ function updateMessagesUI() {
     </div>
   `;
   const wrapper = messagesContainer.querySelector('.messages-wrapper');
-  wrapper.scrollTop = wrapper.scrollHeight;
+  // Wait for any dynamic content to load before scrolling
+  setTimeout(() => {
+    wrapper.scrollTop = wrapper.scrollHeight;
+  }, 100);
 }
 
 function updateCaptionUI() {
@@ -464,7 +467,10 @@ function updateFunctionCallsUI() {
     </div>
   `;
   const wrapper = functionCallsContainer.querySelector('.function-calls-wrapper');
-  wrapper.scrollTop = wrapper.scrollHeight;
+  // Wait for any dynamic content to load before scrolling
+  setTimeout(() => {
+    wrapper.scrollTop = wrapper.scrollHeight;
+  }, 100);
 }
 
 function stopVolumeMeter() {
