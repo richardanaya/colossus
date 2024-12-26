@@ -4,7 +4,7 @@
 
 # Colossus
 
-"Aider + OpenAI Advanced Voice Model = Perfect Coding Companion"
+**Aider + OpenAI Advanced Voice Model = Perfect Coding Companion**
 
 Colossus is a powerful real-time voice assistant designed to streamline your development workflow by providing voice-controlled integration with [`aider`](https://aider.chat/), an AI pair programming tool.
 
