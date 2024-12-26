@@ -79,7 +79,10 @@ async fn handle_web_search(
 
     if !response.status().is_success() {
         let status = response.status();
-        let error_body = response.text().await.unwrap_or_else(|_| "Could not read error response".to_string());
+        let error_body = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Could not read error response".to_string());
         return Err((
             StatusCode::BAD_REQUEST,
             Json(ErrorResponse {
@@ -234,7 +237,10 @@ async fn create_session(
 
     if !response.status().is_success() {
         let status = response.status();
-        let error_body = response.text().await.unwrap_or_else(|_| "Could not read error response".to_string());
+        let error_body = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Could not read error response".to_string());
         println!("Session creation failed:");
         println!("Status: {}", status);
         println!("Error body: {}", error_body);
@@ -404,13 +410,18 @@ async fn main() {
         args.project_dir.yellow()
     );
     println!("{} {}", "Voice:".bright_green(), args.voice.yellow());
-    
+
     // Construct example aider command preview
     let mut example_cmd = String::from("aider --no-suggest-shell-commands --yes-always");
     if let Some(model) = &args.code_model {
         example_cmd.push_str(&format!(" --model {}", model));
     }
-    println!("\n{} {}", "Example aider command:".bright_green(), example_cmd.yellow());
+    example_cmd.push_str(" --load \"<context_file>\" --message \"<message>\"");
+    println!(
+        "{} {}",
+        "Example aider command:".bright_green(),
+        example_cmd.yellow()
+    );
 
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
