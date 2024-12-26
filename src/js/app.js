@@ -441,7 +441,7 @@ function updateFunctionCallsUI() {
       (call, i) => `
         <div class="glass-card rounded-lg p-4 mb-4">
             <span class="function-name">${call.name}</span>
-            <pre class="function-args">${call.args}</pre>
+            <pre class="function-args">${JSON.stringify(call.args, null, 2)}</pre>
         </div>
     `
     )
