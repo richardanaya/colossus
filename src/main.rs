@@ -99,6 +99,14 @@ async fn get_contexts(
         }
     }
 
+    // If no contexts were found, add a default "None" context
+    if contexts.is_empty() {
+        contexts.push(Context {
+            filename: "ColossusNoneContext.md".to_string(),
+            content: String::new(),
+        });
+    }
+
     Ok(Json(contexts))
 }
 
