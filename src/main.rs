@@ -180,7 +180,7 @@ struct Args {
     port: u16,
 
     /// OpenAI model name to use
-    #[arg(short, long, default_value = "gpt-4o-mini-realtime-preview-2024-12-17")]
+    #[arg(short, long, default_value = "gpt-4o-realtime-preview-2024-12-17")]
     model: String,
 
     // Preferred language
