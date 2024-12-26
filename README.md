@@ -41,7 +41,7 @@ USAGE:
 OPTIONS:
     -p, --port <PORT>       Port number to run the server on [default: 49999]
     -m, --model <MODEL>     OpenAI model name to use [default: gpt-4o-mini-realtime-preview-2024-12-17]
-    -d, --project-dir <DIR> Directory to serve project files from [default: "./"]
+    -d, --project-dir <DIR> Directory AI will operate aider on [default: "./"]
     -h, --help             Print help information
     -V, --version          Print version information
 ```
