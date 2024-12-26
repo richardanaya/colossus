@@ -35,11 +35,13 @@ struct ContextSelection {
 #[derive(Deserialize)]
 struct ChangeCodeRequest {
     change: String,
+    context: String,
 }
 
 #[derive(Deserialize)]
 struct QuestionRequest {
     question: String,
+    context: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -331,8 +333,8 @@ async fn handle_change_code(
         .arg("--message")
         .arg(&payload.change);
 
-    if context_file != "ColossusNoneContext.md" {
-        cmd.arg("--load").arg(context_file);
+    if payload.context != "ColossusNoneContext.md" {
+        cmd.arg("--load").arg(&payload.context);
     }
 
     let output = cmd.output()
@@ -381,8 +383,8 @@ async fn handle_question(
         .arg("--message")
         .arg(&payload.question);
 
-    if context_file != "ColossusNoneContext.md" {
-        cmd.arg("--load").arg(context_file);
+    if payload.context != "ColossusNoneContext.md" {
+        cmd.arg("--load").arg(&payload.context);
     }
 
     let output = cmd.output()
