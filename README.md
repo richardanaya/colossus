@@ -4,7 +4,7 @@
 
 # Colossus
 
-**Aider + OpenAI Advanced Voice Model = Coding Companion**
+**Aider + OpenAI Advanced Voice Model = Perfect Coding Companion**
 
 Fair warning: this is very hot of the presses. I'm still working on a ideal workflow and actions you can do and nice sounding prompts, but it does work!
 
