@@ -236,6 +236,21 @@ async function init() {
                 required: ["question", "context"],
               },
             },
+            {
+              type: "function",
+              name: "ask_about_colossus",
+              description: "Ask a question about Colossus itself",
+              parameters: {
+                type: "object",
+                properties: {
+                  question: {
+                    type: "string",
+                    description: "The question to ask about Colossus",
+                  },
+                },
+                required: ["question"],
+              },
+            },
           ],
           tool_choice: "auto",
         },
@@ -432,6 +447,12 @@ async function handleFunctionCall(call) {
         requestVoiceCommentary(
           "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
             JSON.stringify(await response.json())
+        );
+        break;
+
+      case "ask_about_colossus":
+        requestVoiceCommentary(
+          "I'll be happy to tell you about myself. " + args.question
         );
         break;
       default:
