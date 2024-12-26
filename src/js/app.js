@@ -58,6 +58,11 @@ async function handleSendMessage() {
   }
 }
 
+// Event handler for context selection - no longer used
+function handleContextSelect(contextFilename) {
+  // This function is no longer used - removing it
+}
+
 async function createSession() {
   const response = await fetch("/api/sessions", {
     method: "POST",
