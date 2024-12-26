@@ -31,6 +31,7 @@ async function handleSendMessage() {
 
   if (dataChannel) {
     console.log("Sending message to OpenAI:", text);
+    debugger;
     dataChannel.send(
       JSON.stringify({
         type: "conversation.item.create",
@@ -204,7 +205,7 @@ async function init() {
     if (audioTrack) {
       audioTrack.stop();
     }
-    
+
     const ms = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioTrack = ms.getTracks()[0];
     const sender = newPc.addTrack(audioTrack);
@@ -278,11 +279,12 @@ function handleMessage(e) {
   console.log("Received from OpenAI:", event);
 
   if (event.type === "response.function_call_arguments.delta") {
-    console.log("Partial function call:", event.delta);
+    // console.log("Partial function call:", event.delta);
   } else if (
     event.type === "response.done" &&
     event.response.output?.[0]?.type === "function_call"
   ) {
+    console.log("!!!", JSON.stringify(event));
     const call = event.response.output[0];
     functionCalls.push({
       name: call.name,
@@ -338,7 +340,7 @@ function updateCaptionUI() {
 async function handleFunctionCall(name, args) {
   let response;
 
-  if (dataChannel) {
+  /* if (dataChannel) {
     dataChannel.send(
       JSON.stringify({
         type: "conversation.item.create",
@@ -361,7 +363,7 @@ async function handleFunctionCall(name, args) {
         type: "response.create",
       })
     );
-  }
+  }*/
   try {
     switch (name) {
       case "change_code":
@@ -490,7 +492,12 @@ muteButton.addEventListener("click", () => {
         volumeCtx.fillRect(0, 0, volumeMeter.width, volumeMeter.height);
 
         // Draw volume level
-        const gradient = volumeCtx.createLinearGradient(0, 0, volumeMeter.width, 0);
+        const gradient = volumeCtx.createLinearGradient(
+          0,
+          0,
+          volumeMeter.width,
+          0
+        );
         gradient.addColorStop(0, "#3b82f6");
         gradient.addColorStop(1, "#2563eb");
         volumeCtx.fillStyle = gradient;
