@@ -192,7 +192,12 @@ struct Args {
     instructions: String,
 
     // voice
-    #[arg(short, long, default_value = "ash")]
+    #[arg(
+        short,
+        long,
+        default_value = "ash",
+        help = "Supported voices are alloy, ash, coral, echo, fable, onyx, nova, sage and shimmer."
+    )]
     voice: String,
 }
 
