@@ -197,7 +197,11 @@ async fn main() {
         .with_state(state_with_dir)
         .nest_service("/static", ServeDir::new("./static"));
 
-    println!("Colossus Server: http://localhost:{}", args.port);
+    println!("     /\\     ");
+    println!("    /  \\    ");
+    println!("   /    \\   ");
+    println!("  /______\\  ");
+    println!("\nColossus Server: http://localhost:{}", args.port);
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
