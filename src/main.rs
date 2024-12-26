@@ -197,10 +197,17 @@ async fn main() {
         .with_state(state_with_dir)
         .nest_service("/static", ServeDir::new("./static"));
 
-    println!("     /\\     ");
-    println!("    /  \\    ");
-    println!("   /    \\   ");
-    println!("  /______\\  ");
+    println!("          /\\          ");
+    println!("         /  \\         ");
+    println!("        /    \\        ");
+    println!("       /      \\       ");
+    println!("      /   __   \\      ");
+    println!("     /   |  |   \\     ");
+    println!("    /    |  |    \\    ");
+    println!("   /     |  |     \\   ");
+    println!("  /_____/|  |\\____\\  ");
+    println!(" /_____/ |__| \\____\\ ");
+    println!("/______/_|__|_\\____\\\\");
     println!("\nColossus Server: http://localhost:{}", args.port);
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
