@@ -275,11 +275,13 @@ async function init() {
         // Only update the caption for real-time display
         caption = event.delta;
         updateUI();
-      } else if (event.type === "response.audio_transcript.complete") {
-        // Add completed transcription to messages
-        messages.push({ type: "assistant", content: event.text });
-        caption = "";
-        updateUI();
+      } else if (event.type === "response.output_item.done") {
+        // Add completed output item transcript to messages
+        if (event.item?.content?.[0]?.type === 'audio' && event.item.content[0].transcript) {
+          messages.push({ type: "assistant", content: event.item.content[0].transcript });
+          caption = "";
+          updateUI();
+        }
       } else if (event.type === "response.done") {
         caption = "";
         updateUI();
