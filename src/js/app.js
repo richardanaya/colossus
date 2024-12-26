@@ -24,6 +24,7 @@ const textInputElement = document.getElementById("textInput");
 const sendButton = document.getElementById("sendButton");
 const connectButton = document.getElementById("connectButton");
 const muteButton = document.getElementById("muteButton");
+let blockFutureFunctions = false;
 
 async function handleSendMessage() {
   const text = textInputElement.value.trim();
@@ -111,15 +112,6 @@ function updateContextsUI() {
 async function init() {
   setConnectingState(true);
   await fetchContexts();
-  
-  // Configure VAD settings
-  const vadConfig = {
-    turn_detection: {
-      time_units_before_yield: 8,  // 800ms of silence before yielding
-      time_units_before_interrupt: 20,  // 2s of speech before interrupting
-      create_response: true  // Auto-generate responses
-    }
-  };
   try {
     const data = await createSession();
     const EPHEMERAL_KEY = data.client_secret.value;
@@ -156,7 +148,6 @@ async function init() {
       const functionConfig = {
         type: "session.update",
         session: {
-          ...vadConfig,  // Include VAD configuration
           tools: [
             {
               type: "function",
@@ -294,16 +285,7 @@ function handleMessage(e) {
     event.type === "response.done" &&
     event.response.output?.[0]?.type === "function_call"
   ) {
-    console.log("!!!", JSON.stringify(event));
     const call = event.response.output[0];
-    functionCalls.push({
-      name: call.name,
-      args: call.arguments,
-    });
-    updateFunctionCallsUI();
-
-    // Handle the function call
-    debugger;
     handleFunctionCall(call.name, JSON.parse(call.arguments));
   }
 
@@ -348,62 +330,20 @@ function updateCaptionUI() {
 }
 
 async function handleFunctionCall(name, args) {
-  let response;
-  const callId = `call_${Date.now()}`;  // Generate unique call ID
-
-  /* if (dataChannel) {
-    dataChannel.send(
-      JSON.stringify({
-        type: "conversation.item.create",
-        item: {
-          type: "message",
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text: `Say that you're acknowleding that you're going to try to perform the action and that it might take a little while: ${JSON.stringify(
-                args
-              )}`,
-            },
-          ],
-        },
-      })
-    );
-    dataChannel.send(
-      JSON.stringify({
-        type: "response.create",
-      })
-    );
-  }*/
   try {
-    switch (name) {
-      case "change_code":
-        response = await fetch("/change-code", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ change: args.change, context: args.context }),
-        });
-        break;
-      case "ask_question":
-        response = await fetch("/ask-question", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            question: args.question,
-            context: args.context,
-          }),
-        });
-        break;
-      default:
-        console.warn("Unknown function:", name);
-        return;
+    if (blockFutureFunctions) {
+      console.warn("Function calls are blocked.");
+      return;
     }
+    functionCalls.push({
+      name: name,
+      args: args,
+    });
+    updateFunctionCallsUI();
 
-    const responseText = await response.text();
-    messages.push({ type: "assistant", content: responseText });
-    updateMessagesUI();
+    blockFutureFunctions = true;
+    let response;
 
-    // For ask_question, send a follow-up request to OpenAI to summarize vocally
     if (dataChannel) {
       dataChannel.send(
         JSON.stringify({
@@ -414,7 +354,9 @@ async function handleFunctionCall(name, args) {
             content: [
               {
                 type: "input_text",
-                text: `I'd like you to summarize this technical response in a more conversational way using your voice in a single sentence.  Phrase your wording as if you are already done.: <AiderLog>${responseText}</AiderLog>`,
+                text: `Say that you're acknowleding that you're going to try to perform the action and that it might take a little while: ${JSON.stringify(
+                  args
+                )}`,
               },
             ],
           },
@@ -426,13 +368,70 @@ async function handleFunctionCall(name, args) {
         })
       );
     }
-  } catch (error) {
-    console.error("Function call failed:", error);
-    messages.push({
-      type: "assistant",
-      content: "Sorry, there was an error processing your request.",
-    });
-    updateMessagesUI();
+    try {
+      switch (name) {
+        case "change_code":
+          response = await fetch("/change-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              change: args.change,
+              context: args.context,
+            }),
+          });
+          break;
+        case "ask_question":
+          response = await fetch("/ask-question", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              question: args.question,
+              context: args.context,
+            }),
+          });
+          break;
+        default:
+          console.warn("Unknown function:", name);
+          return;
+      }
+
+      const responseText = await response.text();
+      messages.push({ type: "assistant", content: responseText });
+      updateMessagesUI();
+
+      // For ask_question, send a follow-up request to OpenAI to summarize vocally
+      if (dataChannel) {
+        dataChannel.send(
+          JSON.stringify({
+            type: "conversation.item.create",
+            item: {
+              type: "message",
+              role: "user",
+              content: [
+                {
+                  type: "input_text",
+                  text: `I'd like you to summarize this technical response in a more conversational way using your voice in a single sentence.  Phrase your wording as if you are already done.: <AiderLog>${responseText}</AiderLog>`,
+                },
+              ],
+            },
+          })
+        );
+        dataChannel.send(
+          JSON.stringify({
+            type: "response.create",
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Function call failed:", error);
+      messages.push({
+        type: "assistant",
+        content: "Sorry, there was an error processing your request.",
+      });
+      updateMessagesUI();
+    }
+  } finally {
+    blockFutureFunctions = false;
   }
 }
 
