@@ -403,6 +403,13 @@ async fn main() {
         args.project_dir.yellow()
     );
     println!("{} {}", "Voice:".bright_green(), args.voice.yellow());
+    
+    // Construct example aider command preview
+    let mut example_cmd = String::from("aider --no-suggest-shell-commands --yes-always");
+    if let Some(model) = &args.code_model {
+        example_cmd.push_str(&format!(" --model {}", model));
+    }
+    println!("\n{} {}", "Example aider command:".bright_green(), example_cmd.yellow());
 
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
