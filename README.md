@@ -81,9 +81,10 @@ OPTIONS:
     -m, --model <MODEL>             OpenAI model name to use [default: gpt-4o-realtime-preview-2024-12-17]
     -l, --preferred-language <LANG> Preferred language for communication [default: english]
     -i, --instructions <TEXT>       Custom instructions for the AI assistant
-    -v, --voice <VOICE>            Voice to use for speech [default: ash]
-    -h, --help                     Print help information
-    -V, --version                  Print version information
+    -v, --voice <VOICE>             Voice to use for speech [default: ash] (supported: alloy, ash, coral, echo, fable, onyx, nova, sage, shimmer)
+    -c, --code-model <MODEL>        OpenAI model to use for code analysis
+    -h, --help                      Print help information
+    -V, --version                   Print version information
 ```
 
 Example with custom settings:
