@@ -159,7 +159,7 @@ async fn create_session(
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// Directory to serve project files from
-    #[arg(short, long, default_value = "./")]
+    #[arg(short = 'd', long, default_value = "./")]
     project_dir: String,
 
     /// Port number to run the server on
