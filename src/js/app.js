@@ -452,7 +452,8 @@ async function handleFunctionCall(call) {
 
       case "ask_about_colossus":
         requestVoiceCommentary(
-          "I'll be happy to tell you about myself. " + args.question
+          "Answer question about yourself appropriate to your personality: " +
+            args.question
         );
         break;
       default:
