@@ -80,19 +80,25 @@ async function fetchContexts() {
 }
 
 function updateContextsUI() {
-  const contextsList = document.getElementById("contextsList");
-  contextsList.innerHTML = contexts
-    .map(
-      (context) => `
-    <button 
-      onclick="handleContextSelect('${context.filename}')"
-      class="glass-card" 
-      style="text-align: left; padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-weight: 500; flex: 0 1 auto;">
-      ${context.filename}
-    </button>
-  `
-    )
-    .join("");
+  const functionCallsContainer = document.getElementById("functionCalls");
+  const contextsHtml = `
+    <div class="glass-card">
+      <div style="font-weight: 500; margin-bottom: 0.5rem">Known contexts:</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem">
+        ${contexts.map(context => `
+          <button 
+            onclick="handleContextSelect('${context.filename}')"
+            class="small"
+            style="text-align: left; background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+            ${context.filename}
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `;
+  
+  // Insert at the beginning of functionCalls
+  functionCallsContainer.innerHTML = contextsHtml + functionCallsContainer.innerHTML;
 }
 
 async function handleContextSelect(filename) {
