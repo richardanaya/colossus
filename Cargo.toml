@@ -2,7 +2,7 @@
 description = "Colossus is a powerful tool for AI-driven text processing and analysis."
 license = "MIT"
 name = "colossus"
-version = "0.2.7"
+version = "0.2.8"
 edition = "2021"
 
 [dependencies]
