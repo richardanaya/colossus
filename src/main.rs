@@ -8,7 +8,7 @@ use axum::{
 use clap::Parser;
 use colored::*;
 use dotenv::dotenv;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, json};
 use std::fs;
 use std::net::SocketAddr;
 use std::process::Command;
@@ -19,6 +19,86 @@ use tokio::net::TcpListener;
 struct ErrorResponse {
     error: String,
     project_dir: String,
+}
+
+async fn handle_web_search(
+    Json(payload): Json<WebSearchRequest>,
+) -> Result<Json<String>, (StatusCode, Json<ErrorResponse>)> {
+    let api_key = std::env::var("PERPLEXITY_API_KEY").map_err(|_| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: "Perplexity API key not found".to_string(),
+                project_dir: String::new(),
+            }),
+        )
+    })?;
+
+    let client = reqwest::Client::new();
+    let search_request = json!({
+        "model": "llama-3.1-sonar-small-128k-online",
+        "messages": [
+            {
+                "role": "system",
+                "content": "Be precise and concise."
+            },
+            {
+                "role": "user",
+                "content": payload.question
+            }
+        ],
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "search_domain_filter": ["perplexity.ai"],
+        "return_images": false,
+        "return_related_questions": false,
+        "search_recency_filter": "month",
+        "top_k": 0,
+        "stream": false,
+        "presence_penalty": 0,
+        "frequency_penalty": 1
+    });
+
+    let response = client
+        .post("https://api.perplexity.ai/chat/completions")
+        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Content-Type", "application/json")
+        .json(&search_request)
+        .send()
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ErrorResponse {
+                    error: format!("Failed to search web: {}", e),
+                    project_dir: String::new(),
+                }),
+            )
+        })?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let error_body = response.text().await.unwrap_or_else(|_| "Could not read error response".to_string());
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(ErrorResponse {
+                error: format!("API error: {} - {}", status, error_body),
+                project_dir: String::new(),
+            }),
+        ));
+    }
+
+    let json = response.text().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: format!("Failed to parse response: {}", e),
+                project_dir: String::new(),
+            }),
+        )
+    })?;
+
+    Ok(Json(json))
 }
 
 #[derive(Serialize)]
@@ -37,6 +117,11 @@ struct ChangeCodeRequest {
 struct QuestionRequest {
     question: String,
     context: String,
+}
+
+#[derive(Deserialize)]
+struct WebSearchRequest {
+    question: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -277,6 +362,7 @@ async fn main() {
         .route("/contexts", get(move || get_contexts(project_dir.clone())))
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
+        .route("/web-search", post(handle_web_search))
         .with_state(state_with_dir);
 
     println!("{}", "          /\\          ".bright_cyan());

@@ -215,9 +215,24 @@ async function init() {
               },
             },
             {
-              type: "function",
+              type: "function", 
               name: "ask_question",
               description: "Ask a question about the codebase",
+              parameters: {
+                type: "object",
+                properties: {
+                  question: {
+                    type: "string",
+                    description: "The question to search for",
+                  },
+                },
+                required: ["question"],
+              },
+            },
+            {
+              type: "function",
+              name: "web_search",
+              description: "Search the web for information using Perplexity AI",
               parameters: {
                 type: "object",
                 properties: {
