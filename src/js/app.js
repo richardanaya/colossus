@@ -131,6 +131,12 @@ async function init() {
       setConnectedState(true);
       console.log("Connected to OpenAI Realtime API");
 
+      // First fetch contexts before sending function config
+      await fetchContexts();
+    
+      // Create context enum from fetched contexts
+      const contextEnum = contexts.map(ctx => ctx.filename);
+    
       const functionConfig = {
         type: "session.update",
         session: {
@@ -146,13 +152,18 @@ async function init() {
                     type: "string",
                     description: "The change to make",
                   },
+                  context: {
+                    type: "string",
+                    enum: contextEnum,
+                    description: "The context file to modify",
+                  },
                 },
-                required: ["change"],
+                required: ["change", "context"],
               },
             },
             {
               type: "function",
-              name: "ask_question",
+              name: "ask_question", 
               description: "Ask a question about the codebase",
               parameters: {
                 type: "object",
@@ -161,8 +172,13 @@ async function init() {
                     type: "string",
                     description: "The question to ask",
                   },
+                  context: {
+                    type: "string",
+                    enum: contextEnum,
+                    description: "The context file to ask about",
+                  },
                 },
-                required: ["question"],
+                required: ["question", "context"],
               },
             },
           ],
@@ -306,6 +322,12 @@ function updateCaptionUI() {
 
 async function handleFunctionCall(name, args) {
   let response;
+  
+  // Set the context before making the function call
+  if (args.context) {
+    await handleContextSelect(args.context);
+  }
+  
   if (dataChannel) {
     dataChannel.send(
       JSON.stringify({
