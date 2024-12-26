@@ -111,6 +111,15 @@ function updateContextsUI() {
 async function init() {
   setConnectingState(true);
   await fetchContexts();
+  
+  // Configure VAD settings
+  const vadConfig = {
+    turn_detection: {
+      time_units_before_yield: 8,  // 800ms of silence before yielding
+      time_units_before_interrupt: 20,  // 2s of speech before interrupting
+      create_response: true  // Auto-generate responses
+    }
+  };
   try {
     const data = await createSession();
     const EPHEMERAL_KEY = data.client_secret.value;
@@ -147,6 +156,7 @@ async function init() {
       const functionConfig = {
         type: "session.update",
         session: {
+          ...vadConfig,  // Include VAD configuration
           tools: [
             {
               type: "function",
@@ -339,6 +349,7 @@ function updateCaptionUI() {
 
 async function handleFunctionCall(name, args) {
   let response;
+  const callId = `call_${Date.now()}`;  // Generate unique call ID
 
   /* if (dataChannel) {
     dataChannel.send(
