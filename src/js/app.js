@@ -450,6 +450,25 @@ async function handleFunctionCall(call) {
         );
         break;
 
+      case "web_search":
+        requestVoiceCommentary(
+          "I'll search the web for that information. Give me a moment."
+        );
+        response = await fetch("/web-search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            question: args.question,
+          }),
+        });
+        const searchResult = await response.json();
+        requestVoiceCommentary(
+          "Here's what I found from searching the web: " + searchResult
+        );
+        break;
+
       default:
         console.warn("Unknown function call:", call.name);
         return;
