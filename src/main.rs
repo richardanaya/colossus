@@ -324,15 +324,18 @@ async fn handle_change_code(
         ""
     };
 
-    let output = Command::new("aider")
-        .current_dir(project_dir)
-        .arg("--load")
-        .arg(context_file)
+    let mut cmd = Command::new("aider");
+    cmd.current_dir(project_dir)
         .arg("--no-suggest-shell-commands")
         .arg("--yes-always")
         .arg("--message")
-        .arg(&payload.change)
-        .output()
+        .arg(&payload.change);
+
+    if context_file != "ColossusNoneContext.md" {
+        cmd.arg("--load").arg(context_file);
+    }
+
+    let output = cmd.output()
         .map_err(|e| {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -371,15 +374,18 @@ async fn handle_question(
         ""
     };
 
-    let output = Command::new("aider")
-        .current_dir(project_dir)
-        .arg("--load")
-        .arg(context_file)
+    let mut cmd = Command::new("aider");
+    cmd.current_dir(project_dir)
         .arg("--no-suggest-shell-commands")
         .arg("--yes-always")
         .arg("--message")
-        .arg(&payload.question)
-        .output()
+        .arg(&payload.question);
+
+    if context_file != "ColossusNoneContext.md" {
+        cmd.arg("--load").arg(context_file);
+    }
+
+    let output = cmd.output()
         .expect("Failed to execute aider");
 
     let response_message = if output.status.success() {
