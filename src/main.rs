@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::net::SocketAddr;
 use std::process::Command;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use tokio::net::TcpListener;
 
 #[derive(Serialize)]
@@ -25,11 +25,6 @@ struct ErrorResponse {
 struct Context {
     filename: String,
     content: String,
-}
-
-#[derive(Deserialize)]
-struct ContextSelection {
-    filename: String,
 }
 
 #[derive(Deserialize)]
@@ -297,7 +292,6 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-
 async fn handle_change_code(
     State(state_with_dir): State<Arc<AppStateWithDir>>,
     Json(payload): Json<ChangeCodeRequest>,
@@ -315,16 +309,15 @@ async fn handle_change_code(
         cmd.arg("--load").arg(&payload.context);
     }
 
-    let output = cmd.output()
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(ErrorResponse {
-                    error: format!("Failed to execute aider: {}", e),
-                    project_dir: project_dir.clone(),
-                }),
-            )
-        })?;
+    let output = cmd.output().map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: format!("Failed to execute aider: {}", e),
+                project_dir: project_dir.clone(),
+            }),
+        )
+    })?;
 
     if output.status.success() {
         Ok(Json(String::from_utf8_lossy(&output.stdout).to_string()))
@@ -359,8 +352,7 @@ async fn handle_question(
         cmd.arg("--load").arg(&payload.context);
     }
 
-    let output = cmd.output()
-        .expect("Failed to execute aider");
+    let output = cmd.output().expect("Failed to execute aider");
 
     let response_message = if output.status.success() {
         String::from_utf8_lossy(&output.stdout).to_string()
