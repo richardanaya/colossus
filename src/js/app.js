@@ -312,7 +312,7 @@ function updateMessagesUI() {
         <div class="glass-card rounded-lg p-4 mb-4 ${
           message.type === "user" ? "ml-auto" : "mr-auto"
         }" style="max-width: 80%">
-            <p class="text-lg">${message.content}</p>
+            <p class="text-lg" style="white-space: pre-wrap;" >${message.content}</p>
         </div>
     `
     )
@@ -396,7 +396,9 @@ async function handleFunctionCall(name, args) {
       }
 
       const responseText = await response.text();
-      messages.push({ type: "assistant", content: responseText });
+      // Format the response text by replacing newlines with <br> and preserving whitespace
+      const formattedResponse = responseText.replace(/\n/g, '<br>');
+      messages.push({ type: "assistant", content: formattedResponse });
       updateMessagesUI();
 
       // For ask_question, send a follow-up request to OpenAI to summarize vocally
