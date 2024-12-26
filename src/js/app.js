@@ -14,8 +14,6 @@ let audioContext = null;
 let analyser = null;
 let dataArray = null;
 let animationId = null;
-let isFunctionCallInProgress = false;
-
 // DOM Elements
 const volumeMeter = document.getElementById("volumeMeter");
 const volumeCtx = volumeMeter.getContext("2d");
@@ -326,12 +324,6 @@ function updateCaptionUI() {
 }
 
 async function handleFunctionCall(name, args) {
-  if (isFunctionCallInProgress) {
-    console.log("Function call already in progress, ignoring new request");
-    return;
-  }
-
-  isFunctionCallInProgress = true;
   let response;
 
   if (dataChannel) {
@@ -423,16 +415,9 @@ function updateFunctionCallsUI() {
   functionCallsContainer.innerHTML = functionCalls
     .map(
       (call, i) => `
-        <div class="glass-card rounded-lg p-4 mb-4 ${
-          isFunctionCallInProgress ? "opacity-50" : ""
-        }">
+        <div class="glass-card rounded-lg p-4 mb-4">
             <span class="function-name">${call.name}</span>
             <pre class="function-args">${call.args}</pre>
-            ${
-              i === functionCalls.length - 1 && isFunctionCallInProgress
-                ? '<div class="mt-2">Processing...</div>'
-                : ""
-            }
         </div>
     `
     )
