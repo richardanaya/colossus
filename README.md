@@ -50,6 +50,22 @@ Example with custom settings:
 ```bash
 colossus --port 3000 --model gpt-4o-mini-realtime-preview-2024-12-17 --project-dir /path/to/project
 ```
+
+## Context
+
+You can have various aider context files that can be loaded in by using the aider `/load` command.
+
+Any file that is prefixed in the root directory `CONTEXT_` and ends with extension `.md` will show up as a button you can load.
+
+Example:
+
+```
+// CONTEXT_webpage.md - a context that adds all relevant web page files
+/add **.*.html
+/add **.*.js
+```
+
+
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
