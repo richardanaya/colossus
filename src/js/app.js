@@ -124,6 +124,14 @@ async function init() {
     const dc = newPc.createDataChannel("oai-events");
     dataChannel = dc;
 
+    dc.addEventListener("close", () => {
+      if (audioTrack) {
+        audioTrack.stop();
+        audioTrack = null;
+      }
+      stopVolumeMeter();
+    });
+
     dc.addEventListener("open", async () => {
       setConnectingState(false);
       setConnectedState(true);
@@ -192,10 +200,14 @@ async function init() {
 
     dc.addEventListener("message", handleMessage);
 
+    // Clean up any existing audio track
+    if (audioTrack) {
+      audioTrack.stop();
+    }
+    
     const ms = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const track = ms.getTracks()[0];
-    audioTrack = track;
-    newPc.addTrack(track);
+    audioTrack = ms.getTracks()[0];
+    const sender = newPc.addTrack(audioTrack);
 
     // Set up audio analysis
     audioContext = new AudioContext();
