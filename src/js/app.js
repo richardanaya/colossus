@@ -133,10 +133,10 @@ async function init() {
 
       // First fetch contexts before sending function config
       await fetchContexts();
-    
+
       // Create context enum from fetched contexts
-      const contextEnum = contexts.map(ctx => ctx.filename);
-    
+      const contextEnum = contexts.map((ctx) => ctx.filename);
+
       const functionConfig = {
         type: "session.update",
         session: {
@@ -155,7 +155,9 @@ async function init() {
                   context: {
                     type: "string",
                     enum: contextEnum,
-                    description: "The context file to modify",
+                    description:
+                      "The context file to modify, choose one based on " +
+                      JSON.stringify(contextEnum),
                   },
                 },
                 required: ["change", "context"],
@@ -163,7 +165,7 @@ async function init() {
             },
             {
               type: "function",
-              name: "ask_question", 
+              name: "ask_question",
               description: "Ask a question about the codebase",
               parameters: {
                 type: "object",
@@ -175,7 +177,9 @@ async function init() {
                   context: {
                     type: "string",
                     enum: contextEnum,
-                    description: "The context file to ask about",
+                    description:
+                      "The context file to modify, choose one based on " +
+                      JSON.stringify(contextEnum),
                   },
                 },
                 required: ["question", "context"],
@@ -322,12 +326,12 @@ function updateCaptionUI() {
 
 async function handleFunctionCall(name, args) {
   let response;
-  
+
   // Set the context before making the function call
   if (args.context) {
     await handleContextSelect(args.context);
   }
-  
+
   if (dataChannel) {
     dataChannel.send(
       JSON.stringify({
