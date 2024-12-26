@@ -14,7 +14,6 @@ use std::net::SocketAddr;
 use std::process::Command;
 use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
-use tower_http::services::ServeDir;
 
 #[derive(Serialize)]
 struct ErrorResponse {
@@ -240,12 +239,15 @@ async fn main() {
     let project_dir = args.project_dir.clone();
     let app = Router::new()
         .route("/", get(|| async { Html(include_str!("html/index.html")) }))
-        .route("/app.js", get(|| async { 
-            axum::response::Response::builder()
-                .header("Content-Type", "application/javascript")
-                .body(include_str!("js/app.js").to_string())
-                .unwrap()
-        }))
+        .route(
+            "/app.js",
+            get(|| async {
+                axum::response::Response::builder()
+                    .header("Content-Type", "application/javascript")
+                    .body(include_str!("js/app.js").to_string())
+                    .unwrap()
+            }),
+        )
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(project_dir.clone())))
         .route("/select-context", post(handle_context_selection))
