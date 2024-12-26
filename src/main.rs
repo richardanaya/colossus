@@ -205,9 +205,9 @@ async fn main() {
     println!("     /   |  |   \\     ");
     println!("    /    |  |    \\    ");
     println!("   /     |  |     \\   ");
-    println!("  /_____/|  |\\____\\  ");
-    println!(" /_____/ |__| \\____\\ ");
-    println!("/______/_|__|_\\____\\\\");
+    println!("  /_____/|  |\\_____\\  ");
+    println!(" /_____/ |__| \\_____\\ ");
+    println!("/______/_|__|_\\______\\");
     println!("\nColossus Server: http://localhost:{}", args.port);
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
