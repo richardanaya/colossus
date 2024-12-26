@@ -26,13 +26,13 @@ async fn handle_web_search(
     Json(payload): Json<WebSearchRequest>,
 ) -> Result<Json<String>, (StatusCode, Json<ErrorResponse>)> {
     let api_key = std::env::var("PERPLEXITY_API_KEY").map_err(|_| {
-        return Err((
+        (
             StatusCode::OK,
             Json(ErrorResponse {
                 error: "I can't search the web right now because the Perplexity API key is not configured.".to_string(),
                 project_dir: String::new(),
             }),
-        ));
+        )
     })?;
 
     let client = reqwest::Client::new();
