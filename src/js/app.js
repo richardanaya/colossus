@@ -465,7 +465,29 @@ muteButton.addEventListener("click", () => {
     muteButton.textContent = isMuted ? "Unmute" : "Mute";
     if (isMuted) {
       stopVolumeMeter();
-    } else if (analyser) {
+    } else if (analyser && audioContext) {
+      // Restart the volume meter animation
+      function drawVolumeMeter() {
+        analyser.getByteFrequencyData(dataArray);
+        const volume = dataArray.reduce((a, b) => a + b) / dataArray.length;
+
+        volumeCtx.clearRect(0, 0, volumeMeter.width, volumeMeter.height);
+
+        // Draw background
+        volumeCtx.fillStyle = "rgba(0, 0, 0, 0.1)";
+        volumeCtx.fillRect(0, 0, volumeMeter.width, volumeMeter.height);
+
+        // Draw volume level
+        const gradient = volumeCtx.createLinearGradient(0, 0, volumeMeter.width, 0);
+        gradient.addColorStop(0, "#3b82f6");
+        gradient.addColorStop(1, "#2563eb");
+        volumeCtx.fillStyle = gradient;
+
+        const width = (volume / 255) * volumeMeter.width;
+        volumeCtx.fillRect(0, 0, width, volumeMeter.height);
+
+        animationId = requestAnimationFrame(drawVolumeMeter);
+      }
       drawVolumeMeter();
     }
   }
