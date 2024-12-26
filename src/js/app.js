@@ -126,7 +126,7 @@ async function init() {
     const dc = newPc.createDataChannel("oai-events");
     dataChannel = dc;
 
-    dc.addEventListener("open", () => {
+    dc.addEventListener("open", async () => {
       setConnectingState(false);
       setConnectedState(true);
       console.log("Connected to OpenAI Realtime API");
