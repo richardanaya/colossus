@@ -137,6 +137,7 @@ struct AppStateWithDir {
     preferred_language: String,
     instructions: String,
     voice: String,
+    code_model: Option<String>,
 }
 
 async fn get_contexts(
@@ -309,6 +310,14 @@ struct Args {
         help = "Supported voices are alloy, ash, coral, echo, fable, onyx, nova, sage and shimmer."
     )]
     voice: String,
+
+    // code analysis model
+    #[arg(
+        short = 'c',
+        long = "code-model",
+        help = "OpenAI model to use for code analysis"
+    )]
+    code_model: Option<String>,
 }
 
 fn check_requirements(project_dir: &str) -> Result<(), String> {
@@ -345,6 +354,7 @@ async fn main() {
         model: args.model.clone(),
         instructions: args.instructions.clone(),
         voice: args.voice.clone(),
+        code_model: args.code_model.clone(),
     });
     let project_dir = args.project_dir.clone();
     let app = Router::new()
@@ -412,6 +422,10 @@ async fn handle_change_code(
         .arg("--message")
         .arg(&payload.change);
 
+    if let Some(model) = &state_with_dir.code_model {
+        cmd.arg("--model").arg(model);
+    }
+
     if payload.context != "None" {
         cmd.arg("--load").arg(&payload.context);
     }
@@ -454,6 +468,10 @@ async fn handle_question(
         .arg("--yes-always")
         .arg("--message")
         .arg(&payload.question);
+
+    if let Some(model) = &state_with_dir.code_model {
+        cmd.arg("--model").arg(model);
+    }
 
     if payload.context != "None" {
         cmd.arg("--load").arg(&payload.context);
