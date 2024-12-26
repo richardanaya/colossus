@@ -8,6 +8,11 @@ let dataChannel = null;
 let pc = null;
 let isMuted = false;
 let audioTrack = null;
+let audioContext = null;
+let analyser = null;
+let dataArray = null;
+let volumeMeterCanvas = document.getElementById('volumeMeter');
+let volumeMeterCtx = volumeMeterCanvas.getContext('2d');
 
 // DOM Elements
 const connectButton = document.getElementById("connectButton");
@@ -203,6 +208,31 @@ async function init() {
     });
     audioTrack = ms.getTracks()[0];
     pc.addTrack(audioTrack);
+    
+    // Set up audio analysis
+    audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(ms);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(analyser);
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    
+    // Start volume meter animation
+    function drawVolumeMeter() {
+      if (!analyser) return;
+      
+      analyser.getByteFrequencyData(dataArray);
+      const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+      const volume = average / 256; // Normalize to 0-1
+      
+      volumeMeterCtx.clearRect(0, 0, volumeMeterCanvas.width, volumeMeterCanvas.height);
+      volumeMeterCtx.fillStyle = isMuted ? '#9ca3af' : '#3b82f6';
+      volumeMeterCtx.fillRect(0, 0, volumeMeterCanvas.width * volume, volumeMeterCanvas.height);
+      
+      requestAnimationFrame(drawVolumeMeter);
+    }
+    drawVolumeMeter();
+    
     updateUI();
 
     dataChannel.addEventListener("message", (e) => {
