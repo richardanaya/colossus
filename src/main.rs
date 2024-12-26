@@ -146,10 +146,14 @@ async fn create_session(
         })?;
 
     if !response.status().is_success() {
+        let error_body = response.text().await.unwrap_or_else(|_| "Could not read error response".to_string());
+        println!("Session creation failed:");
+        println!("Status: {}", response.status());
+        println!("Error body: {}", error_body);
         return Err((
             StatusCode::BAD_REQUEST,
             Json(ErrorResponse {
-                error: format!("API error: {}", response.status()),
+                error: format!("API error: {} - {}", response.status(), error_body),
                 project_dir: String::new(),
             }),
         ));
