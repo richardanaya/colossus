@@ -236,21 +236,6 @@ async function init() {
                 required: ["question", "context"],
               },
             },
-            {
-              type: "function",
-              name: "ask_about_colossus",
-              description: "Ask a question about Colossus itself",
-              parameters: {
-                type: "object",
-                properties: {
-                  question: {
-                    type: "string",
-                    description: "The question to ask about Colossus",
-                  },
-                },
-                required: ["question"],
-              },
-            },
           ],
           tool_choice: "auto",
         },
@@ -450,12 +435,6 @@ async function handleFunctionCall(call) {
         );
         break;
 
-      case "ask_about_colossus":
-        requestVoiceCommentary(
-          "Answer question about yourself appropriate to your personality: " +
-            args.question
-        );
-        break;
       default:
         console.warn("Unknown function call:", call.name);
         return;
