@@ -449,7 +449,7 @@ async function handleFunctionCall(name, args) {
 
 function updateFunctionCallsUI() {
   functionCallsContainer.innerHTML = `
-    <div class="function-calls-wrapper" style="height: calc(30vh - 100px); overflow-y: auto; padding: 1rem;">
+    <div class="function-calls-wrapper" style="flex: 1; overflow-y: auto; padding: 1rem;">
       ${functionCalls
         .map(
           (call, i) => `
