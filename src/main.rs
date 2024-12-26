@@ -98,7 +98,7 @@ async fn get_contexts(
     // If no contexts were found, add a default "None" context
     if contexts.is_empty() {
         contexts.push(Context {
-            filename: "ColossusNoneContext.md".to_string(),
+            filename: "None".to_string(),
             content: String::new(),
         });
     }
@@ -305,7 +305,7 @@ async fn handle_change_code(
         .arg("--message")
         .arg(&payload.change);
 
-    if payload.context != "ColossusNoneContext.md" {
+    if payload.context != "None" {
         cmd.arg("--load").arg(&payload.context);
     }
 
@@ -348,7 +348,7 @@ async fn handle_question(
         .arg("--message")
         .arg(&payload.question);
 
-    if payload.context != "ColossusNoneContext.md" {
+    if payload.context != "None" {
         cmd.arg("--load").arg(&payload.context);
     }
 
