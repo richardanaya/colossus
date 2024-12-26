@@ -8,7 +8,8 @@ use axum::{
 use clap::Parser;
 use colored::*;
 use dotenv::dotenv;
-use serde::{Deserialize, Serialize, json};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::fs;
 use std::net::SocketAddr;
 use std::process::Command;
