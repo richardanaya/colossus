@@ -297,7 +297,6 @@ function handleMessage(e) {
     } else {
       messages.push({ type: "assistant", content: event.delta });
     }
-    updateMessagesUI();
   } else if (event.type === "response.done") {
     caption = "";
     updateCaptionUI();
@@ -323,7 +322,7 @@ function updateMessagesUI() {
         .join("")}
     </div>
   `;
-  const wrapper = messagesContainer.querySelector('.messages-wrapper');
+  const wrapper = messagesContainer.querySelector(".messages-wrapper");
   // Wait for any dynamic content to load before scrolling
   setTimeout(() => {
     wrapper.scrollTop = wrapper.scrollHeight;
@@ -466,7 +465,9 @@ function updateFunctionCallsUI() {
         .join("")}
     </div>
   `;
-  const wrapper = functionCallsContainer.querySelector('.function-calls-wrapper');
+  const wrapper = functionCallsContainer.querySelector(
+    ".function-calls-wrapper"
+  );
   // Wait for any dynamic content to load before scrolling
   setTimeout(() => {
     wrapper.scrollTop = wrapper.scrollHeight;
