@@ -239,17 +239,19 @@ async fn main() {
     });
     let project_dir = args.project_dir.clone();
     let app = Router::new()
-        .route(
-            "/",
-            get(|| async { Html(include_str!("../static/index.html")) }),
-        )
+        .route("/", get(|| async { Html(include_str!("html/index.html")) }))
+        .route("/app.js", get(|| async { 
+            axum::response::Response::builder()
+                .header("Content-Type", "application/javascript")
+                .body(include_str!("js/app.js").to_string())
+                .unwrap()
+        }))
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(project_dir.clone())))
         .route("/select-context", post(handle_context_selection))
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
-        .with_state(state_with_dir)
-        .nest_service("/static", ServeDir::new("./static"));
+        .with_state(state_with_dir);
 
     println!("{}", "          /\\          ".bright_cyan());
     println!("{}", "         /  \\         ".bright_cyan());
