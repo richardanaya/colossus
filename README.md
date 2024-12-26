@@ -39,9 +39,27 @@ Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pric
    cargo install colossus
    ```
 
+## Required API Keys
+
+To use all features of Colossus, you'll need the following API keys:
+
+- **OpenAI API Key**: Required for real-time voice interactions and code analysis
+  - Get it from: https://platform.openai.com/api-keys
+  - Set as: `OPENAI_API_KEY`
+
+- **Perplexity API Key**: Required for web search integration
+  - Get it from: https://www.perplexity.ai/settings/api
+  - Set as: `PERPLEXITY_API_KEY`
+
+- **Anthropic API Key**: Required for aider code modifications
+  - Get it from: https://console.anthropic.com/
+  - Set as: `ANTHROPIC_API_KEY`
+
+You can set these keys in your `.env` file or as environment variables.
+
 ## Quick Start
 
-TLDR: you should be able to run colossus anywhere you normally run aider as long as there is a .git repo and OPENAI_API_KEY
+TLDR: you should be able to run colossus anywhere you normally run aider as long as there is a .git repo and the required API keys are set
 
 1. Ensure you have a `.env` file in your project directory with an OPENAI_API_KEY (same directory where you run aider) or its in your environment variables
 2. Launch Colossus:
