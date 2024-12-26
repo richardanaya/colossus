@@ -32,7 +32,6 @@ async function handleSendMessage() {
 
   if (dataChannel) {
     console.log("Sending message to OpenAI:", text);
-    debugger;
     dataChannel.send(
       JSON.stringify({
         type: "conversation.item.create",
@@ -312,7 +311,9 @@ function updateMessagesUI() {
         <div class="glass-card rounded-lg p-4 mb-4 ${
           message.type === "user" ? "ml-auto" : "mr-auto"
         }" style="max-width: 80%">
-            <p class="text-lg" style="white-space: pre-wrap;" >${message.content}</p>
+            <p class="text-lg" style="white-space: pre-wrap;" >${
+              message.content
+            }</p>
         </div>
     `
     )
@@ -395,9 +396,9 @@ async function handleFunctionCall(name, args) {
           return;
       }
 
-      const responseText = await response.text();
+      const responseText = await response.json();
       // Format the response text by replacing newlines with <br> and preserving whitespace
-      const formattedResponse = responseText.replace(/\n/g, '<br>');
+      const formattedResponse = responseText.replace(/\n/g, "<br>");
       messages.push({ type: "assistant", content: formattedResponse });
       updateMessagesUI();
 
@@ -443,7 +444,11 @@ function updateFunctionCallsUI() {
       (call, i) => `
         <div class="glass-card rounded-lg p-4 mb-4">
             <span class="function-name">${call.name}</span>
-            <pre class="function-args">${JSON.stringify(call.args, null, 2)}</pre>
+            <pre class="function-args">${JSON.stringify(
+              call.args,
+              null,
+              2
+            )}</pre>
         </div>
     `
     )
