@@ -46,12 +46,12 @@ async function handleSendMessage() {
             },
           ],
         },
-      })
+      }),
     );
     dataChannel.send(
       JSON.stringify({
         type: "response.create",
-      })
+      }),
     );
     messages.push({ type: "user", content: text });
     updateMessagesUI();
@@ -79,19 +79,23 @@ async function fetchContexts() {
   try {
     const response = await fetch("/contexts");
     contexts = await response.json();
-    
+
     // Add contexts to the functionCalls container once
     const functionCallsContainer = document.getElementById("functionCalls");
     const contextsHtml = `
       <div class="glass-card">
         <div style="font-weight: 500; margin-bottom: 0.5rem">Known contexts:</div>
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem">
-          ${contexts.map(context => `
+          ${contexts
+            .map(
+              (context) => `
             <span class="small" 
               style="text-align: left; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 0.25rem 0.5rem; border-radius: 0.5rem;">
               ${context.filename}
             </span>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </div>
       </div>
     `;
@@ -104,7 +108,6 @@ async function fetchContexts() {
 function updateContextsUI() {
   // No longer needed - contexts are now added only once during fetchContexts
 }
-
 
 async function init() {
   setConnectingState(true);
@@ -221,7 +224,7 @@ async function init() {
         0,
         0,
         volumeMeter.width,
-        0
+        0,
       );
       gradient.addColorStop(0, "#3b82f6");
       gradient.addColorStop(1, "#2563eb");
@@ -306,7 +309,7 @@ function updateMessagesUI() {
         }" style="max-width: 80%">
             <p class="text-lg">${message.content}</p>
         </div>
-    `
+    `,
     )
     .join("");
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -326,10 +329,9 @@ async function handleFunctionCall(name, args) {
     console.log("Function call already in progress, ignoring new request");
     return;
   }
-  
+
   isFunctionCallInProgress = true;
   let response;
-
 
   if (dataChannel) {
     dataChannel.send(
@@ -342,17 +344,17 @@ async function handleFunctionCall(name, args) {
             {
               type: "input_text",
               text: `Say that you're acknowleding that you're going to try to perform the action and that it might take a little while: ${JSON.stringify(
-                args
+                args,
               )}`,
             },
           ],
         },
-      })
+      }),
     );
     dataChannel.send(
       JSON.stringify({
         type: "response.create",
-      })
+      }),
     );
   }
   try {
@@ -368,7 +370,10 @@ async function handleFunctionCall(name, args) {
         response = await fetch("/ask-question", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: args.question, context: args.context }),
+          body: JSON.stringify({
+            question: args.question,
+            context: args.context,
+          }),
         });
         break;
       default:
@@ -395,12 +400,12 @@ async function handleFunctionCall(name, args) {
               },
             ],
           },
-        })
+        }),
       );
       dataChannel.send(
         JSON.stringify({
           type: "response.create",
-        })
+        }),
       );
     }
   } catch (error) {
@@ -417,12 +422,12 @@ function updateFunctionCallsUI() {
   functionCallsContainer.innerHTML = functionCalls
     .map(
       (call, i) => `
-        <div class="glass-card rounded-lg p-4 mb-4 ${isFunctionCallInProgress ? 'opacity-50' : ''}">
+        <div class="glass-card rounded-lg p-4 mb-4 ${isFunctionCallInProgress ? "opacity-50" : ""}">
             <span class="function-name">${call.name}</span>
             <pre class="function-args">${call.args}</pre>
-            ${i === functionCalls.length - 1 && isFunctionCallInProgress ? '<div class="mt-2">Processing...</div>' : ''}
+            ${i === functionCalls.length - 1 && isFunctionCallInProgress ? '<div class="mt-2">Processing...</div>' : ""}
         </div>
-    `
+    `,
     )
     .join("");
 }
@@ -445,8 +450,8 @@ function setConnectingState(state) {
   connectButton.textContent = state
     ? "Connecting..."
     : isConnected
-    ? "Connected"
-    : "Start Session";
+      ? "Connected"
+      : "Start Session";
 }
 
 function setConnectedState(state) {
