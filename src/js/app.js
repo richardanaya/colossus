@@ -444,9 +444,10 @@ async function handleFunctionCall(call) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
+    const responseData = await response.json();
     messages.push({
       type: "assistant",
-      content: result,
+      content: JSON.stringify(responseData),
     });
     updateUI();
   } catch (error) {
