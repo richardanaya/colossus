@@ -43,17 +43,13 @@ Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pric
 
 To use all features of Colossus, you'll need the following API keys:
 
-- **OpenAI API Key**: Required for real-time voice interactions and code analysis
+- **OpenAI API Key**: Required for real-time voice interactions and code analysis (based off [aider leader board](https://aider.chat/docs/leaderboards/) )
   - Get it from: https://platform.openai.com/api-keys
   - Set as: `OPENAI_API_KEY`
 
 - **Perplexity API Key**: Required for web search integration
   - Get it from: https://www.perplexity.ai/settings/api
   - Set as: `PERPLEXITY_API_KEY`
-
-- **Anthropic API Key**: Required for aider code modifications
-  - Get it from: https://console.anthropic.com/
-  - Set as: `ANTHROPIC_API_KEY`
 
 You can set these keys in your `.env` file or as environment variables.
 
@@ -82,7 +78,7 @@ USAGE:
 OPTIONS:
     -d, --project-dir <DIR>         Directory to serve project files from [default: "./"]
     -p, --port <PORT>               Port number to run the server on [default: 49999]
-    -m, --model <MODEL>             OpenAI model name to use [default: gpt-4o-mini-realtime-preview-2024-12-17]
+    -m, --model <MODEL>             OpenAI model name to use [default: gpt-4o-realtime-preview-2024-12-17]
     -l, --preferred-language <LANG> Preferred language for communication [default: english]
     -i, --instructions <TEXT>       Custom instructions for the AI assistant
     -v, --voice <VOICE>            Voice to use for speech [default: ash]
@@ -92,7 +88,7 @@ OPTIONS:
 
 Example with custom settings:
 ```bash
-colossus --port 3000 --model gpt-4o-mini-realtime-preview-2024-12-17 --project-dir /path/to/project
+colossus --port 3000 --model gpt-4o-realtime-preview-2024-12-17 --project-dir /path/to/project
 ```
 
 ## Context
