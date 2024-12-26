@@ -256,6 +256,7 @@ async function init() {
           name: call.name,
           args: call.arguments,
         });
+        handleFunctionCall(call);
         updateUI();
       }
 
@@ -322,6 +323,57 @@ textInputArea.addEventListener("keydown", (e) => {
     handleSendMessage();
   }
 });
+
+async function handleFunctionCall(call) {
+  try {
+    const args = JSON.parse(call.arguments);
+    let response;
+
+    switch (call.name) {
+      case 'change_code':
+        response = await fetch('/change-code', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            change: args.change,
+            context: args.context
+          })
+        });
+        break;
+
+      case 'ask_question':
+        response = await fetch('/ask-question', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            question: args.question,
+            context: args.context
+          })
+        });
+        break;
+
+      default:
+        console.warn('Unknown function call:', call.name);
+        return;
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    messages.push({ type: 'assistant', content: result });
+    updateUI();
+  } catch (error) {
+    console.error('Error handling function call:', error);
+    messages.push({ type: 'assistant', content: `Error: ${error.message}` });
+    updateUI();
+  }
+}
 
 // Initial UI update
 updateUI();
