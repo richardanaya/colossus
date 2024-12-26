@@ -78,30 +78,30 @@ async function fetchContexts() {
   try {
     const response = await fetch("/contexts");
     contexts = await response.json();
-    updateContextsUI();
+    
+    // Add contexts to the functionCalls container once
+    const functionCallsContainer = document.getElementById("functionCalls");
+    const contextsHtml = `
+      <div class="glass-card">
+        <div style="font-weight: 500; margin-bottom: 0.5rem">Known contexts:</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem">
+          ${contexts.map(context => `
+            <span class="small" 
+              style="text-align: left; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 0.25rem 0.5rem; border-radius: 0.5rem;">
+              ${context.filename}
+            </span>
+          `).join("")}
+        </div>
+      </div>
+    `;
+    functionCallsContainer.innerHTML = contextsHtml;
   } catch (error) {
     console.error("Failed to fetch contexts:", error);
   }
 }
 
 function updateContextsUI() {
-  const functionCallsContainer = document.getElementById("functionCalls");
-  const contextsHtml = `
-    <div class="glass-card">
-      <div style="font-weight: 500; margin-bottom: 0.5rem">Known contexts:</div>
-      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem">
-        ${contexts.map(context => `
-          <span class="small" 
-            style="text-align: left; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 0.25rem 0.5rem; border-radius: 0.5rem;">
-            ${context.filename}
-          </span>
-        `).join("")}
-      </div>
-    </div>
-  `;
-  
-  // Insert at the beginning of functionCalls
-  functionCallsContainer.innerHTML = contextsHtml + functionCallsContainer.innerHTML;
+  // No longer needed - contexts are now added only once during fetchContexts
 }
 
 
