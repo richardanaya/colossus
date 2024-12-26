@@ -59,8 +59,9 @@ Any file that is prefixed in the root directory `CONTEXT_` and ends with extensi
 
 Example:
 
-```
-// CONTEXT_webpage.md - a context that adds all relevant web page files
+```markdown
+// CONTEXT_webpage.md - a context that clears context and adds all relevant web page files
+/drop
 /add **.*.html
 /add **.*.js
 ```
