@@ -45,12 +45,12 @@ async function handleSendMessage() {
             },
           ],
         },
-      }),
+      })
     );
     dataChannel.send(
       JSON.stringify({
         type: "response.create",
-      }),
+      })
     );
     messages.push({ type: "user", content: text });
     updateMessagesUI();
@@ -90,7 +90,7 @@ function updateContextsUI() {
       style="text-align: left; padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-weight: 500; flex: 0 1 auto;">
       ${context.filename}
     </button>
-  `,
+  `
     )
     .join("");
 }
@@ -204,7 +204,7 @@ async function init() {
         0,
         0,
         volumeMeter.width,
-        0,
+        0
       );
       gradient.addColorStop(0, "#3b82f6");
       gradient.addColorStop(1, "#2563eb");
@@ -222,8 +222,7 @@ async function init() {
     await newPc.setLocalDescription(offer);
 
     const baseUrl = "https://api.openai.com/v1/realtime";
-    const model = "gpt-4o-realtime-preview-2024-12-17";
-    const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
+    const sdpResponse = await fetch(`${baseUrl}`, {
       method: "POST",
       body: offer.sdp,
       headers: {
@@ -290,7 +289,7 @@ function updateMessagesUI() {
         }" style="max-width: 80%">
             <p class="text-lg">${message.content}</p>
         </div>
-    `,
+    `
     )
     .join("");
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -318,17 +317,17 @@ async function handleFunctionCall(name, args) {
             {
               type: "input_text",
               text: `Say that you're acknowleding that you're going to try to perform the action and that it might take a little while: ${JSON.stringify(
-                args,
+                args
               )}`,
             },
           ],
         },
-      }),
+      })
     );
     dataChannel.send(
       JSON.stringify({
         type: "response.create",
-      }),
+      })
     );
   }
   try {
@@ -371,12 +370,12 @@ async function handleFunctionCall(name, args) {
               },
             ],
           },
-        }),
+        })
       );
       dataChannel.send(
         JSON.stringify({
           type: "response.create",
-        }),
+        })
       );
     }
   } catch (error) {
@@ -397,7 +396,7 @@ function updateFunctionCallsUI() {
             <span class="function-name">${call.name}</span>
             <pre class="function-args">${call.args}</pre>
         </div>
-    `,
+    `
     )
     .join("");
 }
@@ -420,8 +419,8 @@ function setConnectingState(state) {
   connectButton.textContent = state
     ? "Connecting..."
     : isConnected
-      ? "Connected"
-      : "Start Session";
+    ? "Connected"
+    : "Start Session";
 }
 
 function setConnectedState(state) {

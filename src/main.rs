@@ -104,13 +104,15 @@ async fn get_contexts(
 
 async fn create_session(
     State(state): State<Arc<AppStateWithDir>>,
-    Json(mut payload): Json<SessionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<ErrorResponse>)> {
-    payload.voice = state.voice.clone();
-    payload.instructions = format!(
-        "The preferred language is {}. {}",
-        state.preferred_language, state.instructions
-    );
+    let payload = SessionRequest {
+        model: state.model.clone(),
+        voice: state.voice.clone(),
+        instructions: format!(
+            "The preferred language is {}. {}",
+            state.preferred_language, state.instructions
+        ),
+    };
     let api_key = std::env::var("OPENAI_API_KEY").map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -121,7 +123,6 @@ async fn create_session(
         )
     })?;
 
-    payload.model = state.model.clone();
     let client = reqwest::Client::new();
     let response = client
         .post("https://api.openai.com/v1/realtime/sessions")
