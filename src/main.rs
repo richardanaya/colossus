@@ -1,3 +1,4 @@
+use colored::*;
 use axum::{
     extract::State,
     http::StatusCode,
@@ -224,22 +225,22 @@ async fn main() {
         .with_state(state_with_dir)
         .nest_service("/static", ServeDir::new("./static"));
 
-    println!("          /\\          ");
-    println!("         /  \\         ");
-    println!("        /    \\        ");
-    println!("       /      \\       ");
-    println!("      /   __   \\      ");
-    println!("     /   |  |   \\     ");
-    println!("    /    |  |    \\    ");
-    println!("   /     |  |     \\   ");
-    println!("  /_____/|  |\\_____\\  ");
-    println!(" /_____/ |__| \\_____\\ ");
-    println!("/______/_|__|_\\______\\");
-    println!("\nColossus Server: http://localhost:{}", args.port);
-    println!("Language: {}", args.preferred_language);
-    println!("Model: {}", args.model);
-    println!("Project directory: {}", args.project_dir);
-    println!("Voice: {}", args.voice);
+    println!("{}", "          /\\          ".bright_cyan());
+    println!("{}", "         /  \\         ".bright_cyan());
+    println!("{}", "        /    \\        ".bright_cyan());
+    println!("{}", "       /      \\       ".bright_cyan());
+    println!("{}", "      /   __   \\      ".bright_cyan());
+    println!("{}", "     /   |  |   \\     ".bright_cyan());
+    println!("{}", "    /    |  |    \\    ".bright_cyan());
+    println!("{}", "   /     |  |     \\   ".bright_cyan());
+    println!("{}", "  /_____/|  |\\_____\\  ".bright_cyan());
+    println!("{}", " /_____/ |__| \\_____\\ ".bright_cyan());
+    println!("{}", "/______/_|__|_\\______\\".bright_cyan());
+    println!("\n{} {}", "Colossus Server:".bright_green(), format!("http://localhost:{}", args.port).yellow());
+    println!("{} {}", "Language:".bright_green(), args.preferred_language.yellow());
+    println!("{} {}", "Model:".bright_green(), args.model.yellow());
+    println!("{} {}", "Project directory:".bright_green(), args.project_dir.yellow());
+    println!("{} {}", "Voice:".bright_green(), args.voice.yellow());
 
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
