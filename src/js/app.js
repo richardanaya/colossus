@@ -366,14 +366,14 @@ async function handleFunctionCall(name, args) {
         response = await fetch("/change-code", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ change: args.change }),
+          body: JSON.stringify({ change: args.change, context: args.context }),
         });
         break;
       case "ask_question":
         response = await fetch("/ask-question", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: args.question }),
+          body: JSON.stringify({ question: args.question, context: args.context }),
         });
         break;
       default:
