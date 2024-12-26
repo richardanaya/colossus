@@ -99,19 +99,6 @@ function updateContextsUI() {
   functionCallsContainer.innerHTML = contextsHtml + functionCallsContainer.innerHTML;
 }
 
-async function handleContextSelect(filename) {
-  try {
-    await fetch("/select-context", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ filename }),
-    });
-  } catch (error) {
-    console.error("Failed to select context:", error);
-  }
-}
 
 async function init() {
   setConnectingState(true);
@@ -331,10 +318,6 @@ function updateCaptionUI() {
 async function handleFunctionCall(name, args) {
   let response;
 
-  // Set the context before making the function call
-  if (args.context) {
-    await handleContextSelect(args.context);
-  }
 
   if (dataChannel) {
     dataChannel.send(

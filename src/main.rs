@@ -52,7 +52,6 @@ struct SessionRequest {
 }
 
 struct AppStateWithDir {
-    current_context: Mutex<Option<Context>>,
     project_dir: String,
     model: String,
     preferred_language: String,
@@ -241,7 +240,6 @@ async fn main() {
     // Initialize global state
     let state_with_dir = Arc::new(AppStateWithDir {
         preferred_language: args.preferred_language.clone(),
-        current_context: Mutex::new(None),
         project_dir: args.project_dir.clone(),
         model: args.model.clone(),
         instructions: args.instructions.clone(),
@@ -261,7 +259,6 @@ async fn main() {
         )
         .route("/api/sessions", post(create_session))
         .route("/contexts", get(move || get_contexts(project_dir.clone())))
-        .route("/select-context", post(handle_context_selection))
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
         .with_state(state_with_dir);
@@ -300,18 +297,6 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn handle_context_selection(
-    State(state_with_dir): State<Arc<AppStateWithDir>>,
-    Json(payload): Json<ContextSelection>,
-) -> StatusCode {
-    let mut current_context = state_with_dir.current_context.lock().unwrap();
-    *current_context = Some(Context {
-        filename: payload.filename.clone(),
-        content: String::new(), // You might want to load the content here
-    });
-    println!("Context selected: {}", payload.filename);
-    StatusCode::OK
-}
 
 async fn handle_change_code(
     State(state_with_dir): State<Arc<AppStateWithDir>>,
@@ -368,13 +353,7 @@ async fn handle_question(
     State(state_with_dir): State<Arc<AppStateWithDir>>,
     Json(payload): Json<QuestionRequest>,
 ) -> Json<String> {
-    let current_context = state_with_dir.current_context.lock().unwrap();
     let project_dir = &state_with_dir.project_dir;
-    let context_file = if let Some(context) = &*current_context {
-        &context.filename
-    } else {
-        ""
-    };
 
     let mut cmd = Command::new("aider");
     cmd.current_dir(project_dir)
