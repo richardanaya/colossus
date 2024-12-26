@@ -39,11 +39,14 @@ USAGE:
     colossus [OPTIONS]
 
 OPTIONS:
-    -p, --port <PORT>       Port number to run the server on [default: 49999]
-    -m, --model <MODEL>     OpenAI model name to use [default: gpt-4o-mini-realtime-preview-2024-12-17]
-    -d, --project-dir <DIR> Directory AI will operate aider on [default: "./"]
-    -h, --help             Print help information
-    -V, --version          Print version information
+    -d, --project-dir <DIR>         Directory to serve project files from [default: "./"]
+    -p, --port <PORT>               Port number to run the server on [default: 49999]
+    -m, --model <MODEL>             OpenAI model name to use [default: gpt-4o-mini-realtime-preview-2024-12-17]
+    -l, --preferred-language <LANG> Preferred language for communication [default: english]
+    -i, --instructions <TEXT>       Custom instructions for the AI assistant
+    -v, --voice <VOICE>            Voice to use for speech [default: ash]
+    -h, --help                     Print help information
+    -V, --version                  Print version information
 ```
 
 Example with custom settings:
