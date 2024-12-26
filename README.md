@@ -6,15 +6,20 @@
 
 **Aider + OpenAI Advanced Voice Model = Perfect Coding Companion**
 
+Fair warning: this is very hot of the presses. I'm still working on a ideal workflow and actions you can do and nice sounding prompts, but it does work!
+
 Colossus is a powerful real-time voice assistant designed to streamline your development workflow by providing voice-controlled integration with [`aider`](https://aider.chat/), an AI pair programming tool.
 
 Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pricing/). Make sure that's compatible with your budget. **Please note that with your credits at tier 1 levels, you will be limited to a number of requests PER DAY. I had to spend $50 credits to no longer be capped on per day limitations.**
 
+<img width="1513" alt="Screenshot 2024-12-25 at 11 53 49 PM" src="https://github.com/user-attachments/assets/802e4007-40fe-453b-aeab-cf8459c87464" />
+
+
 ## Features
 
-- **Intelligent Code Analysis**: Ask questions about your codebase and receive immediate responses
+- **Intelligent Code Analysis**: Ask questions about your codebase 
 - **Code Modification**: Make changes to your codebase through voice commands
-- **Context Switching**: Seamlessly switch between different parts of your project
+- **Context Switching**: Seamlessly switch between different parts of your project by using dynamic `/load` of context files based on the conversation
 
 ## Installation
 
@@ -89,7 +94,7 @@ Example:
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+This is all incredibly new, but feel free to drop suggestions!
 
 ## License
 
