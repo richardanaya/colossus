@@ -1,4 +1,3 @@
-use colored::*;
 use axum::{
     extract::State,
     http::StatusCode,
@@ -7,6 +6,7 @@ use axum::{
     Router,
 };
 use clap::Parser;
+use colored::*;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -205,7 +205,7 @@ fn check_requirements(project_dir: &str) -> Result<(), String> {
 
     // Check for OPENAI_API_KEY
     if std::env::var("OPENAI_API_KEY").is_err() {
-        return Err("OPENAI_API_KEY environment variable is not set.".to_string());
+        return Err("OPENAI_API_KEY environment variable is not set. Put it in your environment variables or a .env file.".to_string());
     }
 
     Ok(())
@@ -216,7 +216,7 @@ async fn main() {
     dotenv().ok();
 
     let args = Args::parse();
-    
+
     // Check requirements before starting
     if let Err(error) = check_requirements(&args.project_dir) {
         eprintln!("{}", error.bright_red());
@@ -257,10 +257,22 @@ async fn main() {
     println!("{}", "  /_____/|  |\\_____\\  ".bright_cyan());
     println!("{}", " /_____/ |__| \\_____\\ ".bright_cyan());
     println!("{}", "/______/_|__|_\\______\\".bright_cyan());
-    println!("\n{} {}", "Colossus Server:".bright_green(), format!("http://localhost:{}", args.port).yellow());
-    println!("{} {}", "Language:".bright_green(), args.preferred_language.yellow());
+    println!(
+        "\n{} {}",
+        "Colossus Server:".bright_green(),
+        format!("http://localhost:{}", args.port).yellow()
+    );
+    println!(
+        "{} {}",
+        "Language:".bright_green(),
+        args.preferred_language.yellow()
+    );
     println!("{} {}", "Model:".bright_green(), args.model.yellow());
-    println!("{} {}", "Project directory:".bright_green(), args.project_dir.yellow());
+    println!(
+        "{} {}",
+        "Project directory:".bright_green(),
+        args.project_dir.yellow()
+    );
     println!("{} {}", "Voice:".bright_green(), args.voice.yellow());
 
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
