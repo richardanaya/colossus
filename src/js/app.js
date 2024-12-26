@@ -112,6 +112,29 @@ async function handleSendMessage() {
   updateUI();
 }
 
+async function requestVoiceCommentary(message) {
+  dataChannel.send(
+    JSON.stringify({
+      type: "conversation.item.create",
+      item: {
+        type: "message",
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: message,
+          },
+        ],
+      },
+    })
+  );
+  dataChannel.send(
+    JSON.stringify({
+      type: "response.create",
+    })
+  );
+}
+
 async function init() {
   isConnecting = true;
   updateUI();
@@ -135,6 +158,9 @@ async function init() {
     // Configure initial session and set up data channel
     dataChannel = pc.createDataChannel("oai-events");
     dataChannel.addEventListener("open", async () => {
+      requestVoiceCommentary(
+        "Introduce yourself as Colossus and ask the user how they can help them with their codebase."
+      );
       isConnecting = false;
       isConnected = true;
       updateUI();
@@ -329,29 +355,6 @@ textInputArea.addEventListener("keydown", (e) => {
     handleSendMessage();
   }
 });
-
-async function requestVoiceCommentary(message) {
-  dataChannel.send(
-    JSON.stringify({
-      type: "conversation.item.create",
-      item: {
-        type: "message",
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: message,
-          },
-        ],
-      },
-    })
-  );
-  dataChannel.send(
-    JSON.stringify({
-      type: "response.create",
-    })
-  );
-}
 
 async function handleFunctionCall(call) {
   try {
