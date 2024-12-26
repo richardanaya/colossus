@@ -12,6 +12,9 @@ Colossus is a powerful real-time voice assistant designed to streamline your dev
 
 Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pricing/). Make sure that's compatible with your budget. **Please note that with your credits at tier 1 levels, you will be limited to a number of requests PER DAY. I had to spend $50 credits to no longer be capped on per day limitations.**
 
+<img width="1513" alt="Screenshot 2024-12-25 at 11 53 49 PM" src="https://github.com/user-attachments/assets/802e4007-40fe-453b-aeab-cf8459c87464" />
+
+
 ## Features
 
 - **Intelligent Code Analysis**: Ask questions about your codebase and receive immediate responses
