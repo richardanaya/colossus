@@ -80,6 +80,9 @@ function updateUI() {
     `
     )
     .join("");
+  
+  // Scroll to bottom of function calls
+  functionCallsContainer.scrollTop = functionCallsContainer.scrollHeight;
 }
 
 async function handleSendMessage() {
