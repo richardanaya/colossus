@@ -64,12 +64,7 @@ async function createSession() {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      model: "",  // Will be set by the backend
-      voice: "ash",
-      instructions:
-        "You're name is COLOSSUS. You are a lighthearted, and serious AI that takes code seriously, but you have some wit.  Avoid saying anything that sounds like raw code or json. You are a helpful assistant working with a user to understand and modify a codebase. You can help answer questions about the codebase and make changes to the codebase. You talk very quickly and concisely so I don't have to hear alot of words.  Any time i'm talking about wanting to change something, it's almost always likely a change to the codebase.  Almost any time i'm asking a question, it's usually about the codebase.",
-    }),
+    body: JSON.stringify({}),
   });
   return response.json();
 }
