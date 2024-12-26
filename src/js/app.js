@@ -185,7 +185,7 @@ async function init() {
             tool_choice: "auto",
           },
         };
-        dc.send(JSON.stringify(functionConfig));
+        dataChannel.send(JSON.stringify(functionConfig));
       });
 
         // Add local audio track for microphone input
