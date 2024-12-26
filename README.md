@@ -16,7 +16,7 @@ Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pric
 
 - **Intelligent Code Analysis**: Ask questions about your codebase and receive immediate responses
 - **Code Modification**: Make changes to your codebase through voice commands
-- **Context Switching**: Seamlessly switch between different parts of your project
+- **Context Switching**: Seamlessly switch between different parts of your project by using dynamic `/load` of context files based on the conversation
 
 ## Installation
 
