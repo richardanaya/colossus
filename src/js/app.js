@@ -200,6 +200,22 @@ async function init() {
             },
             {
               type: "function",
+              name: "toggle_microphone",
+              description: "Toggle the microphone mute state",
+              parameters: {
+                type: "object",
+                properties: {
+                  action: {
+                    type: "string",
+                    enum: ["mute", "unmute"],
+                    description: "Whether to mute or unmute the microphone",
+                  }
+                },
+                required: ["action"],
+              },
+            },
+            {
+              type: "function",
               name: "ask_question",
               description: "Ask a question about the codebase",
               parameters: {
@@ -378,6 +394,20 @@ async function handleFunctionCall(call) {
           }),
         });
         break;
+
+      case "toggle_microphone":
+        if (audioTrack) {
+          if (args.action === "mute" && !isMuted) {
+            isMuted = true;
+            audioTrack.enabled = false;
+          } else if (args.action === "unmute" && isMuted) {
+            isMuted = false;
+            audioTrack.enabled = true;
+          }
+          updateUI();
+          return;
+        }
+        throw new Error("No microphone available");
 
       case "ask_question":
         response = await fetch("/ask-question", {
