@@ -196,11 +196,32 @@ struct Args {
     voice: String,
 }
 
+fn check_requirements(project_dir: &str) -> Result<(), String> {
+    // Check for .git directory
+    let git_dir = std::path::Path::new(project_dir).join(".git");
+    if !git_dir.exists() {
+        return Err("No .git directory found. Please run this from a git repository.".to_string());
+    }
+
+    // Check for OPENAI_API_KEY
+    if std::env::var("OPENAI_API_KEY").is_err() {
+        return Err("OPENAI_API_KEY environment variable is not set.".to_string());
+    }
+
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
     dotenv().ok();
 
     let args = Args::parse();
+    
+    // Check requirements before starting
+    if let Err(error) = check_requirements(&args.project_dir) {
+        eprintln!("{}", error.bright_red());
+        std::process::exit(1);
+    }
 
     // Initialize global state
     let state_with_dir = Arc::new(AppStateWithDir {
