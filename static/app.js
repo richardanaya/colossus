@@ -92,7 +92,7 @@ function updateContextsUI() {
     <button 
       onclick="handleContextSelect('${context.filename}')"
       class="glass-card" 
-      style="width: 100%; text-align: left; margin-bottom: 0.5rem; background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-weight: 500;">
+      style="text-align: left; padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-weight: 500; flex: 0 1 auto;">
       ${context.filename}
     </button>
   `

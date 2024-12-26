@@ -4,7 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
       .glass-card {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
@@ -96,14 +100,6 @@
             height: calc(100vh - 16rem);
           "
         >
-          <!-- Contexts Panel -->
-          <div class="overlay-panel" style="width: 33%; overflow: hidden; display: flex; flex-direction: column;">
-            <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem">
-              Contexts
-            </h3>
-            <div id="contextsList" style="margin-bottom: 2rem"></div>
-          </div>
-
           <!-- Function Calls Panel -->
           <div class="overlay-panel" style="width: 33%; overflow: hidden; display: flex; flex-direction: column;">
             <h3
@@ -142,6 +138,14 @@
               <button id="sendButton">Send</button>
             </div>
           </div>
+        </div>
+
+        <!-- Contexts Panel (Bottom) -->
+        <div class="overlay-panel" style="margin-top: 2rem;">
+          <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem">
+            Contexts
+          </h3>
+          <div id="contextsList" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
         </div>
       </div>
     </main>
