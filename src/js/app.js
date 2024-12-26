@@ -1,75 +1,115 @@
-"use client";
+let isConnecting = false;
+let isConnected = false;
+let caption = "";
+let messages = [];
+let functionCalls = [];
+let textInput = "";
+let dataChannel = null;
+let pc = null;
+let isMuted = false;
+let audioTrack = null;
 
-import { createSession } from "./actions/session";
-import { useState } from "react";
+// DOM Elements
+const connectButton = document.getElementById('connectButton');
+const muteButton = document.getElementById('muteButton');
+const textInputArea = document.getElementById('textInput');
+const sendButton = document.getElementById('sendButton');
+const messagesContainer = document.getElementById('messages');
+const functionCallsContainer = document.getElementById('functionCalls');
+const captionElement = document.getElementById('caption');
 
-export default function Home() {
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-  const [caption, setCaption] = useState("");
-  const [messages, setMessages] = useState<Array<{ type: 'assistant' | 'user', content: string }>>([]);
-  const [functionCalls, setFunctionCalls] = useState<
-    Array<{ name: string; args: string }>
-  >([]);
-  const [textInput, setTextInput] = useState("");
-  const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
+function updateUI() {
+    // Update connect button
+    connectButton.textContent = isConnecting ? "Connecting..." : (isConnected ? "Connected" : "Start Session");
+    connectButton.disabled = isConnecting;
 
-  const handleSendMessage = async () => {
-    if (!textInput.trim()) return;
+    // Update mute button
+    muteButton.style.display = audioTrack ? 'block' : 'none';
+    muteButton.textContent = isMuted ? "Unmute" : "Mute";
+    muteButton.disabled = !audioTrack;
 
-    if (dataChannel) {
-      console.log("Sending message to OpenAI:", textInput);
-      dataChannel.send(
-        JSON.stringify({
-          type: "conversation.item.create",
-          item: {
-            type: "message",
-            role: "user",
-            content: [
-              {
-                type: "input_text",
-                text: textInput,
-              },
-            ],
-          },
-        })
-      );
-      dataChannel.send(
-        JSON.stringify({
-          type: "response.create",
-        })
-      );
-      setMessages(prev => [...prev, { type: 'user', content: textInput }]);
-      setTextInput("");
+    // Update messages
+    messagesContainer.innerHTML = messages.map(message => `
+        <div class="glass-card" style="margin-bottom: 1rem; ${message.type === 'user' ? 'margin-left: auto;' : 'margin-right: auto;'} max-width: 80%;">
+            <p>${message.content}</p>
+        </div>
+    `).join('');
+
+    // Update caption
+    if (caption) {
+        captionElement.style.display = 'block';
+        captionElement.textContent = caption;
+    } else {
+        captionElement.style.display = 'none';
     }
-  };
-  const [pc, setPc] = useState<RTCPeerConnection | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
-  const [audioTrack, setAudioTrack] = useState<MediaStreamTrack | null>(null);
 
-  async function init() {
-    setIsConnecting(true);
+    // Update function calls
+    functionCallsContainer.innerHTML = functionCalls.map(call => `
+        <div class="glass-card">
+            <span class="function-name">${call.name}</span>
+            <pre class="function-args">${call.args}</pre>
+        </div>
+    `).join('');
+}
+
+async function handleSendMessage() {
+    const text = textInputArea.value.trim();
+    if (!text || !dataChannel) return;
+
+    console.log("Sending message to OpenAI:", text);
+    dataChannel.send(
+        JSON.stringify({
+            type: "conversation.item.create",
+            item: {
+                type: "message",
+                role: "user",
+                content: [
+                    {
+                        type: "input_text",
+                        text: text,
+                    },
+                ],
+            },
+        })
+    );
+    dataChannel.send(
+        JSON.stringify({
+            type: "response.create",
+        })
+    );
+    
+    messages.push({ type: 'user', content: text });
+    textInputArea.value = "";
+    updateUI();
+}
+
+async function init() {
+    isConnecting = true;
+    updateUI();
+    
     try {
-      // Get session data from our server action
-      const data = await createSession();
-      const EPHEMERAL_KEY = data.client_secret.value;
+        // Get session data from our server
+        const response = await fetch('/api/sessions', {
+            method: 'POST'
+        });
+        const data = await response.json();
+        const EPHEMERAL_KEY = data.client_secret.value;
 
-      // Create a peer connection
-      const newPc = new RTCPeerConnection();
-      setPc(newPc);
+        // Create a peer connection
+        pc = new RTCPeerConnection();
 
-      // Set up to play remote audio from the model
-      const audioEl = document.createElement("audio");
-      audioEl.autoplay = true;
-      newPc.ontrack = (e) => (audioEl.srcObject = e.streams[0]);
+        // Set up to play remote audio from the model
+        const audioEl = document.createElement("audio");
+        audioEl.autoplay = true;
+        pc.ontrack = (e) => (audioEl.srcObject = e.streams[0]);
 
-      // Configure initial session with onyx voice and set up data channel
-      const dc = newPc.createDataChannel("oai-events");
-      setDataChannel(dc);
-      dc.addEventListener("open", () => {
-        setIsConnecting(false); // Connection is no longer connecting
-        setIsConnected(true); // Connection is now established
-        console.log("Connected to OpenAI Realtime API");
+        // Configure initial session and set up data channel
+        dataChannel = pc.createDataChannel("oai-events");
+        dataChannel.addEventListener("open", () => {
+            isConnecting = false;
+            isConnected = true;
+            updateUI();
+            console.log("Connected to OpenAI Realtime API");
 
         // Configure function calls after connection
         const functionConfig = {
@@ -148,176 +188,98 @@ export default function Home() {
         dc.send(JSON.stringify(functionConfig));
       });
 
-      // Add local audio track for microphone input in the browser
-      const ms = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-      const track = ms.getTracks()[0];
-      setAudioTrack(track);
-      newPc.addTrack(track);
-      dc.addEventListener("message", (e) => {
-        const event = JSON.parse(e.data);
+        // Add local audio track for microphone input
+        const ms = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+        });
+        audioTrack = ms.getTracks()[0];
+        pc.addTrack(audioTrack);
+        updateUI();
 
-        // Log all incoming messages
-        console.log("Received from OpenAI:", event);
+        dataChannel.addEventListener("message", (e) => {
+            const event = JSON.parse(e.data);
 
-        // Log partial function call arguments
-        if (event.type === "response.function_call_arguments.delta") {
-          console.log("Partial function call:", event.delta);
-        } else if (
-          event.type === "response.done" &&
-          event.response.output?.[0]?.type === "function_call"
-        ) {
-          const call = event.response.output[0];
-          setFunctionCalls((prev) => [
-            ...prev,
-            {
-              name: call.name,
-              args: call.arguments,
-            },
-          ]);
-        }
+            // Log all incoming messages
+            console.log("Received from OpenAI:", event);
 
-        // Handle audio transcript events
-        if (event.type === "response.audio_transcript.delta") {
-          // Update caption and add to messages
-          setCaption(event.delta);
-          setMessages(prev => {
-            const lastMessage = prev[prev.length - 1];
-            if (lastMessage?.type === 'assistant') {
-              return [...prev.slice(0, -1), { type: 'assistant', content: lastMessage.content + event.delta }];
-            } else {
-              return [...prev, { type: 'assistant', content: event.delta }];
+            // Handle function calls
+            if (event.type === "response.function_call_arguments.delta") {
+                console.log("Partial function call:", event.delta);
+            } else if (
+                event.type === "response.done" &&
+                event.response.output?.[0]?.type === "function_call"
+            ) {
+                const call = event.response.output[0];
+                functionCalls.push({
+                    name: call.name,
+                    args: call.arguments,
+                });
+                updateUI();
             }
-          });
-        } else if (event.type === "response.done") {
-          setCaption("");
-        }
-      });
 
-      // Start the session using the Session Description Protocol (SDP)
-      const offer = await newPc.createOffer();
-      await newPc.setLocalDescription(offer);
-
-      const baseUrl = "https://api.openai.com/v1/realtime";
-      const model = "gpt-4o-realtime-preview-2024-12-17";
-      const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
-        method: "POST",
-        body: offer.sdp,
-        headers: {
-          Authorization: `Bearer ${EPHEMERAL_KEY}`,
-          "Content-Type": "application/sdp",
-        },
-      });
-
-      const answer = {
-        type: "answer",
-        sdp: await sdpResponse.text(),
-      };
-      await newPc.setRemoteDescription(answer);
-    } catch (error) {
-      console.error("Failed to initialize:", error);
-    } finally {
-      setIsConnecting(false);
-    }
-  }
-
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-8 relative">
-      <div className="w-full max-w-7xl mx-auto flex flex-col gap-8">
-        {/* Header */}
-        <header className="w-full flex justify-between items-center glass-card rounded-xl p-6">
-          <h1 className="text-2xl font-bold">AI Assistant</h1>
-          <div className="flex gap-4">
-            <button
-              onClick={init}
-              disabled={isConnecting}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition-colors duration-200 font-medium"
-            >
-              {isConnecting
-                ? "Connecting..."
-                : isConnected
-                ? "Connected"
-                : "Start Session"}
-            </button>
-            <button
-              onClick={() => {
-                if (audioTrack) {
-                  const newMutedState = !isMuted;
-                  audioTrack.enabled = !newMutedState;
-                  setIsMuted(newMutedState);
+            // Handle audio transcript events
+            if (event.type === "response.audio_transcript.delta") {
+                caption = event.delta;
+                const lastMessage = messages[messages.length - 1];
+                if (lastMessage?.type === 'assistant') {
+                    lastMessage.content += event.delta;
+                } else {
+                    messages.push({ type: 'assistant', content: event.delta });
                 }
-              }}
-              disabled={!audioTrack}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition-colors duration-200 font-medium"
-            >
-              {isMuted ? "Unmute" : "Mute"}
-            </button>
-          </div>
-        </header>
+                updateUI();
+            } else if (event.type === "response.done") {
+                caption = "";
+                updateUI();
+            }
+        });
 
-        {/* Main Content Area */}
-        <div className="flex gap-8 h-[calc(100vh-16rem)]">
-          {/* Function Calls Panel */}
-          <div className="w-1/3 overlay-panel rounded-xl p-6 overflow-hidden flex flex-col">
-            <h3 className="text-xl font-bold mb-4">Function Calls</h3>
-            <div className="overflow-y-auto flex-1">
-              {functionCalls.map((call, i) => (
-                <div key={i} className="mb-4 glass-card rounded-lg p-4">
-                  <span className="font-mono text-blue-600 dark:text-blue-400">
-                    {call.name}
-                  </span>
-                  <pre className="text-sm text-gray-600 dark:text-gray-300 mt-2 whitespace-pre-wrap">
-                    {call.args}
-                  </pre>
-                </div>
-              ))}
-            </div>
-          </div>
+        // Start the session using the Session Description Protocol (SDP)
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
 
-          {/* Text Input Panel */}
-          <div className="w-2/3 overlay-panel rounded-xl p-6 flex flex-col">
-            <h3 className="text-xl font-bold mb-4">Chat</h3>
-            <div className="flex-1 overflow-y-auto mb-4">
-              {messages.map((message, index) => (
-                <div key={index} className={`glass-card rounded-lg p-4 mb-4 ${
-                  message.type === 'user' ? 'ml-auto max-w-[80%]' : 'mr-auto max-w-[80%]'
-                }`}>
-                  <p className="text-lg">{message.content}</p>
-                </div>
-              ))}
-              {caption && (
-                <div className="glass-card rounded-lg p-4 mb-4 mr-auto max-w-[80%] opacity-50">
-                  <p className="text-lg">{caption}</p>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
-                <textarea
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                  className="flex-1 p-4 rounded-lg bg-black/5 dark:bg-white/10 text-foreground placeholder-gray-500 resize-none"
-                  placeholder="Type your message here... (Press Enter to send)"
-                  rows={3}
-                />
-                <button
-                  onClick={handleSendMessage}
-                  className="px-6 py-2 h-fit bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium"
-                >
-                  Send
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+        const baseUrl = "https://api.openai.com/v1/realtime";
+        const model = "gpt-4o-realtime-preview-2024-12-17";
+        const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
+            method: "POST",
+            body: offer.sdp,
+            headers: {
+                Authorization: `Bearer ${EPHEMERAL_KEY}`,
+                "Content-Type": "application/sdp",
+            },
+        });
+
+        const answer = {
+            type: "answer",
+            sdp: await sdpResponse.text(),
+        };
+        await pc.setRemoteDescription(answer);
+    } catch (error) {
+        console.error("Failed to initialize:", error);
+    } finally {
+        isConnecting = false;
+        updateUI();
+    }
 }
+
+// Event Listeners
+connectButton.addEventListener('click', init);
+
+muteButton.addEventListener('click', () => {
+    if (audioTrack) {
+        isMuted = !isMuted;
+        audioTrack.enabled = !isMuted;
+        updateUI();
+    }
+});
+
+sendButton.addEventListener('click', handleSendMessage);
+
+textInputArea.addEventListener('keydown', (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+    }
+});
+
+// Initial UI update
+updateUI();
