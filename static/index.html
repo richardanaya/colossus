@@ -8,6 +8,23 @@
     <style>
       body {
         font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      @media (max-width: 768px) {
+        .layout-desktop {
+          flex-direction: column !important;
+        }
+        .panel-desktop {
+          width: 100% !important;
+        }
+        main {
+          padding: 1rem !important;
+        }
+        .glass-card {
+          padding: 0.75rem !important;
+        }
       }
       .glass-card {
         background: rgba(255, 255, 255, 0.1);
@@ -93,6 +110,7 @@
 
         <!-- Main Content Area -->
         <div
+          class="layout-desktop"
           style="
             display: flex;
             gap: 2rem;
@@ -101,7 +119,7 @@
           "
         >
           <!-- Function Calls Panel -->
-          <div class="overlay-panel" style="width: 33%; overflow: hidden; display: flex; flex-direction: column;">
+          <div class="overlay-panel panel-desktop" style="width: 33%; overflow: hidden; display: flex; flex-direction: column;">
             <h3
               style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem"
             >
@@ -112,7 +130,7 @@
 
           <!-- Chat Panel -->
           <div
-            class="overlay-panel"
+            class="overlay-panel panel-desktop"
             style="width: 67%; display: flex; flex-direction: column"
           >
             <h3
@@ -129,8 +147,9 @@
               class="glass-card"
               style="display: none; opacity: 0.5; margin-bottom: 1rem"
             ></div>
-            <div style="display: flex; gap: 1rem">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap">
               <textarea
+                style="flex: 1; min-width: 200px;"
                 id="textInput"
                 placeholder="Type your message here... (Press Enter to send)"
                 rows="3"
