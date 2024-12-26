@@ -1,6 +1,5 @@
 let isConnecting = false;
 let isConnected = false;
-let caption = "";
 let messages = [];
 let functionCalls = [];
 let textInput = "";
@@ -21,7 +20,6 @@ const textInputArea = document.getElementById("textInput");
 const sendButton = document.getElementById("sendButton");
 const messagesContainer = document.getElementById("messages");
 const functionCallsContainer = document.getElementById("functionCalls");
-const captionElement = document.getElementById("caption");
 let contexts = [];
 
 async function fetchContexts() {
@@ -60,14 +58,6 @@ function updateUI() {
     `
     )
     .join("");
-
-  // Update caption
-  if (caption) {
-    captionElement.style.display = "block";
-    captionElement.textContent = caption;
-  } else {
-    captionElement.style.display = "none";
-  }
 
   // Update function calls
   functionCallsContainer.innerHTML = functionCalls
@@ -271,20 +261,18 @@ async function init() {
       }
 
       // Handle audio transcript events
-      if (event.type === "response.audio_transcript.delta") {
-        // Only update the caption for real-time display
-        caption = event.delta;
-        updateUI();
-      } else if (event.type === "response.output_item.done") {
+      if (event.type === "response.output_item.done") {
         // Add completed output item transcript to messages
-        if (event.item?.content?.[0]?.type === 'audio' && event.item.content[0].transcript) {
-          messages.push({ type: "assistant", content: event.item.content[0].transcript });
-          caption = "";
+        if (
+          event.item?.content?.[0]?.type === "audio" &&
+          event.item.content[0].transcript
+        ) {
+          messages.push({
+            type: "assistant",
+            content: event.item.content[0].transcript,
+          });
           updateUI();
         }
-      } else if (event.type === "response.done") {
-        caption = "";
-        updateUI();
       }
     });
 
