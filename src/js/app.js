@@ -71,8 +71,9 @@ function updateUI() {
     )
     .join("");
 
-  // Scroll to bottom of function calls
+  // Scroll to bottom of function calls and messages
   functionCallsContainer.scrollTop = functionCallsContainer.scrollHeight;
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 async function handleSendMessage() {
