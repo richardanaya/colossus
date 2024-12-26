@@ -32,6 +32,11 @@ async function fetchContexts() {
   }
 }
 
+function rawTextToHTML(text) {
+  let test = text.replace(/(?:\r\n|\r|\n)/g, "<br>");
+  return test;
+}
+
 function updateUI() {
   // Update connect button
   connectButton.textContent = isConnecting
@@ -53,7 +58,7 @@ function updateUI() {
         <div class="glass-card" style="margin-bottom: 1rem; ${
           message.type === "user" ? "margin-left: auto;" : "margin-right: auto;"
         } max-width: 80%;">
-            <pre>${message.content}</pre>
+            ${rawTextToHTML(message.content)}
         </div>
     `
     )
