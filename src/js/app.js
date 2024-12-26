@@ -305,20 +305,26 @@ function handleMessage(e) {
 }
 
 function updateMessagesUI() {
-  messagesContainer.innerHTML = messages
-    .map(
-      (message, index) => `
-        <div class="glass-card rounded-lg p-4 mb-4 ${
-          message.type === "user" ? "ml-auto" : "mr-auto"
-        }" style="max-width: 80%">
-            <p class="text-lg" style="white-space: pre-wrap;" >${
-              message.content
-            }</p>
-        </div>
-    `
-    )
-    .join("");
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  // Add a wrapper div for better scroll containment
+  messagesContainer.innerHTML = `
+    <div class="messages-wrapper" style="height: calc(70vh - 100px); overflow-y: auto; padding: 1rem;">
+      ${messages
+        .map(
+          (message, index) => `
+          <div class="glass-card rounded-lg p-4 mb-4 ${
+            message.type === "user" ? "ml-auto" : "mr-auto"
+          }" style="max-width: 80%">
+              <p class="text-lg" style="white-space: pre-wrap;">${
+                message.content
+              }</p>
+          </div>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+  const wrapper = messagesContainer.querySelector('.messages-wrapper');
+  wrapper.scrollTop = wrapper.scrollHeight;
 }
 
 function updateCaptionUI() {
@@ -439,20 +445,26 @@ async function handleFunctionCall(name, args) {
 }
 
 function updateFunctionCallsUI() {
-  functionCallsContainer.innerHTML = functionCalls
-    .map(
-      (call, i) => `
-        <div class="glass-card rounded-lg p-4 mb-4">
-            <span class="function-name">${call.name}</span>
-            <pre class="function-args">${JSON.stringify(
-              call.args,
-              null,
-              2
-            )}</pre>
-        </div>
-    `
-    )
-    .join("");
+  functionCallsContainer.innerHTML = `
+    <div class="function-calls-wrapper" style="height: calc(30vh - 100px); overflow-y: auto; padding: 1rem;">
+      ${functionCalls
+        .map(
+          (call, i) => `
+          <div class="glass-card rounded-lg p-4 mb-4">
+              <span class="function-name">${call.name}</span>
+              <pre class="function-args">${JSON.stringify(
+                call.args,
+                null,
+                2
+              )}</pre>
+          </div>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+  const wrapper = functionCallsContainer.querySelector('.function-calls-wrapper');
+  wrapper.scrollTop = wrapper.scrollHeight;
 }
 
 function stopVolumeMeter() {
