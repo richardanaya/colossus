@@ -11,8 +11,8 @@ let audioTrack = null;
 let audioContext = null;
 let analyser = null;
 let dataArray = null;
-let volumeMeterCanvas = document.getElementById('volumeMeter');
-let volumeMeterCtx = volumeMeterCanvas.getContext('2d');
+let volumeMeterCanvas = document.getElementById("volumeMeter");
+let volumeMeterCtx = volumeMeterCanvas.getContext("2d");
 
 // DOM Elements
 const connectButton = document.getElementById("connectButton");
@@ -55,7 +55,7 @@ function updateUI() {
         <div class="glass-card" style="margin-bottom: 1rem; ${
           message.type === "user" ? "margin-left: auto;" : "margin-right: auto;"
         } max-width: 80%;">
-            <p>${message.content}</p>
+            <pre>${message.content}</pre>
         </div>
     `
     )
@@ -80,7 +80,7 @@ function updateUI() {
     `
     )
     .join("");
-  
+
   // Scroll to bottom of function calls
   functionCallsContainer.scrollTop = functionCallsContainer.scrollHeight;
 }
@@ -211,7 +211,7 @@ async function init() {
     });
     audioTrack = ms.getTracks()[0];
     pc.addTrack(audioTrack);
-    
+
     // Set up audio analysis
     audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(ms);
@@ -219,23 +219,33 @@ async function init() {
     analyser.fftSize = 256;
     source.connect(analyser);
     dataArray = new Uint8Array(analyser.frequencyBinCount);
-    
+
     // Start volume meter animation
     function drawVolumeMeter() {
       if (!analyser) return;
-      
+
       analyser.getByteFrequencyData(dataArray);
       const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
       const volume = average / 256; // Normalize to 0-1
-      
-      volumeMeterCtx.clearRect(0, 0, volumeMeterCanvas.width, volumeMeterCanvas.height);
-      volumeMeterCtx.fillStyle = isMuted ? '#9ca3af' : '#3b82f6';
-      volumeMeterCtx.fillRect(0, 0, volumeMeterCanvas.width * volume, volumeMeterCanvas.height);
-      
+
+      volumeMeterCtx.clearRect(
+        0,
+        0,
+        volumeMeterCanvas.width,
+        volumeMeterCanvas.height
+      );
+      volumeMeterCtx.fillStyle = isMuted ? "#9ca3af" : "#3b82f6";
+      volumeMeterCtx.fillRect(
+        0,
+        0,
+        volumeMeterCanvas.width * volume,
+        volumeMeterCanvas.height
+      );
+
       requestAnimationFrame(drawVolumeMeter);
     }
     drawVolumeMeter();
-    
+
     updateUI();
 
     dataChannel.addEventListener("message", (e) => {
@@ -324,40 +334,67 @@ textInputArea.addEventListener("keydown", (e) => {
   }
 });
 
+async function requestVoiceCommentary(message) {
+  dataChannel.send(
+    JSON.stringify({
+      type: "conversation.item.create",
+      item: {
+        type: "message",
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: message,
+          },
+        ],
+      },
+    })
+  );
+  dataChannel.send(
+    JSON.stringify({
+      type: "response.create",
+    })
+  );
+}
+
 async function handleFunctionCall(call) {
   try {
     const args = JSON.parse(call.arguments);
     let response;
 
+    requestVoiceCommentary(
+      "Could you vocally say that you are on my task, and it will take just a second"
+    );
+
     switch (call.name) {
-      case 'change_code':
-        response = await fetch('/change-code', {
-          method: 'POST',
+      case "change_code":
+        response = await fetch("/change-code", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             change: args.change,
-            context: args.context
-          })
+            context: args.context,
+          }),
         });
         break;
 
-      case 'ask_question':
-        response = await fetch('/ask-question', {
-          method: 'POST',
+      case "ask_question":
+        response = await fetch("/ask-question", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             question: args.question,
-            context: args.context
-          })
+            context: args.context,
+          }),
         });
         break;
 
       default:
-        console.warn('Unknown function call:', call.name);
+        console.warn("Unknown function call:", call.name);
         return;
     }
 
@@ -366,11 +403,20 @@ async function handleFunctionCall(call) {
     }
 
     const result = await response.json();
-    messages.push({ type: 'assistant', content: result });
+
+    requestVoiceCommentary(
+      "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
+        JSON.stringify(result)
+    );
+
+    messages.push({
+      type: "assistant",
+      content: result,
+    });
     updateUI();
   } catch (error) {
-    console.error('Error handling function call:', error);
-    messages.push({ type: 'assistant', content: `Error: ${error.message}` });
+    console.error("Error handling function call:", error);
+    messages.push({ type: "assistant", content: `Error: ${error.message}` });
     updateUI();
   }
 }
