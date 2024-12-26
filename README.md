@@ -6,6 +6,8 @@
 
 Colossus is a powerful real-time voice assistant designed to streamline your development workflow by providing voice-controlled integration with [`aider`](https://aider.chat/), an AI pair programming tool.
 
+Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pricing/). Make sure that's compatible with your budget.
+
 ## Features
 
 - **Intelligent Code Analysis**: Ask questions about your codebase and receive immediate responses
@@ -31,7 +33,9 @@ Colossus is a powerful real-time voice assistant designed to streamline your dev
 
 ## Quick Start
 
-1. Ensure you have a `.env` file in your project directory with an OPENAI_API_KEY (same directory where you run aider)
+TLDR: you should be able to run colossus anywhere you normally run aider as long as there is a .git repo and OPENAI_API_KEY
+
+1. Ensure you have a `.env` file in your project directory with an OPENAI_API_KEY (same directory where you run aider) or its in your environment variables
 2. Launch Colossus:
    ```bash
    colossus
