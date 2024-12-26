@@ -8,7 +8,7 @@
 
 Colossus is a powerful real-time voice assistant designed to streamline your development workflow by providing voice-controlled integration with [`aider`](https://aider.chat/), an AI pair programming tool.
 
-Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pricing/). Make sure that's compatible with your budget.
+Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pricing/). Make sure that's compatible with your budget. **Please note that with your credits at tier 1 levels, you will be limited to a number of requests PER DAY. I had to spend $50 credits to no longer be capped on per day limitations.**
 
 ## Features
 
