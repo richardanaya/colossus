@@ -53,6 +53,9 @@ struct AppStateWithDir {
     current_context: Mutex<Option<Context>>,
     project_dir: String,
     model: String,
+    preferred_language: String,
+    instructions: String,
+    voice: String,
 }
 
 async fn get_contexts(
@@ -103,6 +106,11 @@ async fn create_session(
     State(state): State<Arc<AppStateWithDir>>,
     Json(mut payload): Json<SessionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<ErrorResponse>)> {
+    payload.voice = state.voice.clone();
+    payload.instructions = format!(
+        "The preferred language is {}. {}",
+        state.preferred_language, state.instructions
+    );
     let api_key = std::env::var("OPENAI_API_KEY").map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -169,6 +177,22 @@ struct Args {
     /// OpenAI model name to use
     #[arg(short, long, default_value = "gpt-4o-mini-realtime-preview-2024-12-17")]
     model: String,
+
+    // Preferred language
+    #[arg(short = 'l', long, default_value = "english")]
+    preferred_language: String,
+
+    // instructions
+    #[arg(
+        short,
+        long,
+        default_value = "You're name is COLOSSUS. You are a lighthearted, and serious AI that takes code seriously, but you have some wit.  Avoid saying anything that sounds like raw code or json. You are a helpful assistant working with a user to understand and modify a codebase. You can help answer questions about the codebase and make changes to the codebase. You talk very quickly and concisely so I don't have to hear alot of words.  Any time i'm talking about wanting to change something, it's almost always likely a change to the codebase.  Almost any time i'm asking a question, it's usually about the codebase."
+    )]
+    instructions: String,
+
+    // voice
+    #[arg(short, long, default_value = "ash")]
+    voice: String,
 }
 
 #[tokio::main]
@@ -179,9 +203,12 @@ async fn main() {
 
     // Initialize global state
     let state_with_dir = Arc::new(AppStateWithDir {
+        preferred_language: args.preferred_language.clone(),
         current_context: Mutex::new(None),
         project_dir: args.project_dir.clone(),
         model: args.model.clone(),
+        instructions: args.instructions.clone(),
+        voice: args.voice.clone(),
     });
     let project_dir = args.project_dir.clone();
     let app = Router::new()
@@ -209,6 +236,11 @@ async fn main() {
     println!(" /_____/ |__| \\_____\\ ");
     println!("/______/_|__|_\\______\\");
     println!("\nColossus Server: http://localhost:{}", args.port);
+    println!("Language: {}", args.preferred_language);
+    println!("Model: {}", args.model);
+    println!("Project directory: {}", args.project_dir);
+    println!("Voice: {}", args.voice);
+
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
