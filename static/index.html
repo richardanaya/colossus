@@ -10,17 +10,37 @@
         font-family: 'Inter', sans-serif;
         margin: 0;
         padding: 0;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      main {
+        height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: 1rem;
+        gap: 1rem;
+        overflow: hidden;
+      }
+
+      .content-area {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1rem;
+        min-height: 0;
+      }
+
+      .scroll-container {
+        overflow-y: auto;
+        min-height: 0;
       }
 
       @media (max-width: 768px) {
-        .layout-desktop {
-          flex-direction: column !important;
-        }
-        .panel-desktop {
-          width: 100% !important;
+        .content-area {
+          grid-template-columns: 1fr;
         }
         main {
-          padding: 1rem !important;
+          padding: 0.5rem;
         }
         .glass-card {
           padding: 0.75rem !important;
@@ -87,8 +107,8 @@
     </style>
   </head>
   <body>
-    <main style="padding: 2rem">
-      <div style="max-width: 1200px; margin: 0 auto">
+    <main>
+      <div style="max-width: 1200px; margin: 0 auto; height: 100%;">
         <!-- Header -->
         <header
           class="glass-card"
@@ -109,17 +129,9 @@
         </header>
 
         <!-- Main Content Area -->
-        <div
-          class="layout-desktop"
-          style="
-            display: flex;
-            gap: 2rem;
-            margin-top: 2rem;
-            height: calc(100vh - 16rem);
-          "
-        >
+        <div class="content-area">
           <!-- Function Calls Panel -->
-          <div class="overlay-panel panel-desktop" style="width: 33%; overflow: hidden; display: flex; flex-direction: column;">
+          <div class="overlay-panel scroll-container">
             <h3
               style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem"
             >
@@ -129,19 +141,13 @@
           </div>
 
           <!-- Chat Panel -->
-          <div
-            class="overlay-panel panel-desktop"
-            style="width: 67%; display: flex; flex-direction: column"
-          >
+          <div class="overlay-panel" style="display: grid; grid-template-rows: auto 1fr auto auto;">
             <h3
               style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem"
             >
               Chat
             </h3>
-            <div
-              id="messages"
-              style="flex: 1; overflow-y: auto; margin-bottom: 1rem"
-            ></div>
+            <div id="messages" class="scroll-container" style="margin-bottom: 1rem"></div>
             <div
               id="caption"
               class="glass-card"
@@ -160,7 +166,7 @@
         </div>
 
         <!-- Contexts Panel (Bottom) -->
-        <div class="overlay-panel" style="margin-top: 2rem;">
+        <div class="overlay-panel">
           <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem">
             Contexts
           </h3>
