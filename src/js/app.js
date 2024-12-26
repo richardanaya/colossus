@@ -42,8 +42,8 @@ function updateUI() {
   connectButton.textContent = isConnecting
     ? "Connecting..."
     : isConnected
-      ? "Connected"
-      : "Start Session";
+    ? "Connected"
+    : "Start Session";
   connectButton.disabled = isConnecting;
 
   // Update mute button
@@ -60,7 +60,7 @@ function updateUI() {
         } max-width: 80%;">
             ${rawTextToHTML(message.content)}
         </div>
-    `,
+    `
     )
     .join("");
 
@@ -72,7 +72,7 @@ function updateUI() {
             <span class="function-name">${call.name}</span>
             <pre class="function-args">${call.args}</pre>
         </div>
-    `,
+    `
     )
     .join("");
 
@@ -99,12 +99,12 @@ async function handleSendMessage() {
           },
         ],
       },
-    }),
+    })
   );
   dataChannel.send(
     JSON.stringify({
       type: "response.create",
-    }),
+    })
   );
 
   messages.push({ type: "user", content: text });
@@ -126,12 +126,12 @@ async function requestVoiceCommentary(message) {
           },
         ],
       },
-    }),
+    })
   );
   dataChannel.send(
     JSON.stringify({
       type: "response.create",
-    }),
+    })
   );
 }
 
@@ -159,7 +159,7 @@ async function init() {
     dataChannel = pc.createDataChannel("oai-events");
     dataChannel.addEventListener("open", async () => {
       requestVoiceCommentary(
-        "Introduce yourself as Colossus and ask the user how they can help them with their codebase.",
+        "Introduce yourself as Colossus and ask the user how they can help them with their codebase."
       );
       isConnecting = false;
       isConnected = true;
@@ -232,20 +232,13 @@ async function init() {
             {
               type: "function",
               name: "web_search",
-              description: "Search the web for information using Perplexity AI",
+              description: "Search the web for information",
               parameters: {
                 type: "object",
                 properties: {
                   question: {
                     type: "string",
                     description: "The question to ask",
-                  },
-                  context: {
-                    type: "string",
-                    enum: contextEnum,
-                    description:
-                      "The context file to modify, choose one based on " +
-                      JSON.stringify(contextEnum),
                   },
                 },
                 required: ["question", "context"],
@@ -285,14 +278,14 @@ async function init() {
         0,
         0,
         volumeMeterCanvas.width,
-        volumeMeterCanvas.height,
+        volumeMeterCanvas.height
       );
       volumeMeterCtx.fillStyle = isMuted ? "#9ca3af" : "#3b82f6";
       volumeMeterCtx.fillRect(
         0,
         0,
         volumeMeterCanvas.width * volume,
-        volumeMeterCanvas.height,
+        volumeMeterCanvas.height
       );
 
       requestAnimationFrame(drawVolumeMeter);
@@ -395,7 +388,7 @@ async function handleFunctionCall(call) {
     switch (call.name) {
       case "change_code":
         requestVoiceCommentary(
-          "Could you vocally say that you'll make the change and it might take some time in some appropriate manner to your personality and the converesation.",
+          "Could you vocally say that you'll make the change and it might take some time in some appropriate manner to your personality and the converesation."
         );
         response = await fetch("/change-code", {
           method: "POST",
@@ -409,7 +402,7 @@ async function handleFunctionCall(call) {
         });
         requestVoiceCommentary(
           "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
-            JSON.stringify(await response.json()),
+            JSON.stringify(await response.json())
         );
         break;
 
@@ -423,7 +416,7 @@ async function handleFunctionCall(call) {
             audioTrack.enabled = true;
           }
           requestVoiceCommentary(
-            "Could you vocally say you muted the mic with some appropriate confirmation.",
+            "Could you vocally say you muted the mic with some appropriate confirmation."
           );
           updateUI();
           return;
@@ -432,7 +425,7 @@ async function handleFunctionCall(call) {
 
       case "ask_question":
         requestVoiceCommentary(
-          "Could you vocally say that you'll look up the question it might take some time in some appropriate manner to your personality and the converesation.",
+          "Could you vocally say that you'll look up the question it might take some time in some appropriate manner to your personality and the converesation."
         );
         response = await fetch("/ask-question", {
           method: "POST",
@@ -446,13 +439,13 @@ async function handleFunctionCall(call) {
         });
         requestVoiceCommentary(
           "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
-            JSON.stringify(await response.json()),
+            JSON.stringify(await response.json())
         );
         break;
 
       case "web_search":
         requestVoiceCommentary(
-          "I'll search the web for that information. Give me a moment.",
+          "I'll search the web for that information. Give me a moment."
         );
         response = await fetch("/web-search", {
           method: "POST",
@@ -465,7 +458,7 @@ async function handleFunctionCall(call) {
         });
         const searchResult = await response.json();
         requestVoiceCommentary(
-          "Here's what I found from searching the web: " + searchResult,
+          "Here's what I found from searching the web: " + searchResult
         );
         break;
 
