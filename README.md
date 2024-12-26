@@ -43,17 +43,13 @@ Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pric
 
 To use all features of Colossus, you'll need the following API keys:
 
-- **OpenAI API Key**: Required for real-time voice interactions and code analysis
+- **OpenAI API Key**: Required for real-time voice interactions and code analysis (based off [aider leader board](https://aider.chat/docs/leaderboards/) )
   - Get it from: https://platform.openai.com/api-keys
   - Set as: `OPENAI_API_KEY`
 
 - **Perplexity API Key**: Required for web search integration
   - Get it from: https://www.perplexity.ai/settings/api
   - Set as: `PERPLEXITY_API_KEY`
-
-- **Anthropic API Key**: Required for aider code modifications
-  - Get it from: https://console.anthropic.com/
-  - Set as: `ANTHROPIC_API_KEY`
 
 You can set these keys in your `.env` file or as environment variables.
 
