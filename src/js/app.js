@@ -209,7 +209,7 @@ async function init() {
                     type: "string",
                     enum: ["mute", "unmute"],
                     description: "Whether to mute or unmute the microphone",
-                  }
+                  },
                 },
                 required: ["action"],
               },
@@ -377,12 +377,11 @@ async function handleFunctionCall(call) {
     const args = JSON.parse(call.arguments);
     let response;
 
-    requestVoiceCommentary(
-      "Could you vocally say that you are on my task, and it will take just a second"
-    );
-
     switch (call.name) {
       case "change_code":
+        requestVoiceCommentary(
+          "Could you vocally say that you'll make the change and it might take some time in some appropriate manner to your personality and the converesation."
+        );
         response = await fetch("/change-code", {
           method: "POST",
           headers: {
@@ -393,6 +392,10 @@ async function handleFunctionCall(call) {
             context: args.context,
           }),
         });
+        requestVoiceCommentary(
+          "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
+            JSON.stringify(await response.json())
+        );
         break;
 
       case "toggle_microphone":
@@ -404,12 +407,18 @@ async function handleFunctionCall(call) {
             isMuted = false;
             audioTrack.enabled = true;
           }
+          requestVoiceCommentary(
+            "Could you vocally say you muted the mic with some appropriate confirmation."
+          );
           updateUI();
           return;
         }
         throw new Error("No microphone available");
 
       case "ask_question":
+        requestVoiceCommentary(
+          "Could you vocally say that you'll look up the question it might take some time in some appropriate manner to your personality and the converesation."
+        );
         response = await fetch("/ask-question", {
           method: "POST",
           headers: {
@@ -420,8 +429,11 @@ async function handleFunctionCall(call) {
             context: args.context,
           }),
         });
+        requestVoiceCommentary(
+          "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
+            JSON.stringify(await response.json())
+        );
         break;
-
       default:
         console.warn("Unknown function call:", call.name);
         return;
@@ -430,13 +442,6 @@ async function handleFunctionCall(call) {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    const result = await response.json();
-
-    requestVoiceCommentary(
-      "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
-        JSON.stringify(result)
-    );
 
     messages.push({
       type: "assistant",
