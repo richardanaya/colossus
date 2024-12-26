@@ -272,13 +272,13 @@ async function init() {
 
       // Handle audio transcript events
       if (event.type === "response.audio_transcript.delta") {
+        // Only update the caption for real-time display
         caption = event.delta;
-        const lastMessage = messages[messages.length - 1];
-        if (lastMessage?.type === "assistant") {
-          lastMessage.content += event.delta;
-        } else {
-          messages.push({ type: "assistant", content: event.delta });
-        }
+        updateUI();
+      } else if (event.type === "response.audio_transcript.complete") {
+        // Add completed transcription to messages
+        messages.push({ type: "assistant", content: event.text });
+        caption = "";
         updateUI();
       } else if (event.type === "response.done") {
         caption = "";
