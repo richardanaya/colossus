@@ -94,7 +94,7 @@ Example:
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+This is all incredibly new, but feel free to drop suggestions!
 
 ## License
 
