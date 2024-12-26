@@ -52,6 +52,7 @@ struct SessionRequest {
 struct AppStateWithDir {
     current_context: Mutex<Option<Context>>,
     project_dir: String,
+    model: String,
 }
 
 async fn get_contexts(
@@ -99,7 +100,8 @@ async fn get_contexts(
 }
 
 async fn create_session(
-    Json(payload): Json<SessionRequest>,
+    State(state): State<Arc<AppStateWithDir>>,
+    Json(mut payload): Json<SessionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<ErrorResponse>)> {
     let api_key = std::env::var("OPENAI_API_KEY").map_err(|_| {
         (
@@ -111,6 +113,7 @@ async fn create_session(
         )
     })?;
 
+    payload.model = state.model.clone();
     let client = reqwest::Client::new();
     let response = client
         .post("https://api.openai.com/v1/realtime/sessions")
@@ -158,6 +161,14 @@ struct Args {
     /// Directory to serve project files from
     #[arg(short, long, default_value = "./")]
     project_dir: String,
+
+    /// Port number to run the server on
+    #[arg(short, long, default_value = "49999")]
+    port: u16,
+
+    /// OpenAI model name to use
+    #[arg(short, long, default_value = "gpt-4o-mini-realtime-preview-2024-12-17")]
+    model: String,
 }
 
 #[tokio::main]
@@ -170,6 +181,7 @@ async fn main() {
     let state_with_dir = Arc::new(AppStateWithDir {
         current_context: Mutex::new(None),
         project_dir: args.project_dir.clone(),
+        model: args.model.clone(),
     });
     let project_dir = args.project_dir.clone();
     let app = Router::new()
@@ -185,8 +197,8 @@ async fn main() {
         .with_state(state_with_dir)
         .nest_service("/static", ServeDir::new("./static"));
 
-    println!("Starting server... http://localhost:49999");
-    let addr = SocketAddr::from(([127, 0, 0, 1], 49999));
+    println!("Starting server... http://localhost:{}", args.port);
+    let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
     println!("listening on {}", addr);
     axum::serve(listener, app).await.unwrap();
