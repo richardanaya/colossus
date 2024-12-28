@@ -92,7 +92,7 @@ async fn handle_web_search(
         ));
     }
 
-    let json = response.text().await.map_err(|e| {
+    let json: serde_json::Value = response.json().await.map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(ErrorResponse {
@@ -102,7 +102,13 @@ async fn handle_web_search(
         )
     })?;
 
-    Ok(Json(json))
+    // Extract the content from the response
+    let content = json["choices"][0]["message"]["content"]
+        .as_str()
+        .unwrap_or("No content found in response")
+        .to_string();
+
+    Ok(Json(content))
 }
 
 #[derive(Serialize)]
