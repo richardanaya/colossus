@@ -395,7 +395,7 @@ async function handleFunctionCall(call) {
         requestVoiceCommentary(
           `Could you vocally say that you'll ${args.action === "create" ? "create new code" : "make the changes"} and it might take some time in some appropriate manner to your personality and the conversation.`
         );
-        response = await fetch("/modify-code", {
+        response = await fetch("/change-code", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
