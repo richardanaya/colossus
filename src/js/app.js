@@ -101,11 +101,11 @@ async function handleSendMessage() {
       },
     })
   );
-  dataChannel.send(
+  /*dataChannel.send(
     JSON.stringify({
       type: "response.create",
     })
-  );
+  );*/
 
   messages.push({ type: "user", content: text });
   textInputArea.value = "";
@@ -126,11 +126,6 @@ async function requestVoiceCommentary(message) {
           },
         ],
       },
-    })
-  );
-  dataChannel.send(
-    JSON.stringify({
-      type: "response.create",
     })
   );
 }
@@ -158,9 +153,6 @@ async function init() {
     // Configure initial session and set up data channel
     dataChannel = pc.createDataChannel("oai-events");
     dataChannel.addEventListener("open", async () => {
-      requestVoiceCommentary(
-        "Introduce yourself as Colossus and ask the user how they can help them with their codebase."
-      );
       isConnecting = false;
       isConnected = true;
       updateUI();
@@ -186,11 +178,13 @@ async function init() {
                   action: {
                     type: "string",
                     enum: ["create", "modify"],
-                    description: "Whether to create new code or modify existing code",
+                    description:
+                      "Whether to create new code or modify existing code",
                   },
                   change: {
                     type: "string",
-                    description: "The code change to make or new code to create",
+                    description:
+                      "The code change to make or new code to create",
                   },
                   context: {
                     type: "string",
@@ -250,7 +244,7 @@ async function init() {
               },
             },
           ],
-          tool_choice: "auto",
+          tool_choice: "required",
         },
       };
       dataChannel.send(JSON.stringify(functionConfig));
@@ -393,7 +387,9 @@ async function handleFunctionCall(call) {
     switch (call.name) {
       case "modify_code":
         requestVoiceCommentary(
-          `Could you vocally say that you'll ${args.action === "create" ? "create new code" : "make the changes"} and it might take some time in some appropriate manner to your personality and the conversation.`
+          `Could you vocally say that you'll ${
+            args.action === "create" ? "create new code" : "make the changes"
+          } and it might take some time in some appropriate manner to your personality and the conversation.`
         );
         response = await fetch("/change-code", {
           method: "POST",
