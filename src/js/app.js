@@ -391,7 +391,7 @@ async function handleFunctionCall(call) {
             args.action === "create" ? "create new code" : "make the changes"
           } and it might take some time in some appropriate manner to your personality and the conversation.`
         );
-        response = await fetch("/change-code", {
+        const codeResponse = await fetch("/change-code", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -402,9 +402,10 @@ async function handleFunctionCall(call) {
             context: args.context,
           }),
         });
+        const codeResult = await codeResponse.json();
         requestVoiceCommentary(
           "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
-            JSON.stringify(await response.json())
+            JSON.stringify(codeResult)
         );
         break;
 
@@ -429,7 +430,7 @@ async function handleFunctionCall(call) {
         requestVoiceCommentary(
           "Could you vocally say that you'll look up the question it might take some time in some appropriate manner to your personality and the converesation."
         );
-        response = await fetch("/ask-question", {
+        const questionResponse = await fetch("/ask-question", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -439,9 +440,10 @@ async function handleFunctionCall(call) {
             context: args.context,
           }),
         });
+        const questionResult = await questionResponse.json();
         requestVoiceCommentary(
           "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
-            JSON.stringify(await response.json())
+            JSON.stringify(questionResult)
         );
         break;
 
@@ -449,7 +451,7 @@ async function handleFunctionCall(call) {
         requestVoiceCommentary(
           "I'll search the web for that information. Give me a moment."
         );
-        response = await fetch("/web-search", {
+        const searchResponse = await fetch("/web-search", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -458,7 +460,7 @@ async function handleFunctionCall(call) {
             question: args.question,
           }),
         });
-        const searchResult = await response.json();
+        const searchResult = await searchResponse.json();
         requestVoiceCommentary(
           "Here's what I found from searching the web: " + searchResult
         );
