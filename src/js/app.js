@@ -471,15 +471,7 @@ async function handleFunctionCall(call) {
         return;
     }
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const responseData = await response.json();
-    messages.push({
-      type: "assistant",
-      content: JSON.stringify(responseData),
-    });
+    // Update UI with any results from the function calls
     updateUI();
   } catch (error) {
     console.error("Error handling function call:", error);
