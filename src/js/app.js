@@ -178,24 +178,29 @@ async function init() {
           tools: [
             {
               type: "function",
-              name: "change_code",
-              description: "Request to change the codebase",
+              name: "modify_code",
+              description: "Request to create or modify code in the codebase",
               parameters: {
                 type: "object",
                 properties: {
+                  action: {
+                    type: "string",
+                    enum: ["create", "modify"],
+                    description: "Whether to create new code or modify existing code",
+                  },
                   change: {
                     type: "string",
-                    description: "The change to make",
+                    description: "The code change to make or new code to create",
                   },
                   context: {
                     type: "string",
                     enum: contextEnum,
                     description:
-                      "The context file to modify, choose one based on " +
+                      "The file to create or modify, choose one based on " +
                       JSON.stringify(contextEnum),
                   },
                 },
-                required: ["change", "context"],
+                required: ["action", "change", "context"],
               },
             },
             {
@@ -386,16 +391,17 @@ async function handleFunctionCall(call) {
     let response;
 
     switch (call.name) {
-      case "change_code":
+      case "modify_code":
         requestVoiceCommentary(
-          "Could you vocally say that you'll make the change and it might take some time in some appropriate manner to your personality and the converesation."
+          `Could you vocally say that you'll ${args.action === "create" ? "create new code" : "make the changes"} and it might take some time in some appropriate manner to your personality and the conversation.`
         );
-        response = await fetch("/change-code", {
+        response = await fetch("/modify-code", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            action: args.action,
             change: args.change,
             context: args.context,
           }),
