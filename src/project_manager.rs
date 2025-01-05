@@ -83,7 +83,17 @@ pub async fn project_manager_loop(
                 .arg("--no-suggest-shell-commands")
                 .arg("--yes-always")
                 .arg("--message")
-                .arg("Given the PROJECT.md and ARCHITECTURE.md, create or update TASKS.md with an ordered list of technical tasks for developers to work on today. Prioritize tasks based on architectural dependencies and project goals. Each task should be clear, actionable, and include any relevant technical details from the architecture.")
+                .arg("Given the PROJECT.md and ARCHITECTURE.md, create or update TASKS.md with an ordered list of technical tasks for developers to work on today. Follow these rules:
+1. Tasks must be ordered by dependency - things needed first must be at the top
+2. Each task should be a small, incremental unit of work
+3. Tasks should be clear and actionable with relevant technical details
+4. The goal is to have a testable product by end of day
+5. Break down large tasks into smaller steps
+6. Include any setup/config tasks needed early
+7. Focus on delivering working functionality over perfection
+8. Mark tasks that are critical path for testing
+9. Include estimates of time required for each task
+10. Ensure the sequence leads to a testable product by end of day")
                 .arg("PROJECT.md")
                 .arg("ARCHITECTURE.md")
                 .arg("TASKS.md");
