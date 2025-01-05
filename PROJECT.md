@@ -1,10 +1,14 @@
 # Game Project Overview
 
 ## Game Type
-Samurai-themed point-and-click video game with a focus on heroic storytelling
+Samurai-themed point-and-click video game with a focus on heroic storytelling and philosophical exploration
 
 ## Core Purpose
-To create an engaging heroic narrative exploring themes of individualism and objectivism through interactive video elements and samurai culture, with a philosophical underpinning that examines the role of the individual in society
+To create an engaging heroic narrative exploring themes of individualism and objectivism through interactive video elements and samurai culture, with a philosophical underpinning that examines:
+- The role of the individual in society
+- Pro-life values and their impact on personal choices
+- Objectivist principles in moral decision-making
+- The tension between personal freedom and societal expectations
 
 ## Target Audience
 - Fans of samurai and Japanese culture
@@ -20,8 +24,12 @@ To create an engaging heroic narrative exploring themes of individualism and obj
 - Heroic character-driven narrative with video dialogue
 - Seamless point-and-click video interactions
 - Exploration of individualism and objectivism through samurai themes
-- Philosophical examination of individual vs society
-- Moral dilemmas based on objectivist principles
+- Philosophical examination of:
+  * Individual vs society
+  * Pro-life values in a samurai context
+  * Objectivist decision-making in moral dilemmas
+- Moral choices that reflect objectivist principles
+- Story arcs that explore the consequences of individualistic vs collectivist choices
 
 ## Development Goals
 1. Define core gameplay mechanics for video integration
