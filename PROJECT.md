@@ -13,6 +13,10 @@ To create an engaging heroic narrative exploring themes of individualism and obj
 - Objectivist themes of rational self-interest and personal excellence
 - Moral dilemmas that challenge players to think independently
 - Integration of supernatural elements (yokai) with philosophical themes
+- Samurai quests involving interactions with yokai
+- Moral and ethical choices aligned with objectivist principles
+- Puzzles and interactions that require independent thinking
+- Narrative arcs exploring consequences of individualistic choices
 
 ## Target Audience
 - Fans of samurai and Japanese culture
@@ -29,6 +33,10 @@ To create an engaging heroic narrative exploring themes of individualism and obj
 - Seamless point-and-click video interactions
 - Exploration of individualism and objectivism through samurai themes
 - Supernatural elements (yokai) that interact with philosophical themes
+- Yokai-based quests that present moral dilemmas
+- Dialogue choices reflecting objectivist principles
+- Special abilities for interacting with supernatural creatures
+- Story arcs exploring samurai's role in upholding personal values
 - Philosophical examination of:
   * Individual vs society
   * Pro-life values in a samurai context
