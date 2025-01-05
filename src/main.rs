@@ -418,6 +418,19 @@ async fn main() {
         )
         .await;
     });
+
+    // Start ProjectManager thread
+    let project_manager_shutdown = shutdown_signal.clone();
+    let project_dir_clone = args.project_dir.clone();
+    let state_with_dir_clone = state_with_dir.clone();
+    tokio::spawn(async move {
+        project_manager_loop(
+            project_dir_clone,
+            project_manager_shutdown,
+            state_with_dir_clone,
+        )
+        .await;
+    });
     let project_dir = args.project_dir.clone();
     let app = Router::new()
         .route("/", get(|| async { Html(include_str!("html/index.html")) }))
@@ -577,9 +590,11 @@ async fn handle_transcript_update(
 
 mod product_manager;
 mod architect;
+mod project_manager;
 
 use product_manager::product_manager_loop;
 use architect::architect_loop;
+use project_manager::project_manager_loop;
 
 async fn handle_question(
     State(state_with_dir): State<Arc<AppStateWithDir>>,
