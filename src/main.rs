@@ -393,7 +393,7 @@ async fn main() {
         code_model: args.code_model.clone(),
     });
 
-    // Start ProductManagerInterview thread
+    // Start ProductManager thread
     let product_manager_shutdown = shutdown_signal.clone();
     let project_dir_clone = args.project_dir.clone();
     let state_with_dir_clone = state_with_dir.clone();
@@ -401,6 +401,19 @@ async fn main() {
         product_manager_loop(
             project_dir_clone,
             product_manager_shutdown,
+            state_with_dir_clone,
+        )
+        .await;
+    });
+
+    // Start Architect thread
+    let architect_shutdown = shutdown_signal.clone();
+    let project_dir_clone = args.project_dir.clone();
+    let state_with_dir_clone = state_with_dir.clone();
+    tokio::spawn(async move {
+        architect_loop(
+            project_dir_clone,
+            architect_shutdown,
             state_with_dir_clone,
         )
         .await;
@@ -563,8 +576,10 @@ async fn handle_transcript_update(
 }
 
 mod product_manager;
+mod architect;
 
 use product_manager::product_manager_loop;
+use architect::architect_loop;
 
 async fn handle_question(
     State(state_with_dir): State<Arc<AppStateWithDir>>,
