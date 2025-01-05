@@ -623,31 +623,31 @@ async fn product_manager_loop(
 
         if should_run_aider {
             println!("Updating PROJECT.md");
-                    let mut cmd = Command::new("aider");
-                    cmd.current_dir(&project_dir)
-                        .arg("--no-suggest-shell-commands")
-                        .arg("--yes-always")
-                        .arg("--message")
-                        .arg("given the TRANSCRIPT.md update PROJECT.md")
-                        .arg("TRANSCRIPT.md")
-                        .arg("PROJECT.md");
+            let mut cmd = Command::new("aider");
+            cmd.current_dir(&project_dir)
+                .arg("--no-suggest-shell-commands")
+                .arg("--yes-always")
+                .arg("--message")
+                .arg("given the TRANSCRIPT.md update PROJECT.md")
+                .arg("TRANSCRIPT.md")
+                .arg("PROJECT.md");
 
-                    if let Some(model) = &state_with_dir.code_model {
-                        cmd.arg("--model").arg(model);
-                    }
+            if let Some(model) = &state_with_dir.code_model {
+                cmd.arg("--model").arg(model);
+            }
 
-                    let output = cmd.output().map_err(|e| {
-                        eprintln!("Failed to run aider: {}", e);
-                    });
+            let output = cmd.output().map_err(|e| {
+                eprintln!("Failed to run aider: {}", e);
+            });
 
-                    if let Ok(output) = output {
-                        if !output.status.success() {
-                            eprintln!(
-                                "Aider command failed: {}",
-                                String::from_utf8_lossy(&output.stderr)
-                            );
-                        }
-                    }
+            if let Ok(output) = output {
+                if !output.status.success() {
+                    eprintln!(
+                        "Aider command failed: {}",
+                        String::from_utf8_lossy(&output.stderr)
+                    );
+                }
+            }
         }
     }
     println!("ProductManagerInterview thread shutting down cleanly");
