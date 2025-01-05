@@ -596,7 +596,7 @@ async fn product_manager_loop(
             eprintln!("Failed to open PROJECT.md for writing");
         }
 
-        println!("Checking if we should update PROJECT.md");
+        println!("\nChecking if we should update PROJECT.md");
 
         // Check file modification times
         let transcript_path = std::path::Path::new(&project_dir).join("TRANSCRIPT.md");
@@ -612,14 +612,26 @@ async fn product_manager_loop(
             if let (Ok(transcript_modified), Ok(project_modified)) =
                 (transcript_meta.modified(), project_meta.modified())
             {
-                // Only run aider if TRANSCRIPT.md is newer than PROJECT.md
-                transcript_modified > project_modified
+                println!("Checking file modification times:");
+                println!("- TRANSCRIPT.md last modified: {:?}", transcript_modified);
+                println!("- PROJECT.md last modified: {:?}", project_modified);
+                
+                let transcript_newer = transcript_modified > project_modified;
+                println!("TRANSCRIPT.md is {} than PROJECT.md", 
+                    if transcript_newer { "newer" } else { "older or same" });
+                
+                transcript_newer
             } else {
+                println!("Could not get modification times for files");
                 false
             }
         } else {
+            println!("Could not get metadata for files");
             false
         };
+
+        println!("Decision to update PROJECT.md: {}", 
+            if should_run_aider { "YES" } else { "NO" });
 
         if should_run_aider {
             println!("Updating PROJECT.md");
