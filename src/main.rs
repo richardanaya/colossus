@@ -16,6 +16,10 @@ use std::net::SocketAddr;
 use std::process::Command;
 use std::sync::Arc;
 use tokio::net::TcpListener;
+use tokio::sync::Mutex;
+use tokio::time::{self, Duration};
+use std::fs::OpenOptions;
+use std::io::Write;
 
 #[derive(Serialize)]
 struct ErrorResponse {
@@ -148,6 +152,7 @@ struct SessionRequest {
 }
 
 struct AppStateWithDir {
+    shutdown_signal: Arc<Mutex<bool>>,
     project_dir: String,
     model: String,
     preferred_language: String,
@@ -371,7 +376,17 @@ async fn main() {
     }
 
     // Initialize global state
+    let shutdown_signal = Arc::new(Mutex::new(false));
+    
+    // Start ProductManagerInterview thread
+    let product_manager_shutdown = shutdown_signal.clone();
+    let project_dir_clone = args.project_dir.clone();
+    tokio::spawn(async move {
+        product_manager_loop(project_dir_clone, product_manager_shutdown).await;
+    });
+
     let state_with_dir = Arc::new(AppStateWithDir {
+        shutdown_signal,
         preferred_language: args.preferred_language.clone(),
         project_dir: args.project_dir.clone(),
         model: args.model.clone(),
@@ -442,7 +457,17 @@ async fn main() {
 
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    // Run server and handle graceful shutdown
+    let server = axum::serve(listener, app);
+    
+    // Wait for server to finish
+    if let Err(e) = server.await {
+        eprintln!("Server error: {}", e);
+    }
+    
+    // Signal shutdown to ProductManagerInterview thread
+    let mut shutdown = state_with_dir.shutdown_signal.lock().await;
+    *shutdown = true;
 }
 
 async fn handle_change_code(
@@ -524,6 +549,42 @@ async fn handle_transcript_update(
     })?;
 
     Ok(Json("Transcript updated successfully".to_string()))
+}
+
+async fn product_manager_loop(project_dir: String, shutdown_signal: Arc<Mutex<bool>>) {
+    let mut interval = time::interval(Duration::from_secs(10));
+    
+    loop {
+        interval.tick().await;
+        
+        // Check if we should shutdown
+        {
+            let shutdown = shutdown_signal.lock().await;
+            if *shutdown {
+                break;
+            }
+        }
+        
+        // Update PROJECT.md
+        let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
+        if let Ok(mut file) = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .append(true)
+            .open(&project_path)
+        {
+            let timestamp = chrono::Local::now().format("%Y-%m-%d %H:%M:%S");
+            if let Err(e) = writeln!(file, "\n## Update at {}\n", timestamp) {
+                eprintln!("Failed to write to PROJECT.md: {}", e);
+            }
+        } else {
+            eprintln!("Failed to open PROJECT.md for writing");
+        }
+        
+        println!("Updating PROJECT.md");
+    }
+    
+    println!("ProductManagerInterview thread shutting down cleanly");
 }
 
 async fn handle_question(
