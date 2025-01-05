@@ -10,7 +10,8 @@ use colored::*;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::fs;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
 use std::net::SocketAddr;
 use std::process::Command;
 use std::sync::Arc;
@@ -132,6 +133,11 @@ struct QuestionRequest {
 #[derive(Deserialize)]
 struct WebSearchRequest {
     question: String,
+}
+
+#[derive(Deserialize)]
+struct TranscriptUpdate {
+    content: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -390,6 +396,7 @@ async fn main() {
         .route("/change-code", post(handle_change_code))
         .route("/ask-question", post(handle_question))
         .route("/web-search", post(handle_web_search))
+        .route("/update-transcript", post(handle_transcript_update))
         .with_state(state_with_dir);
 
     println!("{}", "          /\\          ".bright_cyan());
@@ -483,6 +490,40 @@ async fn handle_change_code(
             }),
         ))
     }
+}
+
+async fn handle_transcript_update(
+    State(state_with_dir): State<Arc<AppStateWithDir>>,
+    Json(payload): Json<TranscriptUpdate>,
+) -> Result<Json<String>, (StatusCode, Json<ErrorResponse>)> {
+    let transcript_path = std::path::Path::new(&state_with_dir.project_dir).join("TRANSCRIPT.md");
+    
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(&transcript_path)
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ErrorResponse {
+                    error: format!("Failed to open transcript file: {}", e),
+                    project_dir: state_with_dir.project_dir.clone(),
+                }),
+            )
+        })?;
+
+    file.write_all(payload.content.as_bytes()).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse {
+                error: format!("Failed to write transcript: {}", e),
+                project_dir: state_with_dir.project_dir.clone(),
+            }),
+        )
+    })?;
+
+    Ok(Json("Transcript updated successfully".to_string()))
 }
 
 async fn handle_question(

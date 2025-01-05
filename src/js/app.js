@@ -37,7 +37,29 @@ function rawTextToHTML(text) {
   return test;
 }
 
+async function updateTranscript() {
+  try {
+    const transcript = messages
+      .map(msg => `${msg.type === 'user' ? 'You' : 'Assistant'}: ${msg.content}`)
+      .join('\n\n');
+    
+    await fetch('/update-transcript', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content: transcript
+      })
+    });
+  } catch (error) {
+    console.error('Failed to update transcript:', error);
+  }
+}
+
 function updateUI() {
+  // Update transcript file whenever UI updates
+  updateTranscript();
   // Update connect button
   connectButton.textContent = isConnecting
     ? "Connecting..."
