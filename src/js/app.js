@@ -101,11 +101,11 @@ async function handleSendMessage() {
       },
     })
   );
-  /*dataChannel.send(
+  dataChannel.send(
     JSON.stringify({
       type: "response.create",
     })
-  );*/
+  );
 
   messages.push({ type: "user", content: text });
   textInputArea.value = "";
@@ -167,36 +167,12 @@ async function init() {
       const functionConfig = {
         type: "session.update",
         session: {
+          input_audio_format: "pcm16",
+          output_audio_format: "pcm16",
+          input_audio_transcription: {
+            model: "whisper-1",
+          },
           tools: [
-            {
-              type: "function",
-              name: "modify_code",
-              description: "Request to create or modify code in the codebase",
-              parameters: {
-                type: "object",
-                properties: {
-                  action: {
-                    type: "string",
-                    enum: ["create", "modify"],
-                    description:
-                      "Whether to create new code or modify existing code",
-                  },
-                  change: {
-                    type: "string",
-                    description:
-                      "The code change to make or new code to create",
-                  },
-                  context: {
-                    type: "string",
-                    enum: contextEnum,
-                    description:
-                      "The file to create or modify, choose one based on " +
-                      JSON.stringify(contextEnum),
-                  },
-                },
-                required: ["action", "change", "context"],
-              },
-            },
             {
               type: "function",
               name: "toggle_microphone",
@@ -215,21 +191,6 @@ async function init() {
             },
             {
               type: "function",
-              name: "ask_question",
-              description: "Ask a question about the codebase",
-              parameters: {
-                type: "object",
-                properties: {
-                  question: {
-                    type: "string",
-                    description: "The question to search for",
-                  },
-                },
-                required: ["question"],
-              },
-            },
-            {
-              type: "function",
               name: "web_search",
               description: "Search the web for information",
               parameters: {
@@ -240,11 +201,11 @@ async function init() {
                     description: "The question to ask",
                   },
                 },
-                required: ["question", "context"],
+                required: ["question"],
               },
             },
           ],
-          tool_choice: "required",
+          tool_choice: "auto",
         },
       };
       dataChannel.send(JSON.stringify(functionConfig));
@@ -385,30 +346,6 @@ async function handleFunctionCall(call) {
     let response;
 
     switch (call.name) {
-      case "modify_code":
-        requestVoiceCommentary(
-          `Could you vocally say that you'll ${
-            args.action === "create" ? "create new code" : "make the changes"
-          } and it might take some time in some appropriate manner to your personality and the conversation.`
-        );
-        const codeResponse = await fetch("/change-code", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            action: args.action,
-            change: args.change,
-            context: args.context,
-          }),
-        });
-        const codeResult = await codeResponse.json();
-        requestVoiceCommentary(
-          "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
-            JSON.stringify(codeResult)
-        );
-        break;
-
       case "toggle_microphone":
         if (audioTrack) {
           if (args.action === "mute" && !isMuted) {
@@ -418,39 +355,16 @@ async function handleFunctionCall(call) {
             isMuted = false;
             audioTrack.enabled = true;
           }
-          requestVoiceCommentary(
-            "Could you vocally say you muted the mic with some appropriate confirmation."
-          );
+          messages.push({
+            type: "assistant",
+            content: `Microphone is now ${isMuted ? "muted" : "unmuted"}`,
+          });
           updateUI();
           return;
         }
         throw new Error("No microphone available");
 
-      case "ask_question":
-        requestVoiceCommentary(
-          "Could you vocally say that you'll look up the question it might take some time in some appropriate manner to your personality and the converesation."
-        );
-        const questionResponse = await fetch("/ask-question", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            question: args.question,
-            context: args.context,
-          }),
-        });
-        const questionResult = await questionResponse.json();
-        requestVoiceCommentary(
-          "Summarize the information retrieved from the operation, try to be breif as this will be spoken (like 2 sentences max). " +
-            JSON.stringify(questionResult)
-        );
-        break;
-
       case "web_search":
-        requestVoiceCommentary(
-          "I'll search the web for that information. Give me a moment."
-        );
         const searchResponse = await fetch("/web-search", {
           method: "POST",
           headers: {
@@ -461,9 +375,12 @@ async function handleFunctionCall(call) {
           }),
         });
         const searchResult = await searchResponse.json();
-        requestVoiceCommentary(
-          "Here's what I found from searching the web: " + searchResult
-        );
+
+        messages.push({
+          type: "assistant",
+          content: `Search: ${args.question} Result: ${searchResult}`,
+        });
+
         break;
 
       default:
