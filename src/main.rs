@@ -375,7 +375,7 @@ async fn main() {
 
     // Initialize global state
     let shutdown_signal = Arc::new(Mutex::new(false));
-    
+
     let state_with_dir = Arc::new(AppStateWithDir {
         shutdown_signal: shutdown_signal.clone(),
         preferred_language: args.preferred_language.clone(),
@@ -391,7 +391,12 @@ async fn main() {
     let project_dir_clone = args.project_dir.clone();
     let state_with_dir_clone = state_with_dir.clone();
     tokio::spawn(async move {
-        product_manager_loop(project_dir_clone, product_manager_shutdown, state_with_dir_clone).await;
+        product_manager_loop(
+            project_dir_clone,
+            product_manager_shutdown,
+            state_with_dir_clone,
+        )
+        .await;
     });
     let project_dir = args.project_dir.clone();
     let app = Router::new()
@@ -458,12 +463,12 @@ async fn main() {
     let listener = TcpListener::bind(addr).await.unwrap();
     // Run server and handle graceful shutdown
     let server = axum::serve(listener, app);
-    
+
     // Wait for server to finish
     if let Err(e) = server.await {
         eprintln!("Server error: {}", e);
     }
-    
+
     // Signal shutdown to ProductManagerInterview thread
     let mut shutdown = state_with_dir.shutdown_signal.lock().await;
     *shutdown = true;
@@ -521,7 +526,7 @@ async fn handle_transcript_update(
     Json(payload): Json<TranscriptUpdate>,
 ) -> Result<Json<String>, (StatusCode, Json<ErrorResponse>)> {
     let transcript_path = std::path::Path::new(&state_with_dir.project_dir).join("TRANSCRIPT.md");
-    
+
     let mut file = OpenOptions::new()
         .write(true)
         .create(true)
@@ -551,15 +556,15 @@ async fn handle_transcript_update(
 }
 
 async fn product_manager_loop(
-    project_dir: String, 
+    project_dir: String,
     shutdown_signal: Arc<Mutex<bool>>,
-    state_with_dir: Arc<AppStateWithDir>
+    state_with_dir: Arc<AppStateWithDir>,
 ) {
     let mut interval = time::interval(Duration::from_secs(10));
-    
+
     loop {
         interval.tick().await;
-        
+
         // Check if we should shutdown
         {
             let shutdown = shutdown_signal.lock().await;
@@ -567,7 +572,7 @@ async fn product_manager_loop(
                 break;
             }
         }
-        
+
         // Update PROJECT.md
         let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
         if let Ok(mut file) = OpenOptions::new()
@@ -583,21 +588,20 @@ async fn product_manager_loop(
         } else {
             eprintln!("Failed to open PROJECT.md for writing");
         }
-        
-        println!("Updating PROJECT.md");
-        
+
+        println!("Checking if we should update PROJECT.md");
+
         // Check file modification times
         let transcript_path = std::path::Path::new(&project_dir).join("TRANSCRIPT.md");
         let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
-        
-        if let (Ok(transcript_meta), Ok(project_meta)) = (
-            fs::metadata(&transcript_path),
-            fs::metadata(&project_path)
-        ) {
-            if let (Ok(transcript_modified), Ok(project_modified)) = (
-                transcript_meta.modified(),
-                project_meta.modified()
-            ) {
+
+        if let (Ok(transcript_meta), Ok(project_meta)) =
+            (fs::metadata(&transcript_path), fs::metadata(&project_path))
+        {
+            if let (Ok(transcript_modified), Ok(project_modified)) =
+                (transcript_meta.modified(), project_meta.modified())
+            {
+                println!("Updating Project.md");
                 // Only run aider if TRANSCRIPT.md is newer than PROJECT.md
                 if transcript_modified > project_modified {
                     let mut cmd = Command::new("aider");
@@ -608,7 +612,7 @@ async fn product_manager_loop(
                         .arg("given the TRANSCRIPT.md update PROJECT.md")
                         .arg("TRANSCRIPT.md")
                         .arg("PROJECT.md");
-                        
+
                     if let Some(model) = &state_with_dir.code_model {
                         cmd.arg("--model").arg(model);
                     }
@@ -629,7 +633,7 @@ async fn product_manager_loop(
             }
         }
     }
-    
+
     println!("ProductManagerInterview thread shutting down cleanly");
 }
 
