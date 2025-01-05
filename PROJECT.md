@@ -12,6 +12,7 @@ To create an engaging heroic narrative exploring themes of individualism and obj
 - Heroic samurai ideals and their relationship to individualism
 - Objectivist themes of rational self-interest and personal excellence
 - Moral dilemmas that challenge players to think independently
+- Integration of supernatural elements (yokai) with philosophical themes
 
 ## Target Audience
 - Fans of samurai and Japanese culture
@@ -27,6 +28,7 @@ To create an engaging heroic narrative exploring themes of individualism and obj
 - Heroic character-driven narrative with video dialogue
 - Seamless point-and-click video interactions
 - Exploration of individualism and objectivism through samurai themes
+- Supernatural elements (yokai) that interact with philosophical themes
 - Philosophical examination of:
   * Individual vs society
   * Pro-life values in a samurai context
@@ -38,7 +40,8 @@ To create an engaging heroic narrative exploring themes of individualism and obj
   * Consequences of individualistic vs collectivist choices
   * The samurai's role in upholding personal values
   * The tension between duty and individualism
-- Gameplay mechanics that reinforce philosophical themes
+  * Interactions with supernatural creatures (yokai) that challenge objectivist principles
+- Gameplay mechanics that reinforce philosophical themes through encounters with supernatural elements
 
 ## Development Goals
 1. Define core gameplay mechanics for video integration
