@@ -289,13 +289,13 @@ async function init() {
           });
           updateUI();
         }
-      }
-      // Handle audio transcription completion events
-      else if (event.type === "conversation.item.input_audio_transcription.completed") {
-        if (event.item?.content?.[0]?.type === "audio" && event.item.content[0].transcript) {
+      } else if (
+        event.type === "conversation.item.input_audio_transcription.completed"
+      ) {
+        if (event.transcript) {
           messages.push({
-            type: "assistant",
-            content: event.item.content[0].transcript,
+            type: "user",
+            content: event.transcript,
           });
           updateUI();
         }
