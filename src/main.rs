@@ -580,22 +580,6 @@ async fn product_manager_loop(
             }
         }
 
-        // Update PROJECT.md
-        let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
-        if let Ok(mut file) = OpenOptions::new()
-            .write(true)
-            .create(true)
-            .append(true)
-            .open(&project_path)
-        {
-            let timestamp = chrono::Local::now().format("%Y-%m-%d %H:%M:%S");
-            if let Err(e) = writeln!(file, "\n## Update at {}\n", timestamp) {
-                eprintln!("Failed to write to PROJECT.md: {}", e);
-            }
-        } else {
-            eprintln!("Failed to open PROJECT.md for writing");
-        }
-
         println!("\nChecking if we should update PROJECT.md");
 
         // Check file modification times
@@ -615,11 +599,17 @@ async fn product_manager_loop(
                 println!("Checking file modification times:");
                 println!("- TRANSCRIPT.md last modified: {:?}", transcript_modified);
                 println!("- PROJECT.md last modified: {:?}", project_modified);
-                
+
                 let transcript_newer = transcript_modified > project_modified;
-                println!("TRANSCRIPT.md is {} than PROJECT.md", 
-                    if transcript_newer { "newer" } else { "older or same" });
-                
+                println!(
+                    "TRANSCRIPT.md is {} than PROJECT.md",
+                    if transcript_newer {
+                        "newer"
+                    } else {
+                        "older or same"
+                    }
+                );
+
                 transcript_newer
             } else {
                 println!("Could not get modification times for files");
@@ -630,8 +620,10 @@ async fn product_manager_loop(
             false
         };
 
-        println!("Decision to update PROJECT.md: {}", 
-            if should_run_aider { "YES" } else { "NO" });
+        println!(
+            "Decision to update PROJECT.md: {}",
+            if should_run_aider { "YES" } else { "NO" }
+        );
 
         if should_run_aider {
             println!("Updating PROJECT.md");
