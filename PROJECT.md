@@ -9,6 +9,9 @@ To create an engaging heroic narrative exploring themes of individualism and obj
 - Pro-life values and their impact on personal choices
 - Objectivist principles in moral decision-making
 - The tension between personal freedom and societal expectations
+- Heroic samurai ideals and their relationship to individualism
+- Objectivist themes of rational self-interest and personal excellence
+- Moral dilemmas that challenge players to think independently
 
 ## Target Audience
 - Fans of samurai and Japanese culture
@@ -28,8 +31,14 @@ To create an engaging heroic narrative exploring themes of individualism and obj
   * Individual vs society
   * Pro-life values in a samurai context
   * Objectivist decision-making in moral dilemmas
+  * Rational self-interest and personal excellence
+  * Heroic ideals in a samurai context
 - Moral choices that reflect objectivist principles
-- Story arcs that explore the consequences of individualistic vs collectivist choices
+- Story arcs that explore:
+  * Consequences of individualistic vs collectivist choices
+  * The samurai's role in upholding personal values
+  * The tension between duty and individualism
+- Gameplay mechanics that reinforce philosophical themes
 
 ## Development Goals
 1. Define core gameplay mechanics for video integration
