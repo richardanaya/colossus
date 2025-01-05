@@ -18,8 +18,6 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 use tokio::sync::Mutex;
 use tokio::time::{self, Duration};
-use std::fs::OpenOptions;
-use std::io::Write;
 
 #[derive(Serialize)]
 struct ErrorResponse {
@@ -412,7 +410,7 @@ async fn main() {
         .route("/ask-question", post(handle_question))
         .route("/web-search", post(handle_web_search))
         .route("/update-transcript", post(handle_transcript_update))
-        .with_state(state_with_dir);
+        .with_state(state_with_dir.clone());
 
     println!("{}", "          /\\          ".bright_cyan());
     println!("{}", "         /  \\         ".bright_cyan());
