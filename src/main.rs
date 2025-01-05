@@ -376,21 +376,22 @@ async fn main() {
     // Initialize global state
     let shutdown_signal = Arc::new(Mutex::new(false));
     
-    // Start ProductManagerInterview thread
-    let product_manager_shutdown = shutdown_signal.clone();
-    let project_dir_clone = args.project_dir.clone();
-    tokio::spawn(async move {
-        product_manager_loop(project_dir_clone, product_manager_shutdown, state_with_dir.clone()).await;
-    });
-
     let state_with_dir = Arc::new(AppStateWithDir {
-        shutdown_signal,
+        shutdown_signal: shutdown_signal.clone(),
         preferred_language: args.preferred_language.clone(),
         project_dir: args.project_dir.clone(),
         model: args.model.clone(),
         instructions: args.instructions.clone(),
         voice: args.voice.clone(),
         code_model: args.code_model.clone(),
+    });
+
+    // Start ProductManagerInterview thread
+    let product_manager_shutdown = shutdown_signal.clone();
+    let project_dir_clone = args.project_dir.clone();
+    let state_with_dir_clone = state_with_dir.clone();
+    tokio::spawn(async move {
+        product_manager_loop(project_dir_clone, product_manager_shutdown, state_with_dir_clone).await;
     });
     let project_dir = args.project_dir.clone();
     let app = Router::new()
