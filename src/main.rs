@@ -581,30 +581,46 @@ async fn product_manager_loop(project_dir: String, shutdown_signal: Arc<Mutex<bo
         
         println!("Updating PROJECT.md");
         
-        // Run aider to update PROJECT.md based on TRANSCRIPT.md
-        let mut cmd = Command::new("aider");
-        cmd.current_dir(&project_dir)
-            .arg("--no-suggest-shell-commands")
-            .arg("--yes-always")
-            .arg("--message")
-            .arg("given the TRANSCRIPT.md update PROJECT.md")
-            .arg("TRANSCRIPT.md")
-            .arg("PROJECT.md");
-            
-        if let Some(model) = &state_with_dir.code_model {
-            cmd.arg("--model").arg(model);
-        }
+        // Check file modification times
+        let transcript_path = std::path::Path::new(&project_dir).join("TRANSCRIPT.md");
+        let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
+        
+        if let (Ok(transcript_meta), Ok(project_meta)) = (
+            fs::metadata(&transcript_path),
+            fs::metadata(&project_path)
+        ) {
+            if let (Ok(transcript_modified), Ok(project_modified)) = (
+                transcript_meta.modified(),
+                project_meta.modified()
+            ) {
+                // Only run aider if TRANSCRIPT.md is newer than PROJECT.md
+                if transcript_modified > project_modified {
+                    let mut cmd = Command::new("aider");
+                    cmd.current_dir(&project_dir)
+                        .arg("--no-suggest-shell-commands")
+                        .arg("--yes-always")
+                        .arg("--message")
+                        .arg("given the TRANSCRIPT.md update PROJECT.md")
+                        .arg("TRANSCRIPT.md")
+                        .arg("PROJECT.md");
+                        
+                    if let Some(model) = &state_with_dir.code_model {
+                        cmd.arg("--model").arg(model);
+                    }
 
-        let output = cmd.output().map_err(|e| {
-            eprintln!("Failed to run aider: {}", e);
-        });
+                    let output = cmd.output().map_err(|e| {
+                        eprintln!("Failed to run aider: {}", e);
+                    });
 
-        if let Ok(output) = output {
-            if !output.status.success() {
-                eprintln!(
-                    "Aider command failed: {}",
-                    String::from_utf8_lossy(&output.stderr)
-                );
+                    if let Ok(output) = output {
+                        if !output.status.success() {
+                            eprintln!(
+                                "Aider command failed: {}",
+                                String::from_utf8_lossy(&output.stderr)
+                            );
+                        }
+                    }
+                }
             }
         }
     }
