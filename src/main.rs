@@ -595,15 +595,27 @@ async fn product_manager_loop(
         let transcript_path = std::path::Path::new(&project_dir).join("TRANSCRIPT.md");
         let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
 
-        if let (Ok(transcript_meta), Ok(project_meta)) =
+        // If PROJECT.md doesn't exist, we should create it
+        let should_run_aider = if !project_path.exists() {
+            println!("PROJECT.md doesn't exist - creating it");
+            true
+        } else if let (Ok(transcript_meta), Ok(project_meta)) =
             (fs::metadata(&transcript_path), fs::metadata(&project_path))
         {
             if let (Ok(transcript_modified), Ok(project_modified)) =
                 (transcript_meta.modified(), project_meta.modified())
             {
-                println!("Updating Project.md");
                 // Only run aider if TRANSCRIPT.md is newer than PROJECT.md
-                if transcript_modified > project_modified {
+                transcript_modified > project_modified
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
+        if should_run_aider {
+            println!("Updating PROJECT.md");
                     let mut cmd = Command::new("aider");
                     cmd.current_dir(&project_dir)
                         .arg("--no-suggest-shell-commands")
