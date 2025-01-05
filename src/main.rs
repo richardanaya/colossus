@@ -648,8 +648,8 @@ async fn product_manager_loop(
                             );
                         }
                     }
-            }
         }
+    }
     println!("ProductManagerInterview thread shutting down cleanly");
 
 async fn handle_question(
