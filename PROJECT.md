@@ -1,23 +1,25 @@
 # Game Project Overview
 
 ## Game Type
-Point-and-click video game with a focus on storytelling
+Samurai-themed point-and-click video game with a focus on heroic storytelling
 
 ## Core Purpose
-To create an engaging storytelling and puzzle-solving experience through interactive video elements
+To create an engaging heroic narrative exploring themes of individualism through interactive video elements and samurai culture
 
 ## Target Audience
-- Fans of narrative-driven games
-- Puzzle enthusiasts
+- Fans of samurai and Japanese culture
+- Players who enjoy heroic narratives
+- Puzzle enthusiasts with interest in historical themes
 - Players who enjoy immersive point-and-click experiences
 - Video game streamers and content creators
 
 ## Key Features
-- Rich storytelling elements with video integration
-- Challenging puzzles integrated with video sequences
-- Interactive video environments
-- Character-driven narrative with video dialogue
+- Rich samurai storytelling with video integration
+- Challenging puzzles integrated with Japanese cultural elements
+- Interactive video environments inspired by feudal Japan
+- Heroic character-driven narrative with video dialogue
 - Seamless point-and-click video interactions
+- Exploration of individualism through samurai themes
 
 ## Development Goals
 1. Define core gameplay mechanics for video integration
