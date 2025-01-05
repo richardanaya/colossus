@@ -641,7 +641,6 @@ async fn product_manager_loop(
                             );
                         }
                     }
-                }
             }
         }
     }
