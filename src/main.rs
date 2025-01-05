@@ -586,12 +586,10 @@ async fn product_manager_loop(project_dir: String, shutdown_signal: Arc<Mutex<bo
         cmd.current_dir(&project_dir)
             .arg("--no-suggest-shell-commands")
             .arg("--yes-always")
-            .arg("--add")
-            .arg("TRANSCRIPT.md")
-            .arg("--add")
-            .arg("PROJECT.md")
             .arg("--message")
-            .arg("given the TRANSCRIPT.md update PROJECT.md");
+            .arg("given the TRANSCRIPT.md update PROJECT.md")
+            .arg("TRANSCRIPT.md")
+            .arg("PROJECT.md");
             
         if let Some(model) = &state_with_dir.code_model {
             cmd.arg("--model").arg(model);
