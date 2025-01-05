@@ -380,7 +380,7 @@ async fn main() {
     let product_manager_shutdown = shutdown_signal.clone();
     let project_dir_clone = args.project_dir.clone();
     tokio::spawn(async move {
-        product_manager_loop(project_dir_clone, product_manager_shutdown).await;
+        product_manager_loop(project_dir_clone, product_manager_shutdown, state_with_dir.clone()).await;
     });
 
     let state_with_dir = Arc::new(AppStateWithDir {
@@ -549,7 +549,11 @@ async fn handle_transcript_update(
     Ok(Json("Transcript updated successfully".to_string()))
 }
 
-async fn product_manager_loop(project_dir: String, shutdown_signal: Arc<Mutex<bool>>) {
+async fn product_manager_loop(
+    project_dir: String, 
+    shutdown_signal: Arc<Mutex<bool>>,
+    state_with_dir: Arc<AppStateWithDir>
+) {
     let mut interval = time::interval(Duration::from_secs(10));
     
     loop {
