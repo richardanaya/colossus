@@ -101,7 +101,7 @@ pub async fn product_manager_loop(
 
                         // Touch PROJECT.md to update its modification time
                         let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
-                        if let Ok(metadata) = fs::metadata(&project_path) {
+                        if let Ok(_metadata) = fs::metadata(&project_path) {
                             let current_time = FileTime::now();
                             filetime::set_file_mtime(&project_path, current_time)
                                 .map_err(|e| {
