@@ -39,6 +39,7 @@ pub async fn developer_loop(
         };
 
         let output = Command::new("aider")
+            .current_dir(&project_dir)
             .arg("--model")
             .arg(&code_model)
             .arg("--message")
