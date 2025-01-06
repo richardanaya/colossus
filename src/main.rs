@@ -6,6 +6,7 @@ use axum::{
     Router,
 };
 mod cli;
+mod init;
 use cli::{Cli, Commands};
 use clap::Parser;
 use colored::*;
@@ -318,6 +319,12 @@ async fn main() {
     let cli = Cli::parse();
     
     match cli.command {
+        Commands::Init(args) => {
+            if let Err(e) = init::project_init(&args.dir) {
+                eprintln!("Initialization failed: {}", e);
+                std::process::exit(1);
+            }
+        }
         Commands::Serve(args) => {
             // Start server with args
 

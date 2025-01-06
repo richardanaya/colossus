@@ -11,6 +11,15 @@ pub struct Cli {
 pub enum Commands {
     /// Start the Colossus server
     Serve(ServeArgs),
+    /// Initialize a new project directory
+    Init(InitArgs),
+}
+
+#[derive(Parser)]
+pub struct InitArgs {
+    /// Directory path to initialize
+    #[arg(default_value = ".")]
+    pub dir: String,
 }
 
 #[derive(Parser)]
