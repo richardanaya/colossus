@@ -23,6 +23,15 @@ pub async fn product_manager_loop(
             }
         }
 
+        // Check activity mode
+        {
+            let mode = state_with_dir.activity_mode.lock().await;
+            if !matches!(*mode, ActivityMode::Planning) {
+                println!("Not in planning mode - skipping update check");
+                continue;
+            }
+        }
+
         println!("\nChecking if we should update PROJECT.md");
 
         // Check file modification times
