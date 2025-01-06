@@ -74,8 +74,8 @@ pub async fn tester_loop(
 1. Simple unit tests using the language's built-in test framework
 2. Basic integration tests for critical paths
 3. Test-driven development workflow using vanilla tools
-4. Minimal CI setup with GitHub Actions
-5. Keep everything as simple and maintainable as possible")
+4. Keep everything as simple and maintainable as possible
+5. Avoid complex tooling or CI pipelines - stick to local development testing")
                 .arg("TASKS.md")
                 .arg("ARCHITECTURE.md")
                 .arg("TEST_STRATEGY.md");
