@@ -64,9 +64,11 @@ pub async fn developer_loop(
             .expect("Failed to execute make build");
 
         if !build_output.status.success() {
+            let stderr = String::from_utf8_lossy(&build_output.stderr);
+            let stdout = String::from_utf8_lossy(&build_output.stdout);
             eprintln!(
-                "Make build failed: {}",
-                String::from_utf8_lossy(&build_output.stderr)
+                "Make build failed\nSTDERR:\n{}\nSTDOUT:\n{}",
+                stderr, stdout
             );
             continue; // Skip testing if build failed
         } else {
