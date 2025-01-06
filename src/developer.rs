@@ -135,7 +135,7 @@ pub async fn developer_loop(
             .arg(model)
             .arg("--message")
             
-            .arg("given the first important task at the top of the list, implement it, and create some way to test it")
+            .arg("find the first UNCOMPLETED task (one without a checkmark ✓) at the top of TASKS.md, implement it, and create some way to test it")
             .arg("--load")
             .arg("CONTEXT.md")
             .arg("--yes-always")
