@@ -455,17 +455,18 @@ async fn main() {
         "Language:".bright_green(),
         args.preferred_language.yellow()
     );
-    println!("{} {}", "Model:".bright_green(), args.model.yellow());
-    println!(
-        "{} {}",
-        "Project directory:".bright_green(),
-        args.project_dir.yellow()
-    );
+    println!("{} {}", "Voice model:".bright_green(), args.model.yellow());
     println!("{} {}", "Voice:".bright_green(), args.voice.yellow());
 
     if let Some(code_model) = &args.code_model {
         println!("{} {}", "Code model:".bright_green(), code_model.yellow());
     }
+
+    println!(
+        "{} {}",
+        "Project directory:".bright_green(),
+        args.project_dir.yellow()
+    );
 
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
