@@ -1,4 +1,5 @@
 use crate::{ActivityMode, AppStateWithDir};
+use filetime::FileTime;
 use std::fs;
 use std::process::Command;
 use std::sync::Arc;
@@ -96,16 +97,20 @@ pub async fn product_manager_loop(
                     if project_modified_after > project_modified_before {
                         println!("PROJECT.md updated successfully");
                     } else {
-                        eprintln!("PROJECT.md was not updated");
+                        eprintln!("PROJECT.md was not updated, check the logs, but probably just empty transcript");
 
                         // Touch PROJECT.md to update its modification time
                         let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
                         if let Ok(metadata) = fs::metadata(&project_path) {
                             let current_time = FileTime::now();
-                            filetime::set_file_mtime(&project_path, current_time).map_err(|e| {
-                                eprintln!("Failed to update PROJECT.md timestamp: {}", e);
-                            }).ok();
+                            filetime::set_file_mtime(&project_path, current_time)
+                                .map_err(|e| {
+                                    eprintln!("Failed to update PROJECT.md timestamp: {}", e);
+                                })
+                                .ok();
                         }
+
+                        print!("Touching PROJECT.md to update its modification time");
                     }
                 }
             }
