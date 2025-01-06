@@ -136,7 +136,7 @@ colossus -c deepseek/deepseek-chat -d /path/to/project
 /add **/_.css
 /add \*\*/_.html
 /add package.json
-``
+```
 
 
 ## Contributing
