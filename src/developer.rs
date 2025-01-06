@@ -26,7 +26,6 @@ pub async fn developer_loop(
         {
             let mode = state_with_dir.activity_mode.lock().await;
             if !matches!(*mode, ActivityMode::Developing) {
-                println!("Not in developing mode - skipping developer work");
                 continue;
             }
         }
