@@ -111,61 +111,8 @@ fn create_language_context(dir: &str, language: &str) -> Result<(), String> {
     
     fs::write(&context_path, context_content)
         .map_err(|e| format!("Failed to create CONTEXT.md: {}", e))?;
-    
-    // Create TASKS.md
-    let tasks_path = path.join("TASKS.md");
-    let tasks_content = "# Project Tasks\n\nList your project tasks here.\n";
-    fs::write(&tasks_path, tasks_content)
-        .map_err(|e| format!("Failed to create TASKS.md: {}", e))?;
-    
-    // Create appropriate project files based on language
-    match language {
-        "JavaScript" | "TypeScript" => {
-            let package_json = path.join("package.json");
-            let package_content = r#"{
-  "name": "project",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest",
-    "start": "node index.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
-}"#;
-            fs::write(&package_json, package_content)
-                .map_err(|e| format!("Failed to create package.json: {}", e))?;
-            
-            if language == "TypeScript" {
-                let tsconfig = path.join("tsconfig.json");
-                let tsconfig_content = r#"{
-  "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  }
-}"#;
-                fs::write(&tsconfig, tsconfig_content)
-                    .map_err(|e| format!("Failed to create tsconfig.json: {}", e))?;
-            }
-        },
-        "Python" => {
-            let requirements = path.join("requirements.txt");
-            fs::write(&requirements, "pytest\n")
-                .map_err(|e| format!("Failed to create requirements.txt: {}", e))?;
-        },
-        "Rust" => {
-            // Cargo.toml already exists
-        },
-        _ => return Err("Unsupported language".to_string()),
-    }
-    
-    println!("Created project files for {} development", language);
+
+    println!("Created CONTEXT.md for {} development", language);
     Ok(())
 }
 
