@@ -6,9 +6,11 @@ use std::io::{self, Write};
 pub fn project_init(dir: &str) -> Result<(), String> {
     let path = Path::new(dir);
     
-    // Ensure directory exists
+    // Create directory if it doesn't exist
     if !path.exists() {
-        return Err(format!("Directory '{}' does not exist", dir));
+        fs::create_dir_all(path)
+            .map_err(|e| format!("Failed to create directory '{}': {}", dir, e))?;
+        println!("Created directory '{}'", dir);
     }
 
     // Check for .git directory
