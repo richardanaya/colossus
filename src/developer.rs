@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::time::{self, Duration};
+use tokio::process::Command;
 use crate::{AppStateWithDir, ActivityMode};
 
 pub async fn developer_loop(
@@ -30,7 +31,24 @@ pub async fn developer_loop(
             }
         }
 
-        println!("DEVELOPING!!");
+        // Run aider command
+        let output = Command::new("aider")
+            .arg("--model")
+            .arg("gpt-4")  // or whatever your code model is
+            .arg("--message")
+            .arg("given the first important task at the top of the list, implement it, and create some way to test it")
+            .arg("--load")
+            .arg("CONTEXT.md")
+            .arg("--yes-always")
+            .output()
+            .await
+            .expect("Failed to execute aider command");
+
+        // Print command output
+        println!("Aider command output:");
+        println!("Status: {}", output.status);
+        println!("Stdout: {}", String::from_utf8_lossy(&output.stdout));
+        println!("Stderr: {}", String::from_utf8_lossy(&output.stderr));
     }
     println!("Developer thread shutting down cleanly");
 }
