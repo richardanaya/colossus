@@ -1,9 +1,9 @@
+use crate::{ActivityMode, AppStateWithDir};
 use std::fs;
 use std::process::Command;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::time::{self, Duration};
-use crate::{AppStateWithDir, ActivityMode};
 
 pub async fn tester_loop(
     project_dir: String,
@@ -28,7 +28,7 @@ pub async fn tester_loop(
             let mode = state_with_dir.activity_mode.lock().await;
             matches!(*mode, ActivityMode::Planning)
         };
-        
+
         if !should_continue {
             continue;
         }
@@ -51,23 +51,8 @@ pub async fn tester_loop(
                 architecture_meta.modified(),
                 test_plan_meta.modified(),
             ) {
-                println!("Checking file modification times:");
-                println!("- TASKS.md last modified: {:?}", tasks_modified);
-                println!("- ARCHITECTURE.md last modified: {:?}", architecture_modified);
-                println!("- TEST_STRATEGY.md last modified: {:?}", test_plan_modified);
-
                 let tasks_newer = tasks_modified > test_plan_modified;
                 let architecture_newer = architecture_modified > test_plan_modified;
-                
-                println!(
-                    "TASKS.md is {} than TEST_STRATEGY.md",
-                    if tasks_newer { "newer" } else { "older or same" }
-                );
-                println!(
-                    "ARCHITECTURE.md is {} than TEST_STRATEGY.md",
-                    if architecture_newer { "newer" } else { "older or same" }
-                );
-
                 tasks_newer || architecture_newer
             } else {
                 println!("Could not get modification times for files");
@@ -114,6 +99,8 @@ pub async fn tester_loop(
                         "Aider command failed: {}",
                         String::from_utf8_lossy(&output.stderr)
                     );
+                } else {
+                    println!("✨ Aider finished updating TEST_STRATEGY.md");
                 }
             }
         }
