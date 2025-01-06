@@ -149,6 +149,12 @@ struct SessionRequest {
     instructions: String,
 }
 
+#[derive(Clone)]
+pub enum ActivityMode {
+    Planning,
+    Developing,
+}
+
 struct AppStateWithDir {
     shutdown_signal: Arc<Mutex<bool>>,
     project_dir: String,
@@ -157,6 +163,7 @@ struct AppStateWithDir {
     instructions: String,
     voice: String,
     code_model: Option<String>,
+    activity_mode: Arc<Mutex<ActivityMode>>,
 }
 
 async fn get_contexts(
@@ -391,6 +398,7 @@ async fn main() {
         instructions: args.instructions.clone(),
         voice: args.voice.clone(),
         code_model: args.code_model.clone(),
+        activity_mode: Arc::new(Mutex::new(ActivityMode::Planning)), // Default to Planning mode
     });
 
     // Start ProductManager thread
