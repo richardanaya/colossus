@@ -154,9 +154,20 @@ pub async fn developer_loop(
             continue; // Restart loop after all attempts failed
         }
 
-        // Run make test after successful build
-        if !handle_make_test(&project_dir, model).await {
-            continue; // Restart loop after attempting fix
+        // Run make test after successful build with retries
+        let mut test_success = false;
+        for attempt in 1..=5 {
+            println!("Test attempt {} of 5", attempt);
+            if handle_make_test(&project_dir, model).await {
+                test_success = true;
+                break;
+            }
+            if attempt == 5 {
+                println!("SOMETHING IS SERIOUSLY WRONG - Tests failed after 5 attempts");
+            }
+        }
+        if !test_success {
+            continue; // Restart loop after all attempts failed
         }
             
             // Tell aider to mark the completed task
