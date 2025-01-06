@@ -32,6 +32,9 @@ If critical issues arise that AI cannot resolve:
 - Provides detailed error context
 - Returns to development mode once issues are resolved
 
+![Untitled drawing (5)](https://github.com/user-attachments/assets/f9f997bb-22ae-42be-b14f-f982810cc1b3)
+
+
 ## Key Features
 
 - **Real-time Voice Interface**: Natural conversation with the AI system
