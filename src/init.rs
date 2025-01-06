@@ -1,6 +1,7 @@
 use std::path::Path;
 use std::process::Command;
 use std::fs;
+use std::io::{self, Write};
 
 pub fn project_init(dir: &str) -> Result<(), String> {
     let path = Path::new(dir);
@@ -50,6 +51,36 @@ ANTHROPIC_API_KEY=<API_KEY>
         println!("Please edit .env and add your API keys");
     }
 
+    // Ask for programming language preference
+    let language = select_language()?;
+    println!("Selected language: {}", language);
+    
     println!("Initialized project in '{}'", dir);
     Ok(())
+}
+
+fn select_language() -> Result<String, String> {
+    let languages = vec!["Rust", "Python", "JavaScript"];
+    
+    println!("\nSelect your preferred programming language:");
+    for (i, lang) in languages.iter().enumerate() {
+        println!("{}. {}", i + 1, lang);
+    }
+    
+    print!("Enter the number (1-3): ");
+    io::stdout().flush().map_err(|e| e.to_string())?;
+    
+    let mut input = String::new();
+    io::stdin()
+        .read_line(&mut input)
+        .map_err(|e| format!("Failed to read input: {}", e))?;
+    
+    let selection = input.trim().parse::<usize>()
+        .map_err(|_| "Please enter a valid number (1-3)".to_string())?;
+    
+    if selection < 1 || selection > languages.len() {
+        return Err(format!("Please enter a number between 1 and {}", languages.len()));
+    }
+    
+    Ok(languages[selection - 1].to_string())
 }
