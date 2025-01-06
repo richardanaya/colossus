@@ -95,7 +95,7 @@ pub async fn product_manager_loop(
                         .unwrap_or_else(|_| std::time::SystemTime::UNIX_EPOCH);
                     //check if PROJECT.md was updated
                     if project_modified_after > project_modified_before {
-                        println!("PROJECT.md updated successfully");
+                        println!("✨ Aider finished updating PROJECT.md");
                     } else {
                         eprintln!("PROJECT.md was not updated, check the logs, but probably just empty transcript");
 

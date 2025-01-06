@@ -1,9 +1,9 @@
+use crate::{ActivityMode, AppStateWithDir};
 use std::fs;
 use std::process::Command;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::time::{self, Duration};
-use crate::{AppStateWithDir, ActivityMode};
 
 pub async fn architect_loop(
     project_dir: String,
@@ -28,7 +28,7 @@ pub async fn architect_loop(
             let mode = state_with_dir.activity_mode.lock().await;
             matches!(*mode, ActivityMode::Planning)
         };
-        
+
         if !should_continue {
             continue;
         }
@@ -40,9 +40,10 @@ pub async fn architect_loop(
         // If ARCHITECTURE.md doesn't exist, we should create it
         let should_run_aider = if !architecture_path.exists() {
             true
-        } else if let (Ok(project_meta), Ok(architecture_meta)) =
-            (fs::metadata(&project_path), fs::metadata(&architecture_path))
-        {
+        } else if let (Ok(project_meta), Ok(architecture_meta)) = (
+            fs::metadata(&project_path),
+            fs::metadata(&architecture_path),
+        ) {
             if let (Ok(project_modified), Ok(architecture_modified)) =
                 (project_meta.modified(), architecture_meta.modified())
             {
@@ -81,6 +82,8 @@ pub async fn architect_loop(
                         "Aider command failed: {}",
                         String::from_utf8_lossy(&output.stderr)
                     );
+                } else {
+                    println!("✨ Aider finished updating ARCHITECTURE.md");
                 }
             }
         }

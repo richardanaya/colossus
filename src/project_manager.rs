@@ -1,9 +1,9 @@
+use crate::{ActivityMode, AppStateWithDir};
 use std::fs;
 use std::process::Command;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::time::{self, Duration};
-use crate::{AppStateWithDir, ActivityMode};
 
 pub async fn project_manager_loop(
     project_dir: String,
@@ -28,7 +28,7 @@ pub async fn project_manager_loop(
             let mode = state_with_dir.activity_mode.lock().await;
             matches!(*mode, ActivityMode::Planning)
         };
-        
+
         if !should_continue {
             continue;
         }
@@ -99,6 +99,8 @@ pub async fn project_manager_loop(
                         "Aider command failed: {}",
                         String::from_utf8_lossy(&output.stderr)
                     );
+                } else {
+                    println!("✨ Aider finished updating TASKS.md");
                 }
             }
         }
