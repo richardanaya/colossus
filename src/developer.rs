@@ -128,6 +128,21 @@ pub async fn developer_loop(
             continue; // Restart loop after attempting fix
         } else {
             println!("Make test succeeded");
+            
+            // Tell aider to mark the completed task
+            let output = Command::new("aider")
+                .current_dir(&project_dir)
+                .arg("--model")
+                .arg(model)
+                .arg("--message")
+                .arg("Mark the task we just completed in TASKS.md as done")
+                .arg("--load")
+                .arg("CONTEXT.md")
+                .arg("--yes-always")
+                .arg("--no-suggest-shell-commands")
+                .output()
+                .await
+                .expect("Failed to execute aider command");
         }
     }
     println!("Developer thread shutting down cleanly");
