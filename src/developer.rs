@@ -85,9 +85,11 @@ pub async fn developer_loop(
             .expect("Failed to execute make test");
 
         if !test_output.status.success() {
+            let stderr = String::from_utf8_lossy(&test_output.stderr);
+            let stdout = String::from_utf8_lossy(&test_output.stdout);
             eprintln!(
-                "Make test failed: {}",
-                String::from_utf8_lossy(&test_output.stderr)
+                "Make test failed\nSTDERR:\n{}\nSTDOUT:\n{}",
+                stderr, stdout
             );
         } else {
             println!("Make test succeeded");
