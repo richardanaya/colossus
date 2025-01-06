@@ -163,6 +163,5 @@ pub async fn developer_loop(
                 .await
                 .expect("Failed to execute aider command");
         }
-    }
     println!("Developer thread shutting down cleanly");
 }
