@@ -1,4 +1,4 @@
-# Test Plan
+# Test Strategy
 
 ## Overview
 This document outlines the testing strategy for the project, following Test-Driven Development (TDD) principles. The plan covers both frontend and backend testing, with a focus on automation and continuous integration.

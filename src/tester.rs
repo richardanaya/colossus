@@ -28,11 +28,11 @@ pub async fn tester_loop(
         // Check file modification times
         let tasks_path = std::path::Path::new(&project_dir).join("TASKS.md");
         let architecture_path = std::path::Path::new(&project_dir).join("ARCHITECTURE.md");
-        let test_plan_path = std::path::Path::new(&project_dir).join("TEST_PLAN.md");
+        let test_plan_path = std::path::Path::new(&project_dir).join("TEST_STRATEGY.md");
 
         // If TEST_PLAN.md doesn't exist, we should create it
         let should_run_aider = if !test_plan_path.exists() {
-            println!("TEST_PLAN.md doesn't exist - creating it");
+            println!("TEST_STRATEGY.md doesn't exist - creating it");
             true
         } else if let (Ok(tasks_meta), Ok(architecture_meta), Ok(test_plan_meta)) = (
             fs::metadata(&tasks_path),
@@ -47,17 +47,17 @@ pub async fn tester_loop(
                 println!("Checking file modification times:");
                 println!("- TASKS.md last modified: {:?}", tasks_modified);
                 println!("- ARCHITECTURE.md last modified: {:?}", architecture_modified);
-                println!("- TEST_PLAN.md last modified: {:?}", test_plan_modified);
+                println!("- TEST_STRATEGY.md last modified: {:?}", test_plan_modified);
 
                 let tasks_newer = tasks_modified > test_plan_modified;
                 let architecture_newer = architecture_modified > test_plan_modified;
                 
                 println!(
-                    "TASKS.md is {} than TEST_PLAN.md",
+                    "TASKS.md is {} than TEST_STRATEGY.md",
                     if tasks_newer { "newer" } else { "older or same" }
                 );
                 println!(
-                    "ARCHITECTURE.md is {} than TEST_PLAN.md",
+                    "ARCHITECTURE.md is {} than TEST_STRATEGY.md",
                     if architecture_newer { "newer" } else { "older or same" }
                 );
 
@@ -72,18 +72,18 @@ pub async fn tester_loop(
         };
 
         println!(
-            "Decision to update TEST_PLAN.md: {}",
+            "Decision to update TEST_STRATEGY.md: {}",
             if should_run_aider { "YES" } else { "NO" }
         );
 
         if should_run_aider {
-            println!("Updating TEST_PLAN.md");
+            println!("Updating TEST_STRATEGY.md");
             let mut cmd = Command::new("aider");
             cmd.current_dir(&project_dir)
                 .arg("--no-suggest-shell-commands")
                 .arg("--yes-always")
                 .arg("--message")
-                .arg("Given the TASKS.md and ARCHITECTURE.md, create or update TEST_PLAN.md with a comprehensive test strategy following these guidelines:
+                .arg("Given the TASKS.md and ARCHITECTURE.md, create or update TEST_STRATEGY.md with a comprehensive test strategy following these guidelines:
 1. Create a test pyramid with unit, integration, and end-to-end tests
 2. For each task in TASKS.md, define specific test cases
 3. Include both frontend and backend test strategies
@@ -96,7 +96,7 @@ pub async fn tester_loop(
 10. Include reporting and monitoring requirements")
                 .arg("TASKS.md")
                 .arg("ARCHITECTURE.md")
-                .arg("TEST_PLAN.md");
+                .arg("TEST_STRATEGY.md");
 
             if let Some(model) = &state_with_dir.code_model {
                 cmd.arg("--model").arg(model);
