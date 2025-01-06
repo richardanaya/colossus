@@ -87,17 +87,29 @@ You can set these keys in your `.env` file or as environment variables.
 
 ## Quick Start
 
-TLDR: you should be able to run colossus anywhere you normally run aider as long as there is a .git repo and the required API keys are set
-
-1. Ensure you have a `.env` file in your project directory with an OPENAI_API_KEY (same directory where you run aider) or its in your environment variables
-2. Launch Colossus:
+1. Create a new project:
    ```bash
-   colossus
+   colossus init my-project
    ```
-3. Go to the website url listed
-4. Click start sessions
-5. Ask questions
-6. Hit mute/unmute as needed
+   This will:
+   - Create the project directory if it doesn't exist
+   - Initialize a git repository
+   - Create a template .env file
+   - Set up language-specific configuration files
+   - Create a Makefile with build and test targets
+
+2. Add your API keys to the .env file:
+   - OPENAI_API_KEY (required)
+   - PERPLEXITY_API_KEY (optional, for web search)
+
+3. Start the Colossus server:
+   ```bash
+   colossus serve
+   ```
+
+4. Open the web interface shown in the terminal
+5. Click "Start Session" to begin
+6. Use the microphone button to talk with Colossus
 
 ## Advanced Usage
 
