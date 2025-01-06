@@ -112,7 +112,50 @@ fn create_language_context(dir: &str, language: &str) -> Result<(), String> {
     fs::write(&context_path, context_content)
         .map_err(|e| format!("Failed to create CONTEXT.md: {}", e))?;
 
-    println!("Created CONTEXT.md for {} development", language);
+    // Create language-specific Makefile
+    let makefile_path = path.join("Makefile");
+    let makefile_content = match language {
+        "Rust" => r#".PHONY: build test
+
+build:
+	cargo build
+
+test:
+	cargo test"#,
+        
+        "Python" => r#".PHONY: build test
+
+build:
+	python -m pip install -r requirements.txt
+
+test:
+	python -m pytest"#,
+        
+        "JavaScript" => r#".PHONY: build test
+
+build:
+	npm install
+	npm run build
+
+test:
+	npm test"#,
+        
+        "TypeScript" => r#".PHONY: build test
+
+build:
+	npm install
+	npm run build
+
+test:
+	npm test"#,
+        
+        _ => return Err("Unsupported language".to_string()),
+    };
+    
+    fs::write(&makefile_path, makefile_content)
+        .map_err(|e| format!("Failed to create Makefile: {}", e))?;
+
+    println!("Created CONTEXT.md and Makefile for {} development", language);
     Ok(())
 }
 
