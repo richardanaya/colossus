@@ -1,6 +1,21 @@
 let isConnecting = false;
 let isConnected = false;
 let currentMode = 'planning'; // Track current mode
+let modePollingInterval;
+
+// Poll backend for current mode
+async function pollCurrentMode() {
+  try {
+    const response = await fetch('/current-mode');
+    const mode = await response.json();
+    if (mode !== currentMode) {
+      currentMode = mode;
+      updateModeToggle();
+    }
+  } catch (error) {
+    console.error('Failed to poll mode:', error);
+  }
+}
 
 // Update mode toggle button
 function updateModeToggle() {
@@ -186,6 +201,9 @@ async function requestVoiceCommentary(message) {
 async function init() {
   isConnecting = true;
   updateUI();
+  
+  // Start mode polling
+  modePollingInterval = setInterval(pollCurrentMode, 5000); // Poll every 5 seconds
 
   try {
     // Get session data from our server
@@ -380,6 +398,11 @@ async function init() {
   } finally {
     isConnecting = false;
     updateUI();
+  }
+
+  // Clear polling interval if initialization fails
+  if (!isConnected) {
+    clearInterval(modePollingInterval);
   }
 }
 

@@ -489,6 +489,7 @@ async fn main() {
         .route("/web-search", post(handle_web_search))
         .route("/update-transcript", post(handle_transcript_update))
         .route("/toggle-mode", post(handle_toggle_mode))
+        .route("/current-mode", get(get_current_mode))
         .with_state(state_with_dir.clone());
 
     println!("{}", "          /\\          ".bright_cyan());
@@ -592,6 +593,17 @@ async fn handle_change_code(
             }),
         ))
     }
+}
+
+async fn get_current_mode(
+    State(state): State<Arc<AppStateWithDir>>,
+) -> Json<String> {
+    let mode = state.activity_mode.lock().await;
+    Json(match *mode {
+        ActivityMode::Planning => "planning".to_string(),
+        ActivityMode::Developing => "developing".to_string(),
+        ActivityMode::ErrorNeedsHuman => "error".to_string(),
+    })
 }
 
 async fn handle_toggle_mode(
