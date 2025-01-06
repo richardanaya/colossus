@@ -57,6 +57,12 @@ pub async fn product_manager_loop(
         };
 
         if should_run_aider {
+            // get PROJECT.md file modified time
+            let project_modified_before = fs::metadata(&project_path)
+                .map(|meta| meta.modified())
+                .unwrap_or_else(|_| Ok(std::time::SystemTime::UNIX_EPOCH))
+                .unwrap_or_else(|_| std::time::SystemTime::UNIX_EPOCH);
+
             println!("📝 Updating PROJECT.md from transcript...");
             let mut cmd = Command::new("aider");
             cmd.current_dir(&project_dir)
@@ -82,8 +88,23 @@ pub async fn product_manager_loop(
                         String::from_utf8_lossy(&output.stderr)
                     );
                 } else {
-                    println!("PROJECT.md updated successfully");
-                    println!("Aider output: {}", String::from_utf8_lossy(&output.stdout));
+                    let project_modified_after = fs::metadata(&project_path)
+                        .map(|meta| meta.modified())
+                        .unwrap_or_else(|_| Ok(std::time::SystemTime::UNIX_EPOCH))
+                        .unwrap_or_else(|_| std::time::SystemTime::UNIX_EPOCH);
+                    //check if PROJECT.md was updated
+                    if project_modified_after > project_modified_before {
+                        println!("PROJECT.md updated successfully");
+                    } else {
+                        eprintln!("PROJECT.md was not updated");
+                        // update PROJECT.md modified timestamp
+                        let touch_output = Command::new("touch")
+                            .current_dir(&project_dir)
+                            .arg("PROJECT.md");
+                        let _ = touch_output.output().map_err(|e| {
+                            eprintln!("Failed to run touch: {}", e);
+                        });
+                    }
                 }
             }
         }
