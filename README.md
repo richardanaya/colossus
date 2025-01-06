@@ -48,7 +48,8 @@ This project uses OpenAI's real-time API pricing. Please be aware:
 - Tier 1 credits have daily request limits
 - Recommended minimum credit balance: $50 for unrestricted usage
 
-<img width="1513" alt="Colossus Interface" src="https://github.com/user-attachments/assets/802e4007-40fe-453b-aeab-cf8459c87464" />
+<img width="700" alt="Screenshot 2025-01-05 at 7 15 00 PM" src="https://github.com/user-attachments/assets/61ced4be-b020-421f-ab10-fa5b4ae9cb5d" />
+
 
 ## Installation
 
