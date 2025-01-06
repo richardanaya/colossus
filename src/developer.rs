@@ -110,8 +110,17 @@ pub async fn developer_loop(
         // Check activity mode - only run in Developing mode
         {
             let mode = state_with_dir.activity_mode.lock().await;
-            if !matches!(*mode, ActivityMode::Developing) {
-                continue;
+            match *mode {
+                ActivityMode::Developing => {
+                    // Continue with development
+                },
+                ActivityMode::ErrorNeedsHuman => {
+                    println!("⚠️  Development halted - human intervention required to fix critical errors!");
+                    continue;
+                },
+                _ => {
+                    continue;
+                }
             }
         }
 
