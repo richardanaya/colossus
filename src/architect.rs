@@ -1,9 +1,10 @@
-use std::fs;
+use std::fs::{self, OpenOptions};
 use std::process::Command;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::time::{self, Duration};
 use crate::{AppStateWithDir, ActivityMode};
+use filetime::FileTime;
 
 pub async fn architect_loop(
     project_dir: String,

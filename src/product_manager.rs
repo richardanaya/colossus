@@ -98,7 +98,14 @@ pub async fn product_manager_loop(
                     } else {
                         eprintln!("PROJECT.md was not updated");
 
-                        // TODO touch PROJECT.md to update it's modified time
+                        // Touch PROJECT.md to update its modification time
+                        let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
+                        if let Ok(metadata) = fs::metadata(&project_path) {
+                            let current_time = FileTime::now();
+                            filetime::set_file_mtime(&project_path, current_time).map_err(|e| {
+                                eprintln!("Failed to update PROJECT.md timestamp: {}", e);
+                            }).ok();
+                        }
                     }
                 }
             }
