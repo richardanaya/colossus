@@ -51,30 +51,14 @@ pub async fn project_manager_loop(
                 architecture_meta.modified(),
                 tasks_meta.modified(),
             ) {
-                println!("Checking file modification times:");
-                println!("- PROJECT.md last modified: {:?}", project_modified);
-                println!("- ARCHITECTURE.md last modified: {:?}", architecture_modified);
-                println!("- TASKS.md last modified: {:?}", tasks_modified);
-
                 let project_newer = project_modified > tasks_modified;
                 let architecture_newer = architecture_modified > tasks_modified;
-                
-                println!(
-                    "PROJECT.md is {} than TASKS.md",
-                    if project_newer { "newer" } else { "older or same" }
-                );
-                println!(
-                    "ARCHITECTURE.md is {} than TASKS.md",
-                    if architecture_newer { "newer" } else { "older or same" }
-                );
 
                 project_newer || architecture_newer
             } else {
-                println!("Could not get modification times for files");
                 false
             }
         } else {
-            println!("Could not get metadata for files");
             false
         };
 

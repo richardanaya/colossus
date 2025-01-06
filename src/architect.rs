@@ -46,27 +46,13 @@ pub async fn architect_loop(
             if let (Ok(project_modified), Ok(architecture_modified)) =
                 (project_meta.modified(), architecture_meta.modified())
             {
-                println!("Checking file modification times:");
-                println!("- PROJECT.md last modified: {:?}", project_modified);
-                println!("- ARCHITECTURE.md last modified: {:?}", architecture_modified);
-
                 let project_newer = project_modified > architecture_modified;
-                println!(
-                    "PROJECT.md is {} than ARCHITECTURE.md",
-                    if project_newer {
-                        "newer"
-                    } else {
-                        "older or same"
-                    }
-                );
 
                 project_newer
             } else {
-                println!("Could not get modification times for files");
                 false
             }
         } else {
-            println!("Could not get metadata for files");
             false
         };
 

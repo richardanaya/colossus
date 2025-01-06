@@ -46,27 +46,13 @@ pub async fn product_manager_loop(
             if let (Ok(transcript_modified), Ok(project_modified)) =
                 (transcript_meta.modified(), project_meta.modified())
             {
-                println!("Checking file modification times:");
-                println!("- TRANSCRIPT.md last modified: {:?}", transcript_modified);
-                println!("- PROJECT.md last modified: {:?}", project_modified);
-
                 let transcript_newer = transcript_modified > project_modified;
-                println!(
-                    "TRANSCRIPT.md is {} than PROJECT.md",
-                    if transcript_newer {
-                        "newer"
-                    } else {
-                        "older or same"
-                    }
-                );
 
                 transcript_newer
             } else {
-                println!("Could not get modification times for files");
                 false
             }
         } else {
-            println!("Could not get metadata for files");
             false
         };
 
