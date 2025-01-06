@@ -19,7 +19,7 @@ async fn handle_make_test(project_dir: &str, model: &str) -> bool {
 
         // Send test error to aider to fix
         println!("🔧 Attempting to fix test failures with aider...");
-        let fix_message = format!("Fix these test failures: {}", stdout);
+        let fix_message = format!("Fix these test failures:\nSTDOUT:\n{}\nSTDERR:\n{}", stdout, stderr);
         let output = Command::new("aider")
             .current_dir(project_dir)
             .arg("--model")
