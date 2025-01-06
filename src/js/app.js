@@ -59,7 +59,6 @@ async function toggleMode() {
   }
 }
 let messages = [];
-let functionCalls = [];
 let textInput = "";
 let dataChannel = null;
 let pc = null;
@@ -144,20 +143,7 @@ function updateUI() {
     )
     .join("");
 
-  // Update function calls
-  functionCallsContainer.innerHTML = functionCalls
-    .map(
-      (call) => `
-        <div class="glass-card">
-            <span class="function-name">${call.name}</span>
-            <pre class="function-args">${call.args}</pre>
-        </div>
-    `
-    )
-    .join("");
-
-  // Scroll to bottom of function calls and messages
-  functionCallsContainer.scrollTop = functionCallsContainer.scrollHeight;
+  // Scroll to bottom of messages
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
