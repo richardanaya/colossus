@@ -53,6 +53,24 @@ pub async fn developer_loop(
             .output()
             .await
             .expect("Failed to execute aider command");
+
+        // Run make build after aider
+        println!("Running make build...");
+        let build_output = Command::new("make")
+            .current_dir(&project_dir)
+            .arg("build")
+            .output()
+            .await
+            .expect("Failed to execute make build");
+
+        if !build_output.status.success() {
+            eprintln!(
+                "Make build failed: {}",
+                String::from_utf8_lossy(&build_output.stderr)
+            );
+        } else {
+            println!("Make build succeeded");
+        }
     }
     println!("Developer thread shutting down cleanly");
 }
