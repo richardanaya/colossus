@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use tokio::time::Duration;
+use tokio::time::{self, Duration};
 use tokio::process::Command;
 use crate::{AppStateWithDir, ActivityMode};
 
