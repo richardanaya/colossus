@@ -60,14 +60,14 @@ ANTHROPIC_API_KEY=<API_KEY>
 }
 
 fn select_language() -> Result<String, String> {
-    let languages = vec!["Rust", "Python", "JavaScript"];
+    let languages = vec!["Rust", "Python", "JavaScript", "TypeScript"];
     
     println!("\nSelect your preferred programming language:");
     for (i, lang) in languages.iter().enumerate() {
         println!("{}. {}", i + 1, lang);
     }
     
-    print!("Enter the number (1-3): ");
+    print!("Enter the number (1-4): ");
     io::stdout().flush().map_err(|e| e.to_string())?;
     
     let mut input = String::new();
@@ -76,7 +76,7 @@ fn select_language() -> Result<String, String> {
         .map_err(|e| format!("Failed to read input: {}", e))?;
     
     let selection = input.trim().parse::<usize>()
-        .map_err(|_| "Please enter a valid number (1-3)".to_string())?;
+        .map_err(|_| "Please enter a valid number (1-4)".to_string())?;
     
     if selection < 1 || selection > languages.len() {
         return Err(format!("Please enter a number between 1 and {}", languages.len()));
