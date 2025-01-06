@@ -70,12 +70,12 @@ pub async fn tester_loop(
                 .arg("--no-suggest-shell-commands")
                 .arg("--yes-always")
                 .arg("--message")
-                .arg("Given the ARCHITECTURE.md, create or update TEST_STRATEGY.md with a simple testing approach. Focus on:
-1. Unit tests for core functionality
-2. Integration tests for key features
-3. Test-driven development workflow
-4. Basic CI setup with GitHub Actions
-5. Code coverage requirements")
+                .arg("Given the ARCHITECTURE.md, create or update TEST_STRATEGY.md with a minimal testing strategy. Focus on:
+1. Simple unit tests using the language's built-in test framework
+2. Basic integration tests for critical paths
+3. Test-driven development workflow using vanilla tools
+4. Minimal CI setup with GitHub Actions
+5. Keep everything as simple and maintainable as possible")
                 .arg("TASKS.md")
                 .arg("ARCHITECTURE.md")
                 .arg("TEST_STRATEGY.md");
