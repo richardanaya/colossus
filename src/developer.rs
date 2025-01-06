@@ -33,10 +33,7 @@ pub async fn developer_loop(
 
         // Run aider command
         // Get the code model from state
-        let code_model = {
-            let state = state_with_dir.state.lock().await;
-            state.code_model.clone()
-        };
+        let code_model = state_with_dir.code_model.clone();
 
         println!("Running aider in directory: {}", project_dir);
         println!("Command: aider --model {} --message 'given the first important task at the top of the list, implement it, and create some way to test it' --load CONTEXT.md --yes-always", code_model);
