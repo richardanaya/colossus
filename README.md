@@ -89,7 +89,7 @@ You can set these keys in your `.env` file or as environment variables.
 
 1. Create a new project:
    ```bash
-   colossus init my-project
+   colossus init ./my-project
    ```
    This will:
    - Create the project directory if it doesn't exist
