@@ -157,6 +157,7 @@ struct SessionRequest {
 pub enum ActivityMode {
     Planning,
     Developing,
+    ErrorNeedsHuman,
 }
 
 struct AppStateWithDir {

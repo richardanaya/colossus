@@ -148,6 +148,8 @@ pub async fn developer_loop(
             }
             if attempt == 5 {
                 println!("SOMETHING IS SERIOUSLY WRONG - Build failed after 5 attempts");
+                let mut mode = state_with_dir.activity_mode.lock().await;
+                *mode = ActivityMode::ErrorNeedsHuman;
             }
         }
         if !build_success {
@@ -164,6 +166,8 @@ pub async fn developer_loop(
             }
             if attempt == 5 {
                 println!("SOMETHING IS SERIOUSLY WRONG - Tests failed after 5 attempts");
+                let mut mode = state_with_dir.activity_mode.lock().await;
+                *mode = ActivityMode::ErrorNeedsHuman;
             }
         }
         if !test_success {
