@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use tokio::time::{self, Duration};
+use tokio::time::Duration;
 use tokio::process::Command;
 use crate::{AppStateWithDir, ActivityMode};
 
@@ -36,12 +36,13 @@ pub async fn developer_loop(
         let code_model = state_with_dir.code_model.clone();
 
         println!("Running aider in directory: {}", project_dir);
-        println!("Command: aider --model {} --message 'given the first important task at the top of the list, implement it, and create some way to test it' --load CONTEXT.md --yes-always", code_model);
+        let model = code_model.as_ref().unwrap_or(&"gpt-4".to_string());
+        println!("Command: aider --model {} --message 'given the first important task at the top of the list, implement it, and create some way to test it' --load CONTEXT.md --yes-always", model);
 
         let output = Command::new("aider")
             .current_dir(&project_dir)
             .arg("--model")
-            .arg(&code_model)
+            .arg(model)
             .arg("--message")
             .arg("given the first important task at the top of the list, implement it, and create some way to test it")
             .arg("--load")
