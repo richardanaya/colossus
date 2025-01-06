@@ -38,6 +38,9 @@ pub async fn developer_loop(
             state.code_model.clone()
         };
 
+        println!("Running aider in directory: {}", project_dir);
+        println!("Command: aider --model {} --message 'given the first important task at the top of the list, implement it, and create some way to test it' --load CONTEXT.md --yes-always", code_model);
+
         let output = Command::new("aider")
             .current_dir(&project_dir)
             .arg("--model")
