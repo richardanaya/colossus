@@ -4,6 +4,49 @@ use tokio::time::{self, Duration};
 use tokio::process::Command;
 use crate::{AppStateWithDir, ActivityMode};
 
+async fn handle_make_build(project_dir: &str, model: &str) -> bool {
+    // Run make build
+    println!("Running make build...");
+    let build_output = Command::new("make")
+        .current_dir(project_dir)
+        .arg("build")
+        .output()
+        .await
+        .expect("Failed to execute make build");
+
+    if !build_output.status.success() {
+        let stderr = String::from_utf8_lossy(&build_output.stderr);
+        let stdout = String::from_utf8_lossy(&build_output.stdout);
+        eprintln!(
+            "Make build failed\nSTDERR:\n{}\nSTDOUT:\n{}",
+            stderr, stdout
+        );
+
+        // Send build error to aider to fix
+        println!("🔧 Attempting to fix build error with aider...");
+        let fix_message = format!("Fix this build error: {}", stdout);
+        let output = Command::new("aider")
+            .current_dir(project_dir)
+            .arg("--model")
+            .arg(model)
+            .arg("--message")
+            .arg(&fix_message)
+            .arg("--load")
+            .arg("CONTEXT.md")
+            .arg("--yes-always")
+            .arg("--no-suggest-shell-commands")
+            .output()
+            .await
+            .expect("Failed to execute aider command");
+        
+        println!("✨ Aider finished attempting build fix");
+        false
+    } else {
+        println!("Make build succeeded");
+        true
+    }
+}
+
 pub async fn developer_loop(
     project_dir: String,
     shutdown_signal: Arc<Mutex<bool>>,
@@ -54,43 +97,8 @@ pub async fn developer_loop(
             .expect("Failed to execute aider command");
 
         // Run make build after aider
-        println!("Running make build...");
-        let build_output = Command::new("make")
-            .current_dir(&project_dir)
-            .arg("build")
-            .output()
-            .await
-            .expect("Failed to execute make build");
-
-        if !build_output.status.success() {
-            let stderr = String::from_utf8_lossy(&build_output.stderr);
-            let stdout = String::from_utf8_lossy(&build_output.stdout);
-            eprintln!(
-                "Make build failed\nSTDERR:\n{}\nSTDOUT:\n{}",
-                stderr, stdout
-            );
-
-            // Send build error to aider to fix
-            println!("🔧 Attempting to fix build error with aider...");
-            let fix_message = format!("Fix this build error: {}", stdout);
-            let output = Command::new("aider")
-                .current_dir(&project_dir)
-                .arg("--model")
-                .arg(model)
-                .arg("--message")
-                .arg(&fix_message)
-                .arg("--load")
-                .arg("CONTEXT.md")
-                .arg("--yes-always")
-                .arg("--no-suggest-shell-commands")
-                .output()
-                .await
-                .expect("Failed to execute aider command");
-            
-            println!("✨ Aider finished attempting build fix");
+        if !handle_make_build(&project_dir, model).await {
             continue; // Restart loop after attempting fix
-        } else {
-            println!("Make build succeeded");
         }
 
         // Run make test after successful build
