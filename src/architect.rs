@@ -3,7 +3,7 @@ use std::process::Command;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::time::{self, Duration};
-use crate::AppStateWithDir;
+use crate::{AppStateWithDir, ActivityMode};
 
 pub async fn architect_loop(
     project_dir: String,
