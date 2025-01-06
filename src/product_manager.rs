@@ -33,15 +33,12 @@ pub async fn product_manager_loop(
             continue;
         }
 
-        println!("\nChecking if we should update PROJECT.md");
-
         // Check file modification times
         let transcript_path = std::path::Path::new(&project_dir).join("TRANSCRIPT.md");
         let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
 
         // If PROJECT.md doesn't exist, we should create it
         let should_run_aider = if !project_path.exists() {
-            println!("PROJECT.md doesn't exist - creating it");
             true
         } else if let (Ok(transcript_meta), Ok(project_meta)) =
             (fs::metadata(&transcript_path), fs::metadata(&project_path))
@@ -73,13 +70,8 @@ pub async fn product_manager_loop(
             false
         };
 
-        println!(
-            "Decision to update PROJECT.md: {}",
-            if should_run_aider { "YES" } else { "NO" }
-        );
-
         if should_run_aider {
-            println!("Updating PROJECT.md");
+            println!("📝 Updating PROJECT.md from transcript...");
             let mut cmd = Command::new("aider");
             cmd.current_dir(&project_dir)
                 .arg("--no-suggest-shell-commands")

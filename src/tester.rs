@@ -33,8 +33,6 @@ pub async fn tester_loop(
             continue;
         }
 
-        println!("\nChecking if we should update TEST_STRATEGY.md");
-
         // Check file modification times
         let tasks_path = std::path::Path::new(&project_dir).join("TASKS.md");
         let architecture_path = std::path::Path::new(&project_dir).join("ARCHITECTURE.md");
@@ -42,7 +40,6 @@ pub async fn tester_loop(
 
         // If TEST_PLAN.md doesn't exist, we should create it
         let should_run_aider = if !test_plan_path.exists() {
-            println!("TEST_STRATEGY.md doesn't exist - creating it");
             true
         } else if let (Ok(tasks_meta), Ok(architecture_meta), Ok(test_plan_meta)) = (
             fs::metadata(&tasks_path),
@@ -81,13 +78,8 @@ pub async fn tester_loop(
             false
         };
 
-        println!(
-            "Decision to update TEST_STRATEGY.md: {}",
-            if should_run_aider { "YES" } else { "NO" }
-        );
-
         if should_run_aider {
-            println!("Updating TEST_STRATEGY.md");
+            println!("🧪 Updating TEST_STRATEGY.md from architecture...");
             let mut cmd = Command::new("aider");
             cmd.current_dir(&project_dir)
                 .arg("--no-suggest-shell-commands")

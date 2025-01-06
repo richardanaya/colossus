@@ -33,8 +33,6 @@ pub async fn project_manager_loop(
             continue;
         }
 
-        println!("\nChecking if we should update TASKS.md");
-
         // Check file modification times
         let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
         let architecture_path = std::path::Path::new(&project_dir).join("ARCHITECTURE.md");
@@ -42,7 +40,6 @@ pub async fn project_manager_loop(
 
         // If TASKS.md doesn't exist, we should create it
         let should_run_aider = if !tasks_path.exists() {
-            println!("TASKS.md doesn't exist - creating it");
             true
         } else if let (Ok(project_meta), Ok(architecture_meta), Ok(tasks_meta)) = (
             fs::metadata(&project_path),
@@ -81,13 +78,8 @@ pub async fn project_manager_loop(
             false
         };
 
-        println!(
-            "Decision to update TASKS.md: {}",
-            if should_run_aider { "YES" } else { "NO" }
-        );
-
         if should_run_aider {
-            println!("Updating TASKS.md");
+            println!("📋 Updating TASKS.md from architecture...");
             let mut cmd = Command::new("aider");
             cmd.current_dir(&project_dir)
                 .arg("--no-suggest-shell-commands")

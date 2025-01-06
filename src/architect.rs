@@ -33,15 +33,12 @@ pub async fn architect_loop(
             continue;
         }
 
-        println!("\nChecking if we should update ARCHITECTURE.md");
-
         // Check file modification times
         let project_path = std::path::Path::new(&project_dir).join("PROJECT.md");
         let architecture_path = std::path::Path::new(&project_dir).join("ARCHITECTURE.md");
 
         // If ARCHITECTURE.md doesn't exist, we should create it
         let should_run_aider = if !architecture_path.exists() {
-            println!("ARCHITECTURE.md doesn't exist - creating it");
             true
         } else if let (Ok(project_meta), Ok(architecture_meta)) =
             (fs::metadata(&project_path), fs::metadata(&architecture_path))
@@ -73,13 +70,8 @@ pub async fn architect_loop(
             false
         };
 
-        println!(
-            "Decision to update ARCHITECTURE.md: {}",
-            if should_run_aider { "YES" } else { "NO" }
-        );
-
         if should_run_aider {
-            println!("Updating ARCHITECTURE.md");
+            println!("🏗️ Updating ARCHITECTURE.md from project requirements...");
             let mut cmd = Command::new("aider");
             cmd.current_dir(&project_dir)
                 .arg("--no-suggest-shell-commands")
