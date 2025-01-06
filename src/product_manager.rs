@@ -23,12 +23,14 @@ pub async fn product_manager_loop(
             }
         }
 
-        // Check activity mode
-        {
+        // Check activity mode quickly
+        let should_continue = {
             let mode = state_with_dir.activity_mode.lock().await;
-            if !matches!(*mode, ActivityMode::Planning) {
-                continue;
-            }
+            matches!(*mode, ActivityMode::Planning)
+        };
+        
+        if !should_continue {
+            continue;
         }
 
         println!("\nChecking if we should update PROJECT.md");

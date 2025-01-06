@@ -102,21 +102,23 @@ pub async fn developer_loop(
             }
         }
 
-        // Check activity mode - only run in Developing mode
-        {
+        // Check activity mode quickly
+        let should_continue = {
             let mode = state_with_dir.activity_mode.lock().await;
-            match *mode {
-                ActivityMode::Developing => {
-                    // Continue with development
-                },
-                ActivityMode::ErrorNeedsHuman => {
-                    println!("⚠️  Development halted - human intervention required to fix critical errors!");
-                    continue;
-                },
-                _ => {
-                    continue;
-                }
+            matches!(*mode, ActivityMode::Developing)
+        };
+        
+        if !should_continue {
+            // Check if we're in error state
+            let is_error = {
+                let mode = state_with_dir.activity_mode.lock().await;
+                matches!(*mode, ActivityMode::ErrorNeedsHuman)
+            };
+            
+            if is_error {
+                println!("⚠️  Development halted - human intervention required to fix critical errors!");
             }
+            continue;
         }
 
         // Run aider command
