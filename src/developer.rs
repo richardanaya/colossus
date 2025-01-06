@@ -66,7 +66,7 @@ async fn handle_make_build(project_dir: &str, model: &str) -> bool {
 
         // Send build error to aider to fix
         println!("🔧 Attempting to fix build error with aider...");
-        let fix_message = format!("Fix this build error: {}", stdout);
+        let fix_message = format!("Fix this build error:\nSTDOUT:\n{}\nSTDERR:\n{}", stdout, stderr);
         let output = Command::new("aider")
             .current_dir(project_dir)
             .arg("--model")
