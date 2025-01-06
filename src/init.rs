@@ -58,6 +58,8 @@ ANTHROPIC_API_KEY=<API_KEY>
     println!("Selected language: {}", language);
     
     println!("Initialized project in '{}'", dir);
+    println!("\nTo start the Colossus server, run:");
+    println!("cd {} && colossus serve", dir);
     Ok(())
 }
 
