@@ -12,13 +12,11 @@ async fn handle_make_test(project_dir: &str, model: &str) -> bool {
     if !test_output.status.success() {
         let stderr = String::from_utf8_lossy(&test_output.stderr);
         let stdout = String::from_utf8_lossy(&test_output.stdout);
-        eprintln!(
-            "Make test failed\nSTDERR:\n{}\nSTDOUT:\n{}",
-            stderr, stdout
-        );
 
         // Send test error to aider to fix
         println!("🔧 Attempting to fix test failures with aider...");
+        // give me the complete command
+        println!("Command: aider --model {} --message 'Fix these test failures:\nSTDOUT:\n{}\nSTDERR:\n{}' --load CONTEXT.md --yes-always --no-suggest-shell-commands", model, stdout, stderr);
         let fix_message = format!("Fix these test failures:\nSTDOUT:\n{}\nSTDERR:\n{}", stdout, stderr);
         let output = Command::new("aider")
             .current_dir(project_dir)
@@ -59,13 +57,10 @@ async fn handle_make_build(project_dir: &str, model: &str) -> bool {
     if !build_output.status.success() {
         let stderr = String::from_utf8_lossy(&build_output.stderr);
         let stdout = String::from_utf8_lossy(&build_output.stdout);
-        eprintln!(
-            "Make build failed\nSTDERR:\n{}\nSTDOUT:\n{}",
-            stderr, stdout
-        );
 
         // Send build error to aider to fix
         println!("🔧 Attempting to fix build error with aider...");
+        println!("Command: aider --model {} --message 'Fix these test failures:\nSTDOUT:\n{}\nSTDERR:\n{}' --load CONTEXT.md --yes-always --no-suggest-shell-commands", model, stdout, stderr);
         let fix_message = format!("Fix this build error:\nSTDOUT:\n{}\nSTDERR:\n{}", stdout, stderr);
         let output = Command::new("aider")
             .current_dir(project_dir)
