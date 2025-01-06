@@ -1,4 +1,46 @@
 use std::sync::Arc;
+
+async fn handle_make_test(project_dir: &str, model: &str) -> bool {
+    println!("Running make test...");
+    let test_output = Command::new("make")
+        .current_dir(project_dir)
+        .arg("test")
+        .output()
+        .await
+        .expect("Failed to execute make test");
+
+    if !test_output.status.success() {
+        let stderr = String::from_utf8_lossy(&test_output.stderr);
+        let stdout = String::from_utf8_lossy(&test_output.stdout);
+        eprintln!(
+            "Make test failed\nSTDERR:\n{}\nSTDOUT:\n{}",
+            stderr, stdout
+        );
+
+        // Send test error to aider to fix
+        println!("🔧 Attempting to fix test failures with aider...");
+        let fix_message = format!("Fix these test failures: {}", stdout);
+        let output = Command::new("aider")
+            .current_dir(project_dir)
+            .arg("--model")
+            .arg(model)
+            .arg("--message")
+            .arg(&fix_message)
+            .arg("--load")
+            .arg("CONTEXT.md")
+            .arg("--yes-always")
+            .arg("--no-suggest-shell-commands")
+            .output()
+            .await
+            .expect("Failed to execute aider command");
+        
+        println!("✨ Aider finished attempting test fix");
+        false
+    } else {
+        println!("Make test succeeded");
+        true
+    }
+}
 use tokio::sync::Mutex;
 use tokio::time::{self, Duration};
 use tokio::process::Command;
@@ -102,43 +144,9 @@ pub async fn developer_loop(
         }
 
         // Run make test after successful build
-        println!("Running make test...");
-        let test_output = Command::new("make")
-            .current_dir(&project_dir)
-            .arg("test")
-            .output()
-            .await
-            .expect("Failed to execute make test");
-
-        if !test_output.status.success() {
-            let stderr = String::from_utf8_lossy(&test_output.stderr);
-            let stdout = String::from_utf8_lossy(&test_output.stdout);
-            eprintln!(
-                "Make test failed\nSTDERR:\n{}\nSTDOUT:\n{}",
-                stderr, stdout
-            );
-
-            // Send test error to aider to fix
-            println!("🔧 Attempting to fix test failures with aider...");
-            let fix_message = format!("Fix these test failures: {}", stdout);
-            let output = Command::new("aider")
-                .current_dir(&project_dir)
-                .arg("--model")
-                .arg(model)
-                .arg("--message")
-                .arg(&fix_message)
-                .arg("--load")
-                .arg("CONTEXT.md")
-                .arg("--yes-always")
-                .arg("--no-suggest-shell-commands")
-                .output()
-                .await
-                .expect("Failed to execute aider command");
-            
-            println!("✨ Aider finished attempting test fix");
+        if !handle_make_test(&project_dir, model).await {
             continue; // Restart loop after attempting fix
-        } else {
-            println!("Make test succeeded");
+        }
             
             // Tell aider to mark the completed task
             let output = Command::new("aider")
