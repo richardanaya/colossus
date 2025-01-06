@@ -39,7 +39,6 @@ If critical issues arise that AI cannot resolve:
 - **Automated Development Cycle**: Continuous implementation, testing, and validation
 - **Context-Aware Development**: Uses multiple context files for specialized tasks
 - **Web Search Integration**: Perplexity-powered web search for additional information
-- **Intelligent Mode Switching**: Automatic transitions between planning and development
 - **Error Management**: Smart detection and handling of critical issues
 
 ## Important Notes
