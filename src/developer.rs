@@ -9,7 +9,7 @@ pub async fn developer_loop(
     shutdown_signal: Arc<Mutex<bool>>,
     state_with_dir: Arc<AppStateWithDir>,
 ) {
-    let mut interval = time::interval(Duration::from_secs(10));
+    let mut interval = time::interval(Duration::from_secs(30));
 
     loop {
         interval.tick().await;
