@@ -70,17 +70,12 @@ pub async fn tester_loop(
                 .arg("--no-suggest-shell-commands")
                 .arg("--yes-always")
                 .arg("--message")
-                .arg("Given the ARCHITECTURE.md, create or update TEST_STRATEGY.md with a comprehensive testing approach. Focus on:
-1. Testing tools and frameworks we'll use for each layer (unit, integration, e2e)
-2. Test automation principles and practices
-3. CI/CD pipeline configuration and tools
-4. Code coverage tools and minimum thresholds
-5. Performance testing tools and benchmarking approach
-6. Security testing tools and scanning strategy
-7. Test data generation and management tools
-8. Logging and monitoring tools for test results
-9. TDD workflow and tooling setup
-10. Testing standards and best practices to follow")
+                .arg("Given the ARCHITECTURE.md, create or update TEST_STRATEGY.md with a simple testing approach. Focus on:
+1. Unit tests for core functionality
+2. Integration tests for key features
+3. Test-driven development workflow
+4. Basic CI setup with GitHub Actions
+5. Code coverage requirements")
                 .arg("TASKS.md")
                 .arg("ARCHITECTURE.md")
                 .arg("TEST_STRATEGY.md");
