@@ -59,6 +59,116 @@ ANTHROPIC_API_KEY=<API_KEY>
     Ok(())
 }
 
+fn create_language_context(dir: &str, language: &str) -> Result<(), String> {
+    let path = Path::new(dir);
+    let context_path = path.join("CONTEXT.md");
+    
+    let context_content = match language {
+        "Rust" => r#"/add TASKS.md
+/read-only ARCHITECTURE.md
+/read-only PROJECT.md
+/read-only TEST_STRATEGY.md
+/read-only Makefile
+/add src/**/*.rs
+/add tests/**/*.rs
+/add Cargo.toml"#,
+        
+        "Python" => r#"/add TASKS.md
+/read-only ARCHITECTURE.md
+/read-only PROJECT.md
+/read-only TEST_STRATEGY.md
+/read-only Makefile
+/add **/*.py
+/add requirements.txt
+/add pyproject.toml"#,
+        
+        "JavaScript" => r#"/add TASKS.md
+/read-only ARCHITECTURE.md
+/read-only PROJECT.md
+/read-only TEST_STRATEGY.md
+/read-only Makefile
+/add package.json
+/add **/*.js
+/add **/*.css
+/add **/*.html
+/add jest.config.js"#,
+        
+        "TypeScript" => r#"/add TASKS.md
+/read-only ARCHITECTURE.md
+/read-only PROJECT.md
+/read-only TEST_STRATEGY.md
+/read-only Makefile
+/add package.json
+/add tsconfig.json
+/add **/*.ts
+/add **/*.tsx
+/add **/*.css
+/add **/*.html
+/add jest.config.ts"#,
+        
+        _ => return Err("Unsupported language".to_string()),
+    };
+    
+    fs::write(&context_path, context_content)
+        .map_err(|e| format!("Failed to create CONTEXT.md: {}", e))?;
+    
+    // Create TASKS.md
+    let tasks_path = path.join("TASKS.md");
+    let tasks_content = "# Project Tasks\n\nList your project tasks here.\n";
+    fs::write(&tasks_path, tasks_content)
+        .map_err(|e| format!("Failed to create TASKS.md: {}", e))?;
+    
+    // Create appropriate project files based on language
+    match language {
+        "JavaScript" | "TypeScript" => {
+            let package_json = path.join("package.json");
+            let package_content = r#"{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}"#;
+            fs::write(&package_json, package_content)
+                .map_err(|e| format!("Failed to create package.json: {}", e))?;
+            
+            if language == "TypeScript" {
+                let tsconfig = path.join("tsconfig.json");
+                let tsconfig_content = r#"{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}"#;
+                fs::write(&tsconfig, tsconfig_content)
+                    .map_err(|e| format!("Failed to create tsconfig.json: {}", e))?;
+            }
+        },
+        "Python" => {
+            let requirements = path.join("requirements.txt");
+            fs::write(&requirements, "pytest\n")
+                .map_err(|e| format!("Failed to create requirements.txt: {}", e))?;
+        },
+        "Rust" => {
+            // Cargo.toml already exists
+        },
+        _ => return Err("Unsupported language".to_string()),
+    }
+    
+    println!("Created project files for {} development", language);
+    Ok(())
+}
+
 fn select_language() -> Result<String, String> {
     let languages = vec!["Rust", "Python", "JavaScript", "TypeScript"];
     
@@ -82,5 +192,10 @@ fn select_language() -> Result<String, String> {
         return Err(format!("Please enter a number between 1 and {}", languages.len()));
     }
     
-    Ok(languages[selection - 1].to_string())
+    let selected_lang = languages[selection - 1].to_string();
+    
+    // Create context file based on selected language
+    create_language_context(dir, &selected_lang)?;
+    
+    Ok(selected_lang)
 }
