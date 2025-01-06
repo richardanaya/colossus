@@ -138,9 +138,20 @@ pub async fn developer_loop(
             .await
             .expect("Failed to execute aider command");
 
-        // Run make build after aider
-        if !handle_make_build(&project_dir, model).await {
-            continue; // Restart loop after attempting fix
+        // Run make build after aider with retries
+        let mut build_success = false;
+        for attempt in 1..=5 {
+            println!("Build attempt {} of 5", attempt);
+            if handle_make_build(&project_dir, model).await {
+                build_success = true;
+                break;
+            }
+            if attempt == 5 {
+                println!("SOMETHING IS SERIOUSLY WRONG - Build failed after 5 attempts");
+            }
+        }
+        if !build_success {
+            continue; // Restart loop after all attempts failed
         }
 
         // Run make test after successful build
