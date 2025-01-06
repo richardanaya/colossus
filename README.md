@@ -4,23 +4,52 @@
 
 # Colossus
 
-**Aider + OpenAI Advanced Voice Model = Perfect Coding Companion**
+**Voice-Controlled Multi-Agent AI Development System**
 
-Fair warning: this is very hot of the presses. I'm still working on a ideal workflow and actions you can do and nice sounding prompts, but it does work!
+Colossus is an innovative development platform that combines real-time voice interaction with a coordinated team of AI agents to streamline the software development process. It orchestrates multiple specialized AI agents working together through different phases of development while maintaining voice communication with you.
 
-Colossus is a powerful real-time voice assistant designed to streamline your development workflow by providing voice-controlled integration with [`aider`](https://aider.chat/), an AI pair programming tool.
+## How It Works
 
-Disclaimer: this project uses [realtime API pricing](https://openai.com/api/pricing/). Make sure that's compatible with your budget. **Please note that with your credits at tier 1 levels, you will be limited to a number of requests PER DAY. I had to spend $50 credits to no longer be capped on per day limitations.**
+Colossus operates in three distinct phases:
 
-<img width="1513" alt="Screenshot 2024-12-25 at 11 53 49 PM" src="https://github.com/user-attachments/assets/802e4007-40fe-453b-aeab-cf8459c87464" />
+### 1. Planning Phase
+During this phase, multiple agents work simultaneously:
+- **Product Manager**: Processes voice transcripts to maintain project requirements
+- **Architect**: Designs and updates the technical architecture
+- **Project Manager**: Breaks down work into specific tasks
+- **Test Strategist**: Develops comprehensive test plans
 
+### 2. Development Phase
+Once planning is complete, the system switches to development mode where:
+- **Developer Agent**: Implements tasks in order, following test-driven development
+- Automated build and test processes run after each implementation
+- Tasks are automatically marked complete when tests pass
 
-## Features
+### 3. Human Intervention Mode
+If critical issues arise that AI cannot resolve:
+- System automatically halts development
+- Signals need for human intervention
+- Provides detailed error context
+- Returns to development mode once issues are resolved
 
-- **Intelligent Code Analysis**: Ask questions about your codebase 
-- **Code Modification**: Make changes to your codebase through voice commands
-- **Context Switching**: Seamlessly switch between different parts of your project by using dynamic `/load` of context files based on the conversation
-- **Web Search Integration**: Search the web using Perplexity to gather additional information and context
+## Key Features
+
+- **Real-time Voice Interface**: Natural conversation with the AI system
+- **Multi-Agent Coordination**: Specialized AI agents working in concert
+- **Automated Development Cycle**: Continuous implementation, testing, and validation
+- **Context-Aware Development**: Uses multiple context files for specialized tasks
+- **Web Search Integration**: Perplexity-powered web search for additional information
+- **Intelligent Mode Switching**: Automatic transitions between planning and development
+- **Error Management**: Smart detection and handling of critical issues
+
+## Important Notes
+
+This project uses OpenAI's real-time API pricing. Please be aware:
+- Requires appropriate API credits and budget
+- Tier 1 credits have daily request limits
+- Recommended minimum credit balance: $50 for unrestricted usage
+
+<img width="1513" alt="Colossus Interface" src="https://github.com/user-attachments/assets/802e4007-40fe-453b-aeab-cf8459c87464" />
 
 ## Installation
 
