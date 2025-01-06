@@ -117,23 +117,26 @@ OPTIONS:
 
 Example with custom settings:
 ```bash
-colossus --port 3000 --model gpt-4o-realtime-preview-2024-12-17 --project-dir /path/to/project
+colossus -c deepseek/deepseek-chat -d /path/to/project
 ```
 
-## Context
+## How to prepare a project for colossus
 
-You can have various aider context files that can be loaded in by using the aider `/load` command.
-
-Any file that is prefixed in the root directory `CONTEXT_` and ends with extension `.md` will show up as a button you can load.
-
-Example:
-
-```markdown
-// CONTEXT_webpage.md - a context that clears context and adds all relevant web page files
-/drop
-/add **.*.html
-/add **.*.js
+* add a `Makefile` that has a `build` and `test` target
+* add  a `CONTEXT.md` that loads all appropriate files
+  
 ```
+# example
+/add TASKS.md
+/read-only ARCHITECTURE.md
+/read-only PROJECT.md
+/read-only TEST_STRATEGY.md
+/read-only Makefile
+/add **/\*.js
+/add **/_.css
+/add \*\*/_.html
+/add package.json
+``
 
 
 ## Contributing
