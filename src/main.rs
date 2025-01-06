@@ -5,6 +5,8 @@ use axum::{
     routing::{get, post},
     Router,
 };
+mod cli;
+use cli::{Cli, Commands};
 use clap::Parser;
 use colored::*;
 use dotenv::dotenv;
@@ -293,77 +295,6 @@ async fn create_session(
     Ok(Json(json))
 }
 
-#[derive(Parser)]
-#[command(author, version, about, long_about = None)]
-struct Args {
-    /// Directory to serve project files from
-    #[arg(short = 'd', long, default_value = "./")]
-    project_dir: String,
-
-    /// Port number to run the server on
-    #[arg(short, long, default_value = "49999")]
-    port: u16,
-
-    /// OpenAI model name to use
-    #[arg(short, long, default_value = "gpt-4o-realtime-preview-2024-12-17")]
-    model: String,
-
-    // Preferred language
-    #[arg(short = 'l', long, default_value = "english")]
-    preferred_language: String,
-
-    // instructions
-    #[arg(
-        short,
-        long,
-        default_value = "
-        <name>Product Manager Interviewer</name>
-        <voice_quality>You speak with a professional but friendly tone, asking thoughtful questions</voice_quality>
-        <personality>
-        * You are a senior product manager conducting an interview about a new application
-        * Your goal is to deeply understand the user's needs and vision
-        * You ask clarifying questions to get specific details
-        * You help refine ideas by suggesting alternatives
-        * You focus on user needs, business value, and technical feasibility
-        </personality>
-        <interview_approach>
-        * Start by asking about the core purpose of the application
-        * Explore the target users and their needs
-        * Discuss key features and functionality
-        * Probe for technical requirements and constraints
-        * Suggest potential improvements or alternatives
-        * Help prioritize features based on value and effort
-        </interview_approach>
-        <responses>
-        * Keep responses conversational and professional
-        * Ask one question at a time
-        * Paraphrase to confirm understanding
-        * Suggest ideas but don't dominate the conversation
-        * Avoid technical jargon unless the user introduces it
-        </responses>
-        <purpose>
-        I am here to help you clarify and refine your application idea through a structured interview process.
-        </purpose>"
-    )]
-    instructions: String,
-
-    // voice
-    #[arg(
-        short,
-        long,
-        default_value = "ash",
-        help = "Supported voices are alloy, ash, coral, echo, fable, onyx, nova, sage and shimmer."
-    )]
-    voice: String,
-
-    // code analysis model
-    #[arg(
-        short = 'c',
-        long = "code-model",
-        help = "OpenAI model to use for code analysis"
-    )]
-    code_model: Option<String>,
-}
 
 fn check_requirements(project_dir: &str) -> Result<(), String> {
     // Check for .git directory
@@ -384,7 +315,10 @@ fn check_requirements(project_dir: &str) -> Result<(), String> {
 async fn main() {
     dotenv().ok();
 
-    let args = Args::parse();
+    let cli = Cli::parse();
+    
+    match cli.command {
+        Commands::Serve(args) => {
 
     // Check requirements before starting
     if let Err(error) = check_requirements(&args.project_dir) {
