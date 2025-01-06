@@ -52,7 +52,7 @@ ANTHROPIC_API_KEY=<API_KEY>
     }
 
     // Ask for programming language preference
-    let language = select_language()?;
+    let language = select_language(dir)?;
     println!("Selected language: {}", language);
     
     println!("Initialized project in '{}'", dir);
@@ -159,7 +159,7 @@ test:
     Ok(())
 }
 
-fn select_language() -> Result<String, String> {
+fn select_language(dir: &str) -> Result<String, String> {
     let languages = vec!["Rust", "Python", "JavaScript", "TypeScript"];
     
     println!("\nSelect your preferred programming language:");
