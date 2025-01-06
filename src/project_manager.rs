@@ -103,7 +103,8 @@ pub async fn project_manager_loop(
 7. Focus on delivering working functionality over perfection
 8. Mark tasks that are critical path for testing
 9. Include estimates of time required for each task
-10. Ensure the sequence leads to a testable product by end of day")
+10. Ensure the sequence leads to a testable product by end of day
+11. Only add a checkmark (✓) to tasks that are confirmed complete - do not add checkmarks to new or uncertain tasks")
                 .arg("PROJECT.md")
                 .arg("ARCHITECTURE.md")
                 .arg("TASKS.md");
