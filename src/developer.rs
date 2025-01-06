@@ -71,6 +71,7 @@ pub async fn developer_loop(
             );
 
             // Send build error to aider to fix
+            println!("🔧 Attempting to fix build error with aider...");
             let fix_message = format!("Fix this build error: {}", stdout);
             let output = Command::new("aider")
                 .current_dir(&project_dir)
@@ -85,7 +86,8 @@ pub async fn developer_loop(
                 .output()
                 .await
                 .expect("Failed to execute aider command");
-
+            
+            println!("✨ Aider finished attempting build fix");
             continue; // Restart loop after attempting fix
         } else {
             println!("Make build succeeded");
@@ -109,6 +111,7 @@ pub async fn developer_loop(
             );
 
             // Send test error to aider to fix
+            println!("🔧 Attempting to fix test failures with aider...");
             let fix_message = format!("Fix these test failures: {}", stdout);
             let output = Command::new("aider")
                 .current_dir(&project_dir)
@@ -123,7 +126,8 @@ pub async fn developer_loop(
                 .output()
                 .await
                 .expect("Failed to execute aider command");
-
+            
+            println!("✨ Aider finished attempting test fix");
             continue; // Restart loop after attempting fix
         } else {
             println!("Make test succeeded");
