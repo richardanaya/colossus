@@ -138,6 +138,11 @@ struct WebSearchRequest {
 }
 
 #[derive(Deserialize)]
+struct ModeToggleRequest {
+    mode: String,
+}
+
+#[derive(Deserialize)]
 struct TranscriptUpdate {
     content: String,
 }
@@ -470,6 +475,7 @@ async fn main() {
         .route("/ask-question", post(handle_question))
         .route("/web-search", post(handle_web_search))
         .route("/update-transcript", post(handle_transcript_update))
+        .route("/toggle-mode", post(handle_toggle_mode))
         .with_state(state_with_dir.clone());
 
     println!("{}", "          /\\          ".bright_cyan());
@@ -573,6 +579,30 @@ async fn handle_change_code(
             }),
         ))
     }
+}
+
+async fn handle_toggle_mode(
+    State(state): State<Arc<AppStateWithDir>>,
+    Json(payload): Json<ModeToggleRequest>,
+) -> Result<Json<String>, (StatusCode, Json<ErrorResponse>)> {
+    let new_mode = match payload.mode.as_str() {
+        "planning" => ActivityMode::Planning,
+        "developing" => ActivityMode::Developing,
+        _ => {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(ErrorResponse {
+                    error: "Invalid mode specified".to_string(),
+                    project_dir: state.project_dir.clone(),
+                }),
+            ))
+        }
+    };
+
+    let mut mode = state.activity_mode.lock().await;
+    *mode = new_mode;
+
+    Ok(Json(format!("Mode changed to {}", payload.mode)))
 }
 
 async fn handle_transcript_update(

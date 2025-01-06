@@ -1,5 +1,36 @@
 let isConnecting = false;
 let isConnected = false;
+let currentMode = 'planning'; // Track current mode
+
+// Update mode toggle button
+function updateModeToggle() {
+  const modeToggle = document.getElementById('modeToggle');
+  if (modeToggle) {
+    modeToggle.textContent = currentMode === 'planning' ? 'Planning Mode' : 'Developing Mode';
+    modeToggle.style.backgroundColor = currentMode === 'planning' ? '#3b82f6' : '#10b981';
+  }
+}
+
+// Toggle mode between planning and developing
+async function toggleMode() {
+  try {
+    const newMode = currentMode === 'planning' ? 'developing' : 'planning';
+    const response = await fetch('/toggle-mode', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ mode: newMode }),
+    });
+    
+    if (response.ok) {
+      currentMode = newMode;
+      updateModeToggle();
+    }
+  } catch (error) {
+    console.error('Failed to toggle mode:', error);
+  }
+}
 let messages = [];
 let functionCalls = [];
 let textInput = "";
@@ -354,6 +385,7 @@ async function init() {
 
 // Event Listeners
 connectButton.addEventListener("click", init);
+document.getElementById('modeToggle')?.addEventListener('click', toggleMode);
 
 muteButton.addEventListener("click", () => {
   if (audioTrack) {
