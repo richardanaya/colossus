@@ -23,7 +23,7 @@ pub async fn tester_loop(
             }
         }
 
-        println!("\nChecking if we should update TEST_PLAN.md");
+        println!("\nChecking if we should update TEST_STRATEGY.md");
 
         // Check file modification times
         let tasks_path = std::path::Path::new(&project_dir).join("TASKS.md");
