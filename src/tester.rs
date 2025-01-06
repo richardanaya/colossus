@@ -75,7 +75,7 @@ pub async fn tester_loop(
 2. Basic integration tests for critical paths
 3. Test-driven development workflow using vanilla tools
 4. Keep everything as simple and maintainable as possible
-5. Avoid complex tooling or CI pipelines - stick to local development testing")
+Note: Do not include any CI/CD setup or pipeline configuration - this is strictly for local development testing.")
                 .arg("TASKS.md")
                 .arg("ARCHITECTURE.md")
                 .arg("TEST_STRATEGY.md");
