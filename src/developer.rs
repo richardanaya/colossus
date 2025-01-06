@@ -16,7 +16,6 @@ async fn handle_make_test(project_dir: &str, model: &str) -> bool {
         // Send test error to aider to fix
         println!("🔧 Attempting to fix test failures with aider...");
         // give me the complete command
-        println!("Command: aider --model {} --message 'Fix these test failures:\nSTDOUT:\n{}\nSTDERR:\n{}' --load CONTEXT.md --yes-always --no-suggest-shell-commands", model, stdout, stderr);
         let fix_message = format!("Fix these test failures:\nSTDOUT:\n{}\nSTDERR:\n{}", stdout, stderr);
         let _output = Command::new("aider")
             .current_dir(project_dir)
@@ -60,7 +59,6 @@ async fn handle_make_build(project_dir: &str, model: &str) -> bool {
 
         // Send build error to aider to fix
         println!("🔧 Attempting to fix build error with aider...");
-        println!("Command: aider --model {} --message 'Fix these test failures:\nSTDOUT:\n{}\nSTDERR:\n{}' --load CONTEXT.md --yes-always --no-suggest-shell-commands", model, stdout, stderr);
         let fix_message = format!("Fix this build error:\nSTDOUT:\n{}\nSTDERR:\n{}", stdout, stderr);
         let _output = Command::new("aider")
             .current_dir(project_dir)
@@ -127,8 +125,6 @@ pub async fn developer_loop(
 
         println!("Running aider in directory: {}", project_dir);
         let model = code_model.as_ref().expect("Code model should be set from CLI params");
-        println!("Command: aider --model {} --message 'given the first important task at the top of the list, implement it, and create some way to test it' --load CONTEXT.md --yes-always", model);
-
         let _output = Command::new("aider")
             .current_dir(&project_dir)
             .arg("--model")
@@ -143,6 +139,8 @@ pub async fn developer_loop(
             .output()
             .await
             .expect("Failed to execute aider command");
+    
+        println!("✨ Aider finished task assignment");
 
         // Run make build after aider with retries
         let mut build_success = false;
