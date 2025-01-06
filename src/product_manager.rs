@@ -97,13 +97,8 @@ pub async fn product_manager_loop(
                         println!("PROJECT.md updated successfully");
                     } else {
                         eprintln!("PROJECT.md was not updated");
-                        // update PROJECT.md modified timestamp
-                        let mut touch_cmd = Command::new("touch");
-                        touch_cmd.current_dir(&project_dir)
-                               .arg("PROJECT.md");
-                        let _ = touch_cmd.output().map_err(|e| {
-                            eprintln!("Failed to run touch: {}", e);
-                        });
+
+                        // TODO touch PROJECT.md to update it's modified time
                     }
                 }
             }
