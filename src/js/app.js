@@ -1,6 +1,6 @@
 let isConnecting = false;
 let isConnected = false;
-let currentMode = 'planning'; // Track current mode
+let currentMode = 'planning'; // Track current mode: planning, developing, or error
 let modePollingInterval;
 
 // Poll backend for current mode
@@ -11,6 +11,11 @@ async function pollCurrentMode() {
     if (mode !== currentMode) {
       currentMode = mode;
       updateModeToggle();
+      // Show/hide resolve error button
+      const resolveButton = document.getElementById('resolveError');
+      if (resolveButton) {
+        resolveButton.style.display = mode === 'error' ? 'block' : 'none';
+      }
     }
   } catch (error) {
     console.error('Failed to poll mode:', error);
@@ -21,8 +26,15 @@ async function pollCurrentMode() {
 function updateModeToggle() {
   const modeToggle = document.getElementById('modeToggle');
   if (modeToggle) {
-    modeToggle.textContent = currentMode === 'planning' ? 'Planning Mode' : 'Developing Mode';
-    modeToggle.style.backgroundColor = currentMode === 'planning' ? '#3b82f6' : '#10b981';
+    if (currentMode === 'error') {
+      modeToggle.textContent = '⚠️ Human Intervention Needed';
+      modeToggle.style.backgroundColor = '#ef4444';
+      modeToggle.disabled = true;
+    } else {
+      modeToggle.textContent = currentMode === 'planning' ? 'Planning Mode' : 'Developing Mode';
+      modeToggle.style.backgroundColor = currentMode === 'planning' ? '#3b82f6' : '#10b981';
+      modeToggle.disabled = false;
+    }
   }
 }
 
@@ -409,6 +421,27 @@ async function init() {
 // Event Listeners
 connectButton.addEventListener("click", init);
 document.getElementById('modeToggle')?.addEventListener('click', toggleMode);
+
+// Add resolve error button handler
+document.getElementById('resolveError')?.addEventListener('click', async () => {
+  try {
+    const response = await fetch('/toggle-mode', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ mode: 'planning' }), // Reset to planning mode
+    });
+    
+    if (response.ok) {
+      currentMode = 'planning';
+      updateModeToggle();
+      document.getElementById('resolveError').style.display = 'none';
+    }
+  } catch (error) {
+    console.error('Failed to resolve error:', error);
+  }
+});
 
 muteButton.addEventListener("click", () => {
   if (audioTrack) {
