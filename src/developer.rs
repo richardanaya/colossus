@@ -68,8 +68,27 @@ pub async fn developer_loop(
                 "Make build failed: {}",
                 String::from_utf8_lossy(&build_output.stderr)
             );
+            continue; // Skip testing if build failed
         } else {
             println!("Make build succeeded");
+        }
+
+        // Run make test after successful build
+        println!("Running make test...");
+        let test_output = Command::new("make")
+            .current_dir(&project_dir)
+            .arg("test")
+            .output()
+            .await
+            .expect("Failed to execute make test");
+
+        if !test_output.status.success() {
+            eprintln!(
+                "Make test failed: {}",
+                String::from_utf8_lossy(&test_output.stderr)
+            );
+        } else {
+            println!("Make test succeeded");
         }
     }
     println!("Developer thread shutting down cleanly");
