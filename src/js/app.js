@@ -430,7 +430,7 @@ document.getElementById('resolveError')?.addEventListener('click', async () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ mode: 'planning' }), // Reset to planning mode
+      body: JSON.stringify({ mode: 'developing' }), // Reset to developing mode
     });
     
     if (response.ok) {
