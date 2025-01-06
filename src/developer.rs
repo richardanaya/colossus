@@ -179,6 +179,7 @@ pub async fn developer_loop(
         }
             
             // Tell aider to mark the completed task
+            println!("Marking off task complete!");
             let output = Command::new("aider")
                 .current_dir(&project_dir)
                 .arg("--model")
@@ -192,6 +193,10 @@ pub async fn developer_loop(
                 .output()
                 .await
                 .expect("Failed to execute aider command");
+            
+            // Print aider's response
+            println!("Aider response:");
+            println!("{}", String::from_utf8_lossy(&output.stdout));
         }
     println!("Developer thread shutting down cleanly");
 }
