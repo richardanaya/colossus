@@ -32,9 +32,15 @@ pub async fn developer_loop(
         }
 
         // Run aider command
+        // Get the code model from state
+        let code_model = {
+            let state = state_with_dir.state.lock().await;
+            state.code_model.clone()
+        };
+
         let output = Command::new("aider")
             .arg("--model")
-            .arg("gpt-4")  // or whatever your code model is
+            .arg(&code_model)
             .arg("--message")
             .arg("given the first important task at the top of the list, implement it, and create some way to test it")
             .arg("--load")
