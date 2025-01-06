@@ -463,17 +463,9 @@ async fn main() {
     );
     println!("{} {}", "Voice:".bright_green(), args.voice.yellow());
 
-    // Construct example aider command preview
-    let mut example_cmd = String::from("aider --no-suggest-shell-commands --yes-always");
-    if let Some(model) = &args.code_model {
-        example_cmd.push_str(&format!(" --model {}", model));
+    if let Some(code_model) = &args.code_model {
+        println!("{} {}", "Code model:".bright_green(), code_model.yellow());
     }
-    example_cmd.push_str(" --load \"<context_file>\" --message \"<message>\"");
-    println!(
-        "{} {}",
-        "Example aider command:".bright_green(),
-        example_cmd.yellow()
-    );
 
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await.unwrap();
