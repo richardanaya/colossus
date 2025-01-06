@@ -319,6 +319,7 @@ async fn main() {
     
     match cli.command {
         Commands::Serve(args) => {
+            // Start server with args
 
     // Check requirements before starting
     if let Err(error) = check_requirements(&args.project_dir) {
@@ -477,9 +478,11 @@ async fn main() {
         eprintln!("Server error: {}", e);
     }
 
-    // Signal shutdown to ProductManagerInterview thread
-    let mut shutdown = state_with_dir.shutdown_signal.lock().await;
-    *shutdown = true;
+            // Signal shutdown to ProductManagerInterview thread
+            let mut shutdown = state_with_dir.shutdown_signal.lock().await;
+            *shutdown = true;
+        }
+    }
 }
 
 async fn handle_change_code(
