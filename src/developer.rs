@@ -108,6 +108,24 @@ pub async fn developer_loop(
                 "Make test failed\nSTDERR:\n{}\nSTDOUT:\n{}",
                 stderr, stdout
             );
+
+            // Send test error to aider to fix
+            let fix_message = format!("Fix these test failures: {}", stdout);
+            let output = Command::new("aider")
+                .current_dir(&project_dir)
+                .arg("--model")
+                .arg(model)
+                .arg("--message")
+                .arg(&fix_message)
+                .arg("--load")
+                .arg("CONTEXT.md")
+                .arg("--yes-always")
+                .arg("--no-suggest-shell-commands")
+                .output()
+                .await
+                .expect("Failed to execute aider command");
+
+            continue; // Restart loop after attempting fix
         } else {
             println!("Make test succeeded");
         }
